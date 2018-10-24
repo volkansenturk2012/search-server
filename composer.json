@@ -21,11 +21,13 @@
         "nesbot/carbon": "^1.22",
 
         "graphaware/neo4j-php-client": "^4.0@alpha",
-        "react/http": "0.7.4",
+        "react/http": "^0.8",
         "cboden/ratchet": "^0.4",
         "clue/redis-react": "^2.2",
         "ramsey/uuid": "^3.7.1",
-        "ekino/newrelic-bundle": "^2.0.0@beta",
+        "ekino/newrelic-bundle": "^2.0",
+        "php-pm/php-pm": "^1",
+        "php-pm/httpkernel-adapter": "^1",
 
         "rsqueue/rsqueue": "^0.1.0",
         "rsqueue/rsqueue-bundle": "^0.1.1",

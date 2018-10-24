@@ -3,15 +3,6 @@
 exec 6>&-
 exec 6<&-
 
-while ! exec 6<>/dev/tcp/apisearch.redis/6379; do
-    echo "$(date) - still trying to connect to redis at apisearch.redis:6379"
-    sleep 1
-done
-
-exec 6>&-
-exec 6<&-
-
-echo $(curl "http://apisearch.elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=10s")
 until $(curl --output /dev/null --silent --fail "http://apisearch.elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=10s"); do
     echo "$(date) - can't connect to apisearch.elasticsearch:9200"
     sleep 1
