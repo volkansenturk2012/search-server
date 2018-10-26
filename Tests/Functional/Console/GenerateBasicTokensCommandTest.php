@@ -47,35 +47,19 @@ class GenerateBasicTokensCommandTest extends CommandTest
         $uuidAdmin = $matches[1];
         preg_match('~UUID\s*(.*?)\s*generated for query~', $output, $matches);
         $uuidQuery = $matches[1];
-        preg_match('~UUID\s*(.*?)\s*generated for events~', $output, $matches);
-        $uuidEvents = $matches[1];
         preg_match('~UUID\s*(.*?)\s*generated for interaction~', $output, $matches);
         $uuidInteractions = $matches[1];
 
         $adminToken = new Token(TokenUUID::createById($uuidAdmin), $appUUID);
         $queryToken = new Token(TokenUUID::createById($uuidQuery), $appUUID);
-        $eventsToken = new Token(TokenUUID::createById($uuidEvents), $appUUID);
-        // $interactionsToken = new Token(TokenUUID::createById($uuidInteractions), self::$appId);
+        $interactionsToken = new Token(TokenUUID::createById($uuidInteractions), $appUUID);
 
         $this->query(Query::createMatchAll(), null, null, $adminToken);
         $this->query(Query::createMatchAll(), null, null, $queryToken);
 
-        // $this->queryEvents(Query::createMatchAll(), null, null, null, null, $adminToken);
-        // $this->queryEvents(Query::createMatchAll(), null, null, null, null, $eventsToken);
-        // $this->queryLogs(Query::createMatchAll(), null, null, null, null, $adminToken);
-        // $this->addInteraction('1234', '1~product', 10, self::$appId, $adminToken);
-        // $this->addInteraction('1234', '1~product', 10, self::$appId, $interactionsToken);
-
         try {
-            $this->query(Query::createMatchAll(), null, null, $eventsToken);
-            $this->fail('Query endpoint should not be accessible with an events token');
-        } catch (InvalidTokenException $e) {
-            // Silent pass
-        }
-
-        try {
-            // $this->queryEvents(Query::createMatchAll(), null, null, null, null, $queryToken);
-            // $this->fail('Events endpoint should not be accessible with an query token');
+            $this->query(Query::createMatchAll(), null, null, $interactionsToken);
+            $this->fail('Query endpoint should not be accessible with an interactions token');
         } catch (InvalidTokenException $e) {
             // Silent pass
         }

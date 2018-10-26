@@ -17,6 +17,7 @@ namespace Apisearch\Server\Tests\Functional\Domain\Repository;
 
 use Apisearch\Query\Query;
 use Apisearch\Query\ScoreStrategy;
+use Apisearch\Query\SortBy;
 
 /**
  * Class ScoreStrategyTest.
@@ -70,6 +71,32 @@ trait ScoreStrategyTest
         $this->assertResults(
             $result,
             ['3', '2', '1', '4', '5']
+        );
+    }
+
+    /**
+     * Score strategy composed with nested filter and sorting.
+     *
+     * @group aaa
+     */
+    public function testScoreStrategyWithNested()
+    {
+        $result = $this->query(
+            Query::createMatchAll()
+                ->filterBy('brand', 'brand.id', [1, 2, 3, 4])
+                ->sortBy(
+                    SortBy::create()
+                        ->byValue(SortBy::SCORE)
+                        ->byNestedField('brand.id', 'ASC')
+                )
+                ->setScoreStrategy(ScoreStrategy::createCustomFunction(
+                    'doc["indexed_metadata.simple_int"].value'
+                ))
+        );
+
+        $this->assertResults(
+            $result,
+            ['4', '1', '2', '3', '5']
         );
     }
 }
