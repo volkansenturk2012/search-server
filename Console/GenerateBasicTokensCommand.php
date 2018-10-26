@@ -77,7 +77,6 @@ class GenerateBasicTokensCommand extends CommandWithBusAndGodToken
         foreach ([
             'admin' => [],
             'query only' => Endpoints::queryOnly(),
-            'events' => Endpoints::eventsOnly(),
             'interaction' => Endpoints::interactionOnly(),
                  ] as $tokenName => $endpoints) {
             $this->generateReadOnlyToken(
