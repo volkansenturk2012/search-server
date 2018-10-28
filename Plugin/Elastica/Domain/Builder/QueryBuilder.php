@@ -47,6 +47,11 @@ class QueryBuilder
         ElasticaQuery &$mainQuery,
         ElasticaQuery\BoolQuery $boolQuery
     ) {
+        $this->selectFields(
+            $query,
+            $mainQuery
+        );
+
         $this->addFilters(
             $query,
             $boolQuery,
@@ -87,6 +92,26 @@ class QueryBuilder
                 $query->getFilterFields()
             );
         }
+    }
+
+    /**
+     * Select fields.
+     *
+     * @param Query         $query
+     * @param ElasticaQuery $mainQuery
+     */
+    private function selectFields(
+        Query $query,
+        ElasticaQuery $mainQuery
+    ) {
+        if (empty($query->getFields())) {
+            return;
+        }
+
+        $fields = array_values($query->getFields());
+        $fields[] = 'uuid.*';
+        $fields = array_unique($fields);
+        $mainQuery->setSource($fields);
     }
 
     /**

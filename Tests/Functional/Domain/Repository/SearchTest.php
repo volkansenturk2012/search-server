@@ -395,4 +395,79 @@ trait SearchTest
             $this->query(Query::create('煮'))->getItems()
         );
     }
+
+    /**
+     * Test select some fields.
+     *
+     * @group ccc
+     */
+    public function testSelectOnlyDesiredFields()
+    {
+        $query = Query::createMatchAll()
+            ->setFields([
+                'metadata.*',
+            ]);
+
+        $items = $this->query($query)->getItems();
+        $this->assertCount(5, $items);
+        $firstItem = $items[0];
+        $this->assertEquals('1', $firstItem->getUUID()->getId());
+        $this->assertNotEmpty($firstItem->getMetadata());
+        $this->assertEmpty($firstItem->getIndexedMetadata());
+        $this->assertEmpty($firstItem->getSearchableMetadata());
+
+        $query = Query::createMatchAll()
+            ->setFields([
+                'metadata.*',
+                'indexed_metadata.field_integer',
+            ]);
+
+        $items = $this->query($query)->getItems();
+        $this->assertCount(5, $items);
+        $firstItem = $items[0];
+        $this->assertEquals('1', $firstItem->getUUID()->getId());
+        $this->assertNotEmpty($firstItem->getMetadata());
+        $this->assertNotEmpty($firstItem->getIndexedMetadata());
+        $this->assertEquals(10, $firstItem->get('field_integer'));
+        $this->assertNull($firstItem->get('field_boolean'));
+        $this->assertEmpty($firstItem->getSearchableMetadata());
+
+        $query = Query::createMatchAll()
+            ->setFields([
+                '*',
+            ]);
+
+        $items = $this->query($query)->getItems();
+        $this->assertCount(5, $items);
+        $firstItem = $items[0];
+        $this->assertNotEmpty($firstItem->getMetadata());
+        $this->assertNotEmpty($firstItem->getIndexedMetadata());
+        $this->assertEquals(10, $firstItem->get('field_integer'));
+        $this->assertTrue($firstItem->get('field_boolean'));
+        $this->assertNotEmpty($firstItem->getSearchableMetadata());
+
+        $query = Query::createMatchAll()
+            ->setFields([]);
+
+        $items = $this->query($query)->getItems();
+        $this->assertCount(5, $items);
+        $firstItem = $items[0];
+        $this->assertNotEmpty($firstItem->getMetadata());
+        $this->assertNotEmpty($firstItem->getIndexedMetadata());
+        $this->assertNotEmpty($firstItem->getSearchableMetadata());
+
+        $query = Query::createMatchAll()
+            ->setFields([
+                'metadata.*',
+                'indexed_metadata.*',
+                'searchable_metadata.*',
+            ]);
+
+        $items = $this->query($query)->getItems();
+        $this->assertCount(5, $items);
+        $firstItem = $items[0];
+        $this->assertNotEmpty($firstItem->getMetadata());
+        $this->assertNotEmpty($firstItem->getIndexedMetadata());
+        $this->assertNotEmpty($firstItem->getSearchableMetadata());
+    }
 }
