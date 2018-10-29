@@ -1,34 +1,21 @@
-FROM php:7.1-cli
+FROM alpine:latest
 
 WORKDIR /var/www
 
 #
 # Dependencies
 #
-RUN apt-get update \
-    && apt-get install -y \
-        libzip-dev \
-        zip \
-        wget \
-        gnupg \
-    && docker-php-ext-configure zip --with-libzip \
-    && docker-php-ext-install zip bcmath
-
-#
-# Redis
-#
-RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/4.0.2.tar.gz \
-    && tar xfz /tmp/redis.tar.gz \
-    && rm -r /tmp/redis.tar.gz \
-    && mkdir -p /usr/src/php/ext \
-    && mv phpredis-4.0.2 /usr/src/php/ext/redis \
-    && docker-php-ext-install redis
+RUN apk --no-cache add \
+    libzip-dev zip wget gnupg curl \
+    php7 php7-cgi php7-curl php7-opcache php7-zip \
+    php7-bcmath php7-pcntl php7-redis php7-json \
+    php7-phar php7-mbstring php7-openssl php7-xml\
+    php7-tokenizer php7-dom php7-xmlwriter
 
 #
 # Composer
 #
-RUN apt-get install -y curl \
-    && curl -sS https://getcomposer.org/installer | php \
+RUN  curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/bin/composer
 
 #
@@ -43,4 +30,4 @@ RUN cd /var/www/apisearch && \
 COPY docker/* /
 
 EXPOSE 8200
-ENTRYPOINT ["/server-entrypoint.sh"]
+CMD ["sh", "/server-pm-entrypoint.sh"]
