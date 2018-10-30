@@ -107,9 +107,9 @@ class NewRelicPluginExtension extends BaseExtension
     protected function getParametrizationValues(array $config): array
     {
         return [
-            'apisearch_plugin.newrelic.application_name' => $_ENV['NEWRELIC_APP_NAME'] ?? $config['application_name'],
-            'apisearch_plugin.newrelic.api_key' => $_ENV['NEWRELIC_API_KEY'] ?? $config['api_key'],
-            'apisearch_plugin.newrelic.license_key' => $_ENV['NEWRELIC_LICENSE_KEY'] ?? $config['license_key'],
+            'apisearch_plugin.newrelic.application_name' => $_SERVER['NEWRELIC_APP_NAME'] ?? $config['application_name'],
+            'apisearch_plugin.newrelic.api_key' => $_SERVER['NEWRELIC_API_KEY'] ?? $config['api_key'],
+            'apisearch_plugin.newrelic.license_key' => $_SERVER['NEWRELIC_LICENSE_KEY'] ?? $config['license_key'],
         ];
     }
 
