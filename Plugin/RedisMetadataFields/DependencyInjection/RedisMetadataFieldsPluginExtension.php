@@ -107,7 +107,7 @@ class RedisMetadataFieldsPluginExtension extends BaseExtension
      */
     protected function getParametrizationValues(array $config): array
     {
-        $storageHost = $_ENV['REDIS_METADATA_FIELDS_HOST'] ?? $config['host'];
+        $storageHost = $_SERVER['REDIS_METADATA_FIELDS_HOST'] ?? $config['host'];
         if (null === $storageHost) {
             $exception = new InvalidConfigurationException('Please provide a host for redis metadata fields plugin.');
             $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'host'));
@@ -115,7 +115,7 @@ class RedisMetadataFieldsPluginExtension extends BaseExtension
             throw $exception;
         }
 
-        $storagePort = $_ENV['REDIS_METADATA_FIELDS_PORT'] ?? $config['port'];
+        $storagePort = $_SERVER['REDIS_METADATA_FIELDS_PORT'] ?? $config['port'];
         if (null === $storageHost) {
             $exception = new InvalidConfigurationException('Please provide a port for redis metadata fields plugin.');
             $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'port'));
@@ -126,9 +126,9 @@ class RedisMetadataFieldsPluginExtension extends BaseExtension
         return [
             'apisearch_plugin.redis_metadata_fields.host' => (string) $storageHost,
             'apisearch_plugin.redis_metadata_fields.port' => (int) $storagePort,
-            'apisearch_plugin.redis_metadata_fields.is_cluster' => (bool) ($_ENV['REDIS_METADATA_FIELDS_IS_CLUSTER'] ?? $config['is_cluster']),
-            'apisearch_plugin.redis_metadata_fields.database' => (string) ($_ENV['REDIS_METADATA_FIELDS_DATABASE'] ?? $config['database']),
-            'apisearch_plugin.redis_metadata_fields.key' => (string) ($_ENV['REDIS_METADATA_FIELDS_KEY'] ?? $config['key']),
+            'apisearch_plugin.redis_metadata_fields.is_cluster' => (bool) ($_SERVER['REDIS_METADATA_FIELDS_IS_CLUSTER'] ?? $config['is_cluster']),
+            'apisearch_plugin.redis_metadata_fields.database' => (string) ($_SERVER['REDIS_METADATA_FIELDS_DATABASE'] ?? $config['database']),
+            'apisearch_plugin.redis_metadata_fields.key' => (string) ($_SERVER['REDIS_METADATA_FIELDS_KEY'] ?? $config['key']),
         ];
     }
 }

@@ -88,7 +88,7 @@ class MultilanguagePluginExtension extends BaseExtension
     protected function getParametrizationValues(array $config): array
     {
         return [
-            'apisearch_plugin_callbacks.language_field' => $_ENV['MULTILANGUAGE_FIELD'] ?? $config['language_field'],
+            'apisearch_plugin_callbacks.language_field' => $_SERVER['MULTILANGUAGE_FIELD'] ?? $config['language_field'],
         ];
     }
 }
