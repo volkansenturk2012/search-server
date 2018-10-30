@@ -43,7 +43,7 @@ class ApisearchPluginsBundle extends BaseBundle
      */
     public static function getBundleDependencies(KernelInterface $kernel): array
     {
-        $pluginsAsString = $_ENV['APISEARCH_ENABLED_PLUGINS'] ?? '';
+        $pluginsAsString = $_SERVER['APISEARCH_ENABLED_PLUGINS'] ?? '';
         $pluginsAsArray = explode(',', $pluginsAsString);
         $pluginsAsArray = array_map('trim', $pluginsAsArray);
         $pluginsAsArray = self::resolveAliases($pluginsAsArray);
