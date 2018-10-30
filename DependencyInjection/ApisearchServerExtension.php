@@ -91,12 +91,12 @@ class ApisearchServerExtension extends BaseExtension
     protected function getParametrizationValues(array $config): array
     {
         return [
-            'apisearch_server.middleware_domain_events_service' => $_ENV['APISEARCH_EVENTS_MIDDLEWARE'] ?? $config['middleware_domain_events_service'],
+            'apisearch_server.middleware_domain_events_service' => $_SERVER['APISEARCH_EVENTS_MIDDLEWARE'] ?? $config['middleware_domain_events_service'],
             'apisearch_server.command_bus_service' => $config['command_bus_service'],
             'apisearch_server.token_repository_service' => $config['token_repository_service'],
-            'apisearch_server.god_token' => $_ENV['APISEARCH_GOD_TOKEN'] ?? $config['god_token'],
-            'apisearch_server.readonly_token' => $_ENV['APISEARCH_READONLY_TOKEN'] ?? $config['readonly_token'],
-            'apisearch_server.ping_token' => $_ENV['APISEARCH_PING_TOKEN'] ?? $config['ping_token'],
+            'apisearch_server.god_token' => $_SERVER['APISEARCH_GOD_TOKEN'] ?? $config['god_token'],
+            'apisearch_server.readonly_token' => $_SERVER['APISEARCH_READONLY_TOKEN'] ?? $config['readonly_token'],
+            'apisearch_server.ping_token' => $_SERVER['APISEARCH_PING_TOKEN'] ?? $config['ping_token'],
         ];
     }
 

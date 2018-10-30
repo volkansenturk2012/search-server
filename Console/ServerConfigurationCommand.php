@@ -83,7 +83,11 @@ class ServerConfigurationCommand extends ApisearchCommand
         $this->printMessage($output, '##', 'Server started');
         $this->printInfoMessage($output, '##', ' ~~ with');
         $this->printInfoMessage($output, '##', sprintf(' ~~ --env = %s', $this->kernel->getEnvironment()));
-        foreach ($_ENV as $item => $value) {
+        foreach ($_SERVER as $item => $value) {
+            if (!is_string($value)) {
+                continue;
+            }
+
             $this->printInfoMessage($output, '##', sprintf(' ~~ %s = %s', $item, $value));
         }
         $this->printInfoMessage($output, '##', '');

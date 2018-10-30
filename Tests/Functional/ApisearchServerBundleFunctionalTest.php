@@ -104,9 +104,9 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
     protected static function getKernel(): KernelInterface
     {
         static::loadEnv();
-        self::$godToken = $_ENV['APISEARCH_GOD_TOKEN'];
-        self::$pingToken = $_ENV['APISEARCH_PING_TOKEN'];
-        self::$readonlyToken = $_ENV['APISEARCH_READONLY_TOKEN'];
+        self::$godToken = $_SERVER['APISEARCH_GOD_TOKEN'];
+        self::$pingToken = $_SERVER['APISEARCH_PING_TOKEN'];
+        self::$readonlyToken = $_SERVER['APISEARCH_READONLY_TOKEN'];
         $imports = [
             ['resource' => '@ApisearchServerBundle/Resources/config/tactician.yml'],
             [
@@ -162,8 +162,8 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
             'elastica_plugin' => [
                 'cluster' => [
                     'localhost' => [
-                        'host' => $_ENV['ELASTICSEARCH_HOST'],
-                        'port' => $_ENV['ELASTICSEARCH_PORT'],
+                        'host' => $_SERVER['ELASTICSEARCH_HOST'],
+                        'port' => $_SERVER['ELASTICSEARCH_PORT'],
                     ],
                 ],
                 'repository_config_path' => '/tmp/config_{app_id}_{index_id}',
