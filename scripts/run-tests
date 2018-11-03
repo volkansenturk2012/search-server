@@ -11,4 +11,7 @@ done
 exec 6>&-
 exec 6<&-
 
-cd /var/www/apisearch && composer test
+cd /var/www/apisearch \
+    && composer install -n --prefer-dist --no-suggest --dev \
+    && composer test \
+    && composer install -n --prefer-dist --no-suggest --no-dev

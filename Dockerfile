@@ -24,8 +24,8 @@ RUN  curl -sS https://getcomposer.org/installer | php \
 RUN mkdir /var/www/apisearch
 COPY . /var/www/apisearch
 RUN cd /var/www/apisearch && \
-    composer install -n --prefer-dist && \
-    composer dump-autoload
+    composer install -n --prefer-dist --no-dev --no-suggest && \
+    composer dump-autoload -n --no-dev --optimize
 
 COPY docker/* /
 
