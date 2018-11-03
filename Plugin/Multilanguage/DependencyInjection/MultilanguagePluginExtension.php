@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\Multilanguage\DependencyInjection;
 
+use Apisearch\Server\DependencyInjection\Env;
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 
 /**
@@ -88,7 +89,7 @@ class MultilanguagePluginExtension extends BaseExtension
     protected function getParametrizationValues(array $config): array
     {
         return [
-            'apisearch_plugin_callbacks.language_field' => $_SERVER['MULTILANGUAGE_FIELD'] ?? $config['language_field'],
+            'apisearch_plugin_callbacks.language_field' => Env::get('MULTILANGUAGE_FIELD', $config['language_field']),
         ];
     }
 }

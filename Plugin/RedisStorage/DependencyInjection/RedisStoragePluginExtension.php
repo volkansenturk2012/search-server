@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\RedisStorage\DependencyInjection;
 
+use Apisearch\Server\DependencyInjection\Env;
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -107,7 +108,7 @@ class RedisStoragePluginExtension extends BaseExtension
      */
     protected function getParametrizationValues(array $config): array
     {
-        $storageHost = $_SERVER['REDIS_STORAGE_HOST'] ?? $config['host'];
+        $storageHost = Env::get('REDIS_STORAGE_HOST', $config['host']);
         if (null === $storageHost) {
             $exception = new InvalidConfigurationException('Please provide a host for redis storage plugin.');
             $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'host'));
@@ -115,7 +116,7 @@ class RedisStoragePluginExtension extends BaseExtension
             throw $exception;
         }
 
-        $storagePort = $_SERVER['REDIS_STORAGE_PORT'] ?? $config['port'];
+        $storagePort = Env::get('REDIS_STORAGE_PORT', $config['port']);
         if (null === $storageHost) {
             $exception = new InvalidConfigurationException('Please provide a port for redis storage plugin.');
             $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'port'));
@@ -127,8 +128,8 @@ class RedisStoragePluginExtension extends BaseExtension
             'apisearch_plugin.redis_storage.locator_enabled' => $config['locator_enabled'],
             'apisearch_plugin.redis_storage.host' => (string) $storageHost,
             'apisearch_plugin.redis_storage.port' => (int) $storagePort,
-            'apisearch_plugin.redis_storage.is_cluster' => (bool) ($_SERVER['REDIS_STORAGE_IS_CLUSTER'] ?? $config['is_cluster']),
-            'apisearch_plugin.redis_storage.database' => (string) ($_SERVER['REDIS_STORAGE_DATABASE'] ?? $config['database']),
+            'apisearch_plugin.redis_storage.is_cluster' => (bool) Env::get('REDIS_STORAGE_IS_CLUSTER', $config['is_cluster']),
+            'apisearch_plugin.redis_storage.database' => (string) Env::get('REDIS_STORAGE_DATABASE', $config['database']),
         ];
     }
 }

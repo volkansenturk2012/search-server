@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\NewRelic\DependencyInjection;
 
+use Apisearch\Server\DependencyInjection\Env;
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -107,9 +108,9 @@ class NewRelicPluginExtension extends BaseExtension
     protected function getParametrizationValues(array $config): array
     {
         return [
-            'apisearch_plugin.newrelic.application_name' => $_SERVER['NEWRELIC_APP_NAME'] ?? $config['application_name'],
-            'apisearch_plugin.newrelic.api_key' => $_SERVER['NEWRELIC_API_KEY'] ?? $config['api_key'],
-            'apisearch_plugin.newrelic.license_key' => $_SERVER['NEWRELIC_LICENSE_KEY'] ?? $config['license_key'],
+            'apisearch_plugin.newrelic.application_name' => Env::get('NEWRELIC_APP_NAME', $config['application_name']),
+            'apisearch_plugin.newrelic.api_key' => Env::get('NEWRELIC_API_KEY', $config['api_key']),
+            'apisearch_plugin.newrelic.license_key' => Env::get('NEWRELIC_LICENSE_KEY', $config['license_key']),
         ];
     }
 
