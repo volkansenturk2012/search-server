@@ -1,6 +1,7 @@
 <?php
+
 /*
- * This file is part of the {Package name}.
+ * This file is part of the Apisearch Server
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,14 +11,17 @@
  * @author Marc Morera <yuhu@mmoreram.com>
  */
 
+declare(strict_types=1);
+
 namespace Apisearch\Server\PPM;
 
+use Mmoreram\BaseBundle\Kernel\BaseKernel;
 use OneBundleApp\App\AppFactory;
 use PHPPM\Bootstraps\ApplicationEnvironmentAwareInterface;
 use PHPPM\Bootstraps\BootstrapInterface;
 
 /**
- * Class Adapter
+ * Class Adapter.
  */
 class Adapter implements BootstrapInterface, ApplicationEnvironmentAwareInterface
 {
@@ -29,17 +33,17 @@ class Adapter implements BootstrapInterface, ApplicationEnvironmentAwareInterfac
     protected $environment;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * Debug
      */
     protected $debug;
 
     /**
-     * Instantiate the bootstrap, storing the $appenv
+     * Instantiate the bootstrap, storing the $appenv.
      *
      * @param string $environment
-     * @param boolean $debug
+     * @param bool   $debug
      */
     public function initialize($environment, $debug)
     {
@@ -47,13 +51,19 @@ class Adapter implements BootstrapInterface, ApplicationEnvironmentAwareInterfac
         $this->debug = $debug;
     }
 
+    /**
+     * @return BaseKernel
+     */
     public function getApplication()
     {
-        $appPath = __DIR__ . '/..';
-        return AppFactory::createApp(
-            $appPath,
+        $kernel = AppFactory::createApp(
+            __DIR__.'/..',
             $this->environment,
             $this->debug
         );
+
+        $kernel->boot();
+
+        return $kernel;
     }
 }

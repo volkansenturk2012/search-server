@@ -18,8 +18,9 @@ config:
         form: false
         assets: false
         session: false
+        translator: false
         php_errors:
-            log: true
+            log: false
 
     # config/services.yaml
     services:
@@ -27,13 +28,6 @@ config:
             autowire: false
             autoconfigure: false
             public: true
-
-    monolog:
-        handlers:
-            main:
-                type: stream
-                path: '%kernel.logs_dir%/%kernel.environment%.log'
-                level: debug
 
     #
     # Elastica plugin for Apisearch
