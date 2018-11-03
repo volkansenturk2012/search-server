@@ -25,8 +25,6 @@ class BasicUsageTest extends MetadataFieldsFunctionalTest
 {
     /**
      * Basic usage.
-     *
-     * @group hola
      */
     public function testBasicUsage()
     {

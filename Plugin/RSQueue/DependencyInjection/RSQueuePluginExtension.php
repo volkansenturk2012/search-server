@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\RSQueue\DependencyInjection;
 
+use Apisearch\Server\DependencyInjection\Env;
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -108,7 +109,7 @@ class RSQueuePluginExtension extends BaseExtension
      */
     protected function getParametrizationValues(array $config): array
     {
-        $redisHost = $_SERVER['REDIS_QUEUE_HOST'] ?? $config['host'];
+        $redisHost = Env::get('REDIS_QUEUE_HOST', $config['host']);
         if (null === $redisHost) {
             $exception = new InvalidConfigurationException('Please provide a host for the rs queue plugin');
             $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'host'));
@@ -116,7 +117,7 @@ class RSQueuePluginExtension extends BaseExtension
             throw $exception;
         }
 
-        $redisPort = $_SERVER['REDIS_QUEUE_PORT'] ?? $config['port'];
+        $redisPort = Env::get('REDIS_QUEUE_PORT', $config['port']);
         if (null === $redisPort) {
             $exception = new InvalidConfigurationException('Please provide a port for the rs queue plugin');
             $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'port'));
@@ -127,10 +128,10 @@ class RSQueuePluginExtension extends BaseExtension
         return [
             'apisearch_plugin.rsqueue.host' => (string) $redisHost,
             'apisearch_plugin.rsqueue.port' => (int) $redisPort,
-            'apisearch_plugin.rsqueue.is_cluster' => (bool) ($_SERVER['REDIS_QUEUE_IS_CLUSTER'] ?? $config['is_cluster']),
-            'apisearch_plugin.rsqueue.database' => (string) ($_SERVER['REDIS_QUEUE_DATABASE'] ?? $config['database']),
-            'apisearch_plugin.rsqueue.commands_queue_name' => $_SERVER['COMMANDS_QUEUE_NAME'] ?? $config['commands_queue_name'],
-            'apisearch_plugin.rsqueue.events_queue_name' => $_SERVER['EVENTS_QUEUE_NAME'] ?? $config['events_queue_name'],
+            'apisearch_plugin.rsqueue.is_cluster' => (bool) Env::get('REDIS_QUEUE_IS_CLUSTER', $config['is_cluster']),
+            'apisearch_plugin.rsqueue.database' => (string) Env::get('REDIS_QUEUE_DATABASE', $config['database']),
+            'apisearch_plugin.rsqueue.commands_queue_name' => Env::get('COMMANDS_QUEUE_NAME', $config['commands_queue_name']),
+            'apisearch_plugin.rsqueue.events_queue_name' => Env::get('EVENTS_QUEUE_NAME', $config['events_queue_name']),
         ];
     }
 

@@ -76,8 +76,6 @@ trait ScoreStrategyTest
 
     /**
      * Score strategy composed with nested filter and sorting.
-     *
-     * @group aaa
      */
     public function testScoreStrategyWithNested()
     {

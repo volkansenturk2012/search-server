@@ -11,30 +11,25 @@
     ],
     "require": {
         "php": ">=7.1",
+
         "symfony/framework-bundle": "^3.4|^4.0",
         "symfony/http-kernel": "^3.4|^4.0",
         "symfony/console": "^3.4|^4.0",
         "symfony/dependency-injection" : "^3.4|^4.0",
+
+        "mmoreram/base-bundle": "^1.0.8",
+        "mmoreram/symfony-bundle-dependencies": "^2.0.0",
+        "one-bundle-app/one-bundle-app": "^1.0.24",
+        "apisearch-io/apisearch-bundle": "dev-master@dev",
+        "apisearch-io/php-client": "dev-master@dev",
+
         "ruflin/elastica": "^6.0",
         "league/tactician-bundle": "^1.1",
         "nesbot/carbon": "^1.22",
-
-        "graphaware/neo4j-php-client": "^4.0@alpha",
-        "react/http": "^0.8",
-        "cboden/ratchet": "^0.4",
-        "clue/redis-react": "^2.2",
         "ramsey/uuid": "^3.7.1",
         "ekino/newrelic-bundle": "^2.0",
-        "php-pm/php-pm": "^1",
-        "php-pm/httpkernel-adapter": "^1",
-
         "rsqueue/rsqueue": "^0.1.0",
-        "rsqueue/rsqueue-bundle": "^0.1.1",
-        "mmoreram/base-bundle": "^1.0.8",
-        "mmoreram/symfony-bundle-dependencies": "^2.0.0",
-        "one-bundle-app/one-bundle-app": "^1.0.15",
-        "apisearch-io/apisearch-bundle": "dev-master@dev",
-        "apisearch-io/php-client": "dev-master@dev"
+        "rsqueue/rsqueue-bundle": "^0.1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.6.5",

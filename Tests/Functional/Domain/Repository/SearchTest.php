@@ -398,8 +398,6 @@ trait SearchTest
 
     /**
      * Test select some fields.
-     *
-     * @group ccc
      */
     public function testSelectOnlyDesiredFields()
     {
