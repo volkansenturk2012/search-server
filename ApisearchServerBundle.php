@@ -22,7 +22,6 @@ use League\Tactician\Bundle\TacticianBundle;
 use Mmoreram\BaseBundle\BaseBundle;
 use RSQueueBundle\RSQueueBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
-use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -73,7 +72,6 @@ class ApisearchServerBundle extends BaseBundle
         return [
             ApisearchBundle::class,
             FrameworkBundle::class,
-            MonologBundle::class,
             BaseBundle::class,
             RSQueueBundle::class,
             ApisearchBundle::class,
