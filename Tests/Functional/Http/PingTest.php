@@ -60,8 +60,8 @@ class PingTest extends HttpFunctionalTest
         self::loadEnv();
 
         return [
-            [$_SERVER['APISEARCH_GOD_TOKEN'], 200],
-            [$_SERVER['APISEARCH_PING_TOKEN'], 200],
+            [$_ENV['APISEARCH_GOD_TOKEN'], 200],
+            [$_ENV['APISEARCH_PING_TOKEN'], 200],
             ['1234', 401],
         ];
     }

@@ -25,6 +25,7 @@ use Apisearch\Plugin\RedisMetadataFields\RedisMetadataFieldsPluginBundle;
 use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
 use Apisearch\Plugin\RSQueue\RSQueuePluginBundle;
 use Apisearch\Plugin\StaticTokens\StaticTokensPluginBundle;
+use Apisearch\Server\DependencyInjection\Env;
 use Apisearch\Server\Domain\Plugin\Plugin;
 use Mmoreram\BaseBundle\BaseBundle;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -43,7 +44,7 @@ class ApisearchPluginsBundle extends BaseBundle
      */
     public static function getBundleDependencies(KernelInterface $kernel): array
     {
-        $pluginsAsString = $_SERVER['APISEARCH_ENABLED_PLUGINS'] ?? '';
+        $pluginsAsString = Env::get('APISEARCH_ENABLED_PLUGINS', '');
         $pluginsAsArray = explode(',', $pluginsAsString);
         $pluginsAsArray = array_map('trim', $pluginsAsArray);
         $pluginsAsArray = self::resolveAliases($pluginsAsArray);
