@@ -146,8 +146,8 @@ class RSQueuePluginExtension extends BaseExtension
 
         $container->prependExtensionConfig('rs_queue', [
             'queues' => [
-                'commands_queuex' => $container->getParameter('apisearch_plugin.rsqueue.commands_queue_name'),
-                'events_queuex' => $container->getParameter('apisearch_plugin.rsqueue.events_queue_name'),
+                'commands_queue' => $container->getParameter('apisearch_plugin.rsqueue.commands_queue_name'),
+                'events_queue' => $container->getParameter('apisearch_plugin.rsqueue.events_queue_name'),
             ],
             'collector' => [
                 'enable' => false,
