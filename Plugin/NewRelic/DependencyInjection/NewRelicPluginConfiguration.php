@@ -32,8 +32,14 @@ class NewRelicPluginConfiguration extends BaseConfiguration
     {
         $rootNode
             ->children()
-                ->scalarNode('application_name')->end()
-                ->scalarNode('api_key')->end()
-                ->scalarNode('license_key')->end();
+                ->scalarNode('application_name')
+                    ->defaultValue('')
+                ->end()
+                ->scalarNode('api_key')
+                    ->defaultValue('')
+                ->end()
+                ->scalarNode('license_key')
+                    ->defaultValue('')
+                ->end();
     }
 }
