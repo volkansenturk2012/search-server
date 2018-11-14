@@ -20,10 +20,12 @@ use Apisearch\Geo\LocationRange;
 use Apisearch\Geo\Polygon;
 use Apisearch\Geo\Square;
 use Apisearch\Model\Coordinate;
+use Apisearch\Model\Item;
 use Apisearch\Query\Aggregation as QueryAggregation;
 use Apisearch\Query\Filter;
 use Apisearch\Query\Query;
 use Apisearch\Query\Range;
+use Apisearch\Query\ScoreStrategies;
 use Apisearch\Query\ScoreStrategy;
 use Apisearch\Query\SortBy;
 use Elastica\Aggregation as ElasticaAggregation;
@@ -625,7 +627,7 @@ class QueryBuilder
                 );
         }
 
-        $match = $this->setScoreType(
+        $match = $this->setScoreStrategies(
             $query,
             $match
         );
@@ -706,44 +708,137 @@ class QueryBuilder
     }
 
     /**
-     * Set score type.
+     * Set score strategies.
      *
      * @param Query                       $query
      * @param ElasticaQuery\AbstractQuery $elasticaQuery
      *
      * @return ElasticaQuery\AbstractQuery
      */
-    private function setScoreType(
+    private function setScoreStrategies(
         Query $query,
         ElasticaQuery\AbstractQuery $elasticaQuery
     ): ElasticaQuery\AbstractQuery {
-        $scoreStrategy = $query->getScoreStrategy();
+        $scoreStrategies = $query->getScoreStrategies();
         if (
-            !($scoreStrategy instanceof ScoreStrategy) ||
-            ScoreStrategy::DEFAULT === $scoreStrategy->getType()
+            !($scoreStrategies instanceof ScoreStrategies) ||
+            empty($scoreStrategies->getScoreStrategies())
         ) {
             return $elasticaQuery;
         }
 
         $newQuery = new ElasticaQuery\FunctionScore();
         $newQuery->setQuery($elasticaQuery);
-        $newQuery->setBoostMode('replace');
+        $newQuery->setScoreMode($scoreStrategies->getScoreMode());
 
-        if (ScoreStrategy::BOOSTING_RELEVANCE_FIELD === $scoreStrategy->getType()) {
-            $newQuery->addScriptScoreFunction(
-                new Script(
-                    "_score + (10 * doc['indexed_metadata.relevance'].value / 100)"
-                )
-            );
-        }
+        /*
+         * @var ScoreStrategy
+         */
+        foreach ($scoreStrategies->getScoreStrategies() as $scoreStrategy) {
+            $filter = $scoreStrategy->getFilter() instanceof Filter
+                ? $this->createQueryFilterByApplicationType(
+                        $scoreStrategy->getFilter(),
+                        false,
+                        false,
+                        false
+                    )
+                : null;
 
-        if (ScoreStrategy::CUSTOM_FUNCTION === $scoreStrategy->getType()) {
-            $newQuery->addScriptScoreFunction(
-                new Script($scoreStrategy->getFunction())
-            );
+            switch ($scoreStrategy->getType()) {
+                case ScoreStrategy::BOOSTING_FIELD_VALUE:
+                    $this->addBoostingFieldValueScoreStrategy(
+                        $scoreStrategy,
+                        $newQuery,
+                        $filter
+                    );
+                    break;
+                case ScoreStrategy::CUSTOM_FUNCTION:
+                    $this->addCustomFunctionScoreStrategy(
+                        $scoreStrategy,
+                        $newQuery,
+                        $filter
+                    );
+                    break;
+                case ScoreStrategy::DECAY:
+                    $this->addDecayFunctionScoreStrategy(
+                        $scoreStrategy,
+                        $newQuery,
+                        $filter
+                    );
+                    break;
+            }
         }
 
         return $newQuery;
+    }
+
+    /**
+     * Create score strategy by field value.
+     *
+     * @param ScoreStrategy                    $scoreStrategy
+     * @param ElasticaQuery\FunctionScore      $functionScore
+     * @param ElasticaQuery\AbstractQuery|null $filter
+     */
+    private function addBoostingFieldValueScoreStrategy(
+        ScoreStrategy $scoreStrategy,
+        ElasticaQuery\FunctionScore $functionScore,
+        ?ElasticaQuery\AbstractQuery $filter
+    ) {
+        $functionScore->addFieldValueFactorFunction(
+            Item::getPathByField(
+                (string) $scoreStrategy->getConfigurationValue('field')
+            ),
+            (float) $scoreStrategy->getConfigurationValue('factor'),
+            (string) $scoreStrategy->getConfigurationValue('modifier'),
+            (float) $scoreStrategy->getConfigurationValue('missing'),
+            $scoreStrategy->getWeight(),
+            $filter
+        );
+    }
+
+    /**
+     * Create score strategy by using a custom function.
+     *
+     * @param ScoreStrategy                    $scoreStrategy
+     * @param ElasticaQuery\FunctionScore      $functionScore
+     * @param ElasticaQuery\AbstractQuery|null $filter
+     */
+    private function addCustomFunctionScoreStrategy(
+        ScoreStrategy $scoreStrategy,
+        ElasticaQuery\FunctionScore $functionScore,
+        ?ElasticaQuery\AbstractQuery $filter
+    ) {
+        $functionScore->addScriptScoreFunction(
+            new Script($scoreStrategy->getConfigurationValue('function')),
+            $filter,
+            $scoreStrategy->getWeight()
+        );
+    }
+
+    /**
+     * Create score strategy by using a decay function.
+     *
+     * @param ScoreStrategy                    $scoreStrategy
+     * @param ElasticaQuery\FunctionScore      $functionScore
+     * @param ElasticaQuery\AbstractQuery|null $filter
+     */
+    private function addDecayFunctionScoreStrategy(
+        ScoreStrategy $scoreStrategy,
+        ElasticaQuery\FunctionScore $functionScore,
+        ?ElasticaQuery\AbstractQuery $filter
+    ) {
+        $functionScore->addDecayFunction(
+            (string) $scoreStrategy->getConfigurationValue('type'),
+            Item::getPathByField(
+                (string) $scoreStrategy->getConfigurationValue('field')
+            ),
+            (string) $scoreStrategy->getConfigurationValue('origin'),
+            (string) $scoreStrategy->getConfigurationValue('scale'),
+            (string) $scoreStrategy->getConfigurationValue('offset'),
+            (float) $scoreStrategy->getConfigurationValue('decay'),
+            $scoreStrategy->getWeight(),
+            $filter
+        );
     }
 
     /**

@@ -23,7 +23,6 @@ use Apisearch\Plugin\Elastica\Domain\Builder\QueryBuilder;
 use Apisearch\Plugin\Elastica\Domain\Builder\ResultBuilder;
 use Apisearch\Plugin\Elastica\Domain\ElasticaWrapper;
 use Apisearch\Plugin\Elastica\Domain\ElasticaWrapperWithRepositoryReference;
-use Apisearch\Query\Filter;
 use Apisearch\Query\Query;
 use Apisearch\Result\Result;
 use Apisearch\Server\Domain\Repository\Repository\QueryRepository as QueryRepositoryInterface;
@@ -362,7 +361,7 @@ class QueryRepository extends ElasticaWrapperWithRepositoryReference implements 
                 $boosting = $boostClause->getBoost();
                 foreach ($boostClause->getValues() as $value) {
                     $term = new ElasticaQuery\Term([
-                        Filter::getFilterPathByField($boostClause->getField()) => [
+                        Item::getPathByField($boostClause->getField()) => [
                             'value' => $value,
                             'boost' => $boosting,
                         ],
