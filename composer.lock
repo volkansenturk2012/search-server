@@ -57,7 +57,7 @@
                     "email": "hello@puntmig.com"
                 }
             ],
-            "time": "2018-10-25 02:26:01"
+            "time": "2018-10-25T02:26:01+00:00"
         },
         {
             "name": "apisearch-io/php-client",
@@ -65,12 +65,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/apisearch-io/php-client.git",
-                "reference": "6c7044d0902888c56568eb006e38c33544191218"
+                "reference": "80a1c5fa1c4a01477fc24af0052eab02284674bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/6c7044d0902888c56568eb006e38c33544191218",
-                "reference": "6c7044d0902888c56568eb006e38c33544191218",
+                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/80a1c5fa1c4a01477fc24af0052eab02284674bc",
+                "reference": "80a1c5fa1c4a01477fc24af0052eab02284674bc",
                 "shasum": ""
             },
             "require": {
@@ -104,7 +104,7 @@
                     "email": "yuhu@mmoreram.com"
                 }
             ],
-            "time": "2018-11-14 17:29:09"
+            "time": "2018-11-15T23:36:05+00:00"
         },
         {
             "name": "cboden/ratchet",
@@ -1182,16 +1182,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "1.35.0",
+            "version": "1.35.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "3c0342ed6cb7c770d0c33595c51c286716552f65"
+                "reference": "5c05a2be472b22f63291d192410df9f0e0de3b19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/3c0342ed6cb7c770d0c33595c51c286716552f65",
-                "reference": "3c0342ed6cb7c770d0c33595c51c286716552f65",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/5c05a2be472b22f63291d192410df9f0e0de3b19",
+                "reference": "5c05a2be472b22f63291d192410df9f0e0de3b19",
                 "shasum": ""
             },
             "require": {
@@ -1236,7 +1236,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2018-11-14T12:39:51+00:00"
+            "time": "2018-11-14T21:55:58+00:00"
         },
         {
             "name": "one-bundle-app/one-bundle-app",

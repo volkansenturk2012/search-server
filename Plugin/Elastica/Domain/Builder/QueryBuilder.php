@@ -728,7 +728,9 @@ class QueryBuilder
         }
 
         $newQuery = new ElasticaQuery\FunctionScore();
-        $newQuery->setQuery($elasticaQuery);
+        $boolQuery = new ElasticaQuery\BoolQuery();
+        $boolQuery->addMust($elasticaQuery);
+        $newQuery->setQuery($boolQuery);
         $newQuery->setScoreMode($scoreStrategies->getScoreMode());
 
         /*
@@ -744,11 +746,38 @@ class QueryBuilder
                     )
                 : null;
 
+            $field = Item::getPathByField(
+                (string) $scoreStrategy->getConfigurationValue('field')
+            );
+            $fieldParts = explode('.', $field);
+            $nestedFunctionQuery = null;
+
+            if (count($fieldParts) >= 3) {
+                array_pop($fieldParts);
+                $nestedQuery = new ElasticaQuery\Nested();
+                $boolQuery->addShould($nestedQuery);
+                $nestedQuery->setPath(implode('.', $fieldParts));
+                $nestedQuery->setScoreMode($scoreStrategy->getScoreMode());
+                $nestedFunctionQuery = new ElasticaQuery\FunctionScore();
+                $nestedQuery->setQuery($nestedFunctionQuery);
+            }
+
             switch ($scoreStrategy->getType()) {
                 case ScoreStrategy::BOOSTING_FIELD_VALUE:
                     $this->addBoostingFieldValueScoreStrategy(
                         $scoreStrategy,
-                        $newQuery,
+                        $nestedFunctionQuery instanceof ElasticaQuery\FunctionScore
+                            ? $nestedFunctionQuery
+                            : $newQuery,
+                        $filter
+                    );
+                    break;
+                case ScoreStrategy::DECAY:
+                    $this->addDecayFunctionScoreStrategy(
+                        $scoreStrategy,
+                        $nestedFunctionQuery instanceof ElasticaQuery\FunctionScore
+                            ? $nestedFunctionQuery
+                            : $newQuery,
                         $filter
                     );
                     break;
@@ -759,17 +788,29 @@ class QueryBuilder
                         $filter
                     );
                     break;
-                case ScoreStrategy::DECAY:
-                    $this->addDecayFunctionScoreStrategy(
-                        $scoreStrategy,
-                        $newQuery,
-                        $filter
-                    );
-                    break;
             }
         }
 
         return $newQuery;
+    }
+
+    /**
+     * Create score strategy by using a custom function.
+     *
+     * @param ScoreStrategy                    $scoreStrategy
+     * @param ElasticaQuery\FunctionScore      $functionScore
+     * @param ElasticaQuery\AbstractQuery|null $filter
+     */
+    private function addCustomFunctionScoreStrategy(
+        ScoreStrategy $scoreStrategy,
+        ElasticaQuery\FunctionScore $functionScore,
+        ?ElasticaQuery\AbstractQuery $filter
+    ) {
+        $functionScore->addScriptScoreFunction(
+            new Script($scoreStrategy->getConfigurationValue('function')),
+            $filter,
+            $scoreStrategy->getWeight()
+        );
     }
 
     /**
@@ -793,25 +834,6 @@ class QueryBuilder
             (float) $scoreStrategy->getConfigurationValue('missing'),
             $scoreStrategy->getWeight(),
             $filter
-        );
-    }
-
-    /**
-     * Create score strategy by using a custom function.
-     *
-     * @param ScoreStrategy                    $scoreStrategy
-     * @param ElasticaQuery\FunctionScore      $functionScore
-     * @param ElasticaQuery\AbstractQuery|null $filter
-     */
-    private function addCustomFunctionScoreStrategy(
-        ScoreStrategy $scoreStrategy,
-        ElasticaQuery\FunctionScore $functionScore,
-        ?ElasticaQuery\AbstractQuery $filter
-    ) {
-        $functionScore->addScriptScoreFunction(
-            new Script($scoreStrategy->getConfigurationValue('function')),
-            $filter,
-            $scoreStrategy->getWeight()
         );
     }
 

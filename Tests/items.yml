@@ -48,6 +48,9 @@ items:
                 - two
             relevance: 50
             strange_field: "煮"
+            array_of_values:
+                first: 1
+                second: 2
             array_of_arrays_ids:
                 - "1"
                 - "2"
@@ -173,6 +176,9 @@ items:
             array_of_arrays_ids:
                 - "1"
                 - "4"
+            array_of_values:
+                first: 3
+                second: 2
             brand:
                 - {id: 3, category: 2, rank: 14}
                 - {id: 4, category: 4, rank: 9}
