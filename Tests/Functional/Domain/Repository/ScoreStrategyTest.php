@@ -200,4 +200,70 @@ trait ScoreStrategyTest
             ['3', '4', '1', '2', '5']
         );
     }
+
+    /**
+     * Test score strategy for array inside indexed_metadata.
+     */
+    public function testScoreStrategyInsideSimpleArray()
+    {
+        $result = $this->query(
+            Query::createMatchAll()
+                ->setScoreStrategies(
+                    ScoreStrategies::createEmpty()
+                        ->addScoreStrategy(ScoreStrategy::createFieldBoosting(
+                            'array_of_values.first'
+                        ))
+                )
+        );
+
+        $this->assertResults(
+            $result,
+            ['3', '1', '{4', '2', '5}']
+        );
+
+        $result = $this->query(
+            Query::create('Código de Hernando')
+                ->setScoreStrategies(
+                    ScoreStrategies::createEmpty()
+                        ->addScoreStrategy(ScoreStrategy::createFieldBoosting(
+                            'array_of_values.first'
+                        ))
+                )
+        );
+
+        $this->assertCount(1, $result->getItems());
+        $this->assertEquals(3, $result->getFirstItem()->getId());
+    }
+
+    /**
+     * Test score strategy for array inside indexed_metadata.
+     */
+    public function testScoreStrategyInsideArrayOfArrays()
+    {
+        $result = $this->query(
+            Query::createMatchAll()
+                ->setScoreStrategies(
+                    ScoreStrategies::createEmpty()
+                        ->addScoreStrategy(ScoreStrategy::createFieldBoosting(
+                            'brand.rank',
+                            ScoreStrategy::DEFAULT_FACTOR,
+                            0.0,
+                            ScoreStrategy::MODIFIER_NONE,
+                            ScoreStrategy::DEFAULT_WEIGHT,
+                            Filter::create(
+                                'brand.id',
+                                [1],
+                                Filter::MUST_ALL,
+                                Filter::TYPE_FIELD
+                            ),
+                            ScoreStrategy::SCORE_MODE_MAX
+                        ))
+                )
+        );
+
+        $this->assertResults(
+            $result,
+            ['4', '1', '5', '{2', '3}']
+        );
+    }
 }

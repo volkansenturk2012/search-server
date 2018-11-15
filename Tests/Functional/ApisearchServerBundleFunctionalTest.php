@@ -789,4 +789,18 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
             AppUUID::createById($appId)
         );
     }
+
+    /**
+     * Print item results with score.
+     *
+     * @param Result $result
+     */
+    protected function printItemResultsWithScore(Result $result)
+    {
+        echo PHP_EOL;
+        foreach ($result->getItems() as $item) {
+            echo sprintf('[ %s ] - %f', $item->composeUUID(), $item->getScore()).PHP_EOL;
+        }
+        echo PHP_EOL;
+    }
 }
