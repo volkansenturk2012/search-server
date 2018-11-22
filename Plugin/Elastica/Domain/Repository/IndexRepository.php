@@ -80,16 +80,19 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
                 $item->getIndexedMetadata()
             ),
             'searchable_metadata' => $this->filterSearchableElementRecursively(
-                $item->getSearchableMetadata()
+                $item->getSearchableMetadata(),
+                false
             ),
             'exact_matching_metadata' => array_values(
                 $this->filterSearchableElementRecursively(
-                    $item->getExactMatchingMetadata()
+                    $item->getExactMatchingMetadata(),
+                    false
                 )
             ),
             'suggest' => array_values(
                 $this->filterSearchableElementRecursively(
-                    $item->getSuggest()
+                    $item->getSuggest(),
+                    false
                 )
             ),
         ];
@@ -139,14 +142,17 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
      * Filter element for search.
      *
      * @param array $elements
+     * @param bool  $asList
      *
      * @return mixed $element
      */
-    private function filterSearchableElementRecursively(array $elements)
-    {
+    private function filterSearchableElementRecursively(
+        array $elements,
+        bool $asList
+    ) {
         foreach ($elements as $key => $element) {
             if (is_array($element)) {
-                $elements[$key] = $this->filterSearchableElementRecursively($element);
+                $elements[$key] = $this->filterSearchableElementRecursively($element, true);
             }
         }
 
@@ -154,6 +160,10 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
             $elements,
             [$this, 'filterSearchableElement']
         );
+
+        if ($asList) {
+            $elements = array_values($elements);
+        }
 
         return $elements;
     }
