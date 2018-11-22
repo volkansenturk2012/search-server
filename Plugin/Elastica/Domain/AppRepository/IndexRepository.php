@@ -135,9 +135,7 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
                 $this
                     ->getRepositoryReference()
                     ->changeIndex($indexUUID),
-                $config,
-                $this->repositoryConfig['shards'],
-                $this->repositoryConfig['replicas']
+                $config
             );
 
         $this->refresh();

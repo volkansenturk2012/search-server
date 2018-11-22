@@ -23,6 +23,7 @@ use Apisearch\Result\Result;
 trait AllAsynchronousTests
 {
     use IndexConfigurationTest;
+    use IndexTest;
     use UpdateItemsTest;
     use ScoreStrategyTest;
     use SearchTest;
