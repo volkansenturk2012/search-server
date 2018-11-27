@@ -18,7 +18,7 @@ namespace Apisearch\Server\Tests\Functional\Domain\Repository;
 use Apisearch\Server\Tests\Functional\SocketFunctionalTest;
 
 /**
- * Class HttpRepositoryTest.
+ * Class SocketRepositoryTest.
  */
 class SocketRepositoryTest extends SocketFunctionalTest
 {

@@ -109,6 +109,7 @@ class QueryRepository extends ElasticaWrapperWithRepositoryReference implements 
             $query
         );
 
+        $mainQuery->setExplain(false);
         $results = $this
             ->elasticaWrapper
             ->search(
