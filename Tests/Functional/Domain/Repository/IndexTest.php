@@ -25,7 +25,7 @@ use Apisearch\Query\Query;
 trait IndexTest
 {
     /**
-     * Test some index scenarios
+     * Test some index scenarios.
      */
     public function testIndexItemWithWrongSearchableValues()
     {

@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Tests\Functional\Domain\Repository;
 
+use Apisearch\Config\Config;
 use Apisearch\Query\Query;
 
 /**
@@ -43,9 +44,7 @@ trait HighlightTest
      */
     public function testWithSearchableMetadataNotStored()
     {
-        self::changeConfig([
-            'store_searchable_metadata' => false,
-        ]);
+        $this->configureIndex(new Config(null, false));
 
         $result = $this->query(
             Query::create('v')

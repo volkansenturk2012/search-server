@@ -40,6 +40,8 @@ class DeleteRepository extends ElasticaWrapperWithRepositoryReference implements
                 }, $itemUUIDs)
             );
 
-        $this->refresh();
+        if ($this->refreshOnWrite) {
+            $this->refresh();
+        }
     }
 }

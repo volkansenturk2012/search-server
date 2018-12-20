@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace Apisearch\Server\Exception;
 
 use Apisearch\Exception\ResourceExistsException;
-use Apisearch\Exception\ResourceNotAvailableException;
 
 /**
  * Class ParsedCreatingIndexException.
@@ -32,7 +31,7 @@ class ParsedCreatingIndexException
      *
      * @return ResourceExistsException
      */
-    public static function parse(string $message): \RuntimeException
+    public static function parse(string $message): ResourceExistsException
     {
         if (1 === preg_match(
                 '#\[apisearch_item_(?P<app_id>.*?)_(?P<index_name>.*?)\/.*\] already exists#i',
@@ -47,9 +46,9 @@ class ParsedCreatingIndexException
                 $match['app_id']
             );
 
-            return new ResourceExistsException($parsedMessage, ResourceExistsException::getTransportableHTTPError());
+            return new ResourceExistsException($parsedMessage);
         }
 
-        return new ResourceNotAvailableException($message);
+        return new ResourceExistsException($message);
     }
 }

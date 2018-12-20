@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\Elastica\DependencyInjection;
 
+use Apisearch\Server\DependencyInjection\Env;
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -91,8 +92,8 @@ class ElasticaPluginExtension extends BaseExtension
     {
         return [
             'apisearch_plugin.elastica.repository_config_path' => $config['repository_config_path'],
-            'apisearch_plugin.elastica.save_events' => $config['save_events'],
             'apisearch_plugin.elastica.cluster' => ['servers' => $config['cluster']],
+            'apisearch_plugin.elastica.refresh_on_write' => (bool) Env::get('ELASTICSEARCH_REFRESH_ON_WRITE', $config['refresh_on_write']),
         ];
     }
 

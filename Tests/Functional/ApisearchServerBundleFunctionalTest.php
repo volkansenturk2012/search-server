@@ -166,6 +166,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
                         'port' => $_ENV['ELASTICSEARCH_PORT'],
                     ],
                 ],
+                'refresh_on_write' => true,
                 'repository_config_path' => '/tmp/config_{app_id}_{index_id}',
             ],
             'apisearch' => [
@@ -487,23 +488,6 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
             static::deleteIndex($appId);
         } catch (ResourceNotAvailableException $e) {
         }
-    }
-
-    /**
-     * Change index config.
-     *
-     * @param array $config
-     */
-    public function changeConfig(array $config)
-    {
-        static::deleteIndex();
-        static::createIndex(
-            null,
-            null,
-            null,
-            Config::createFromArray($config)
-        );
-        static::indexTestingItems();
     }
 
     /**
