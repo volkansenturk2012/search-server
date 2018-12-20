@@ -248,8 +248,7 @@ abstract class ServiceFunctionalTest extends ApisearchServerBundleFunctionalTest
         return self::getStatic('apisearch_server.query_bus')
             ->handle(new GetIndices(
                 RepositoryReference::create(
-                    $appUUID,
-                    IndexUUID::createById($index ?? self::$index)
+                    $appUUID
                 ),
                 $token ??
                     new Token(

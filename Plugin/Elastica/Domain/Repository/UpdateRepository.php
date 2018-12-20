@@ -17,8 +17,8 @@ namespace Apisearch\Plugin\Elastica\Domain\Repository;
 
 use Apisearch\Model\Changes;
 use Apisearch\Plugin\Elastica\Domain\Builder\QueryBuilder;
-use Apisearch\Plugin\Elastica\Domain\ElasticaWrapper;
 use Apisearch\Plugin\Elastica\Domain\ElasticaWrapperWithRepositoryReference;
+use Apisearch\Plugin\Elastica\Domain\ItemElasticaWrapper;
 use Apisearch\Query\Query;
 use Apisearch\Server\Domain\Repository\Repository\UpdateRepository as UpdateRepositoryInterface;
 use Elastica\Query as ElasticaQuery;
@@ -40,18 +40,21 @@ class UpdateRepository extends ElasticaWrapperWithRepositoryReference implements
     /**
      * ElasticaSearchRepository constructor.
      *
-     * @param ElasticaWrapper $elasticaWrapper
-     * @param string          $repositoryConfigPath
-     * @param QueryBuilder    $queryBuilder
+     * @param ItemElasticaWrapper $elasticaWrapper
+     * @param string              $repositoryConfigPath
+     * @param bool                $refreshOnWrite
+     * @param QueryBuilder        $queryBuilder
      */
     public function __construct(
-        ElasticaWrapper $elasticaWrapper,
+        ItemElasticaWrapper $elasticaWrapper,
         string $repositoryConfigPath,
+        bool $refreshOnWrite,
         QueryBuilder $queryBuilder
     ) {
         parent::__construct(
             $elasticaWrapper,
-            $repositoryConfigPath
+            $repositoryConfigPath,
+            $refreshOnWrite
         );
 
         $this->queryBuilder = $queryBuilder;
@@ -87,7 +90,10 @@ class UpdateRepository extends ElasticaWrapperWithRepositoryReference implements
                     'conflicts' => 'proceed',
                 ]
             );
-        $this->refresh();
+
+        if ($this->refreshOnWrite) {
+            $this->refresh();
+        }
     }
 
     /**

@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Tests\Functional\Domain\Repository;
 
+use Apisearch\Config\Config;
+use Apisearch\Config\Synonym;
 use Apisearch\Model\Item;
 use Apisearch\Model\ItemUUID;
 use Apisearch\Model\User;
@@ -194,12 +196,7 @@ trait SearchTest
                 ->composeUUID()
         );
 
-        static::changeConfig([
-            'synonyms' => [
-                ['words' => ['Style step', 'Stylestep']],
-            ],
-        ]);
-
+        $this->configureIndex(Config::createEmpty()->addSynonym(Synonym::createByWords(['Stylestep', 'Style step'])));
         $this->assertEquals(
             '1~product',
             $this

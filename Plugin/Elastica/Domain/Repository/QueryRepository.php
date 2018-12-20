@@ -21,14 +21,13 @@ use Apisearch\Model\Item;
 use Apisearch\Model\ItemUUID;
 use Apisearch\Plugin\Elastica\Domain\Builder\QueryBuilder;
 use Apisearch\Plugin\Elastica\Domain\Builder\ResultBuilder;
-use Apisearch\Plugin\Elastica\Domain\ElasticaWrapper;
 use Apisearch\Plugin\Elastica\Domain\ElasticaWrapperWithRepositoryReference;
+use Apisearch\Plugin\Elastica\Domain\ItemElasticaWrapper;
 use Apisearch\Query\Query;
 use Apisearch\Result\Result;
 use Apisearch\Server\Domain\Repository\Repository\QueryRepository as QueryRepositoryInterface;
 use Carbon\Carbon;
 use Elastica\Query as ElasticaQuery;
-use Elastica\Result as ElasticaResult;
 use Elastica\Suggest;
 use Exception;
 
@@ -54,20 +53,23 @@ class QueryRepository extends ElasticaWrapperWithRepositoryReference implements 
     /**
      * ElasticaSearchRepository constructor.
      *
-     * @param ElasticaWrapper $elasticaWrapper
-     * @param string          $repositoryConfigPath
-     * @param QueryBuilder    $queryBuilder
-     * @param ResultBuilder   $resultBuilder
+     * @param ItemElasticaWrapper $elasticaWrapper
+     * @param string              $repositoryConfigPath
+     * @param bool                $refreshOnWrite
+     * @param QueryBuilder        $queryBuilder
+     * @param ResultBuilder       $resultBuilder
      */
     public function __construct(
-        ElasticaWrapper $elasticaWrapper,
+        ItemElasticaWrapper $elasticaWrapper,
         string $repositoryConfigPath,
+        bool $refreshOnWrite,
         QueryBuilder $queryBuilder,
         ResultBuilder $resultBuilder
     ) {
         parent::__construct(
             $elasticaWrapper,
-            $repositoryConfigPath
+            $repositoryConfigPath,
+            $refreshOnWrite
         );
 
         $this->queryBuilder = $queryBuilder;

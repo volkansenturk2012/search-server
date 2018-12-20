@@ -27,7 +27,7 @@ abstract class ElasticaWrapperWithRepositoryReference implements WithRepositoryR
     use WithRepositoryReferenceTrait;
 
     /**
-     * @var ElasticaWrapper
+     * @var ItemElasticaWrapper
      *
      * Elastica wrapper
      */
@@ -41,17 +41,27 @@ abstract class ElasticaWrapperWithRepositoryReference implements WithRepositoryR
     protected $repositoryConfigPath;
 
     /**
+     * @var bool
+     *
+     * Refresh on write
+     */
+    protected $refreshOnWrite;
+
+    /**
      * ElasticaSearchRepository constructor.
      *
-     * @param ElasticaWrapper $elasticaWrapper
-     * @param string          $repositoryConfigPath
+     * @param ItemElasticaWrapper $elasticaWrapper
+     * @param string              $repositoryConfigPath
+     * @param bool                $refreshOnWrite
      */
     public function __construct(
-        ElasticaWrapper $elasticaWrapper,
-        string $repositoryConfigPath
+        ItemElasticaWrapper $elasticaWrapper,
+        string $repositoryConfigPath,
+        bool $refreshOnWrite
     ) {
         $this->elasticaWrapper = $elasticaWrapper;
         $this->repositoryConfigPath = $repositoryConfigPath;
+        $this->refreshOnWrite = $refreshOnWrite;
     }
 
     /**

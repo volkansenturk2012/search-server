@@ -28,7 +28,7 @@ jobs:
                         -e "http.host=0.0.0.0" \
                         -e "transport.host=0.0.0.0" \
                         -e "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
-                        -e "action.auto_create_index=+apisearch_item_*_*-plugin-*,+apisearch_log_*,+apisearch_event_*,-apisearch*,+*" \
+                        -e "action.auto_create_index=+apisearch_item_*_*-plugin-*,-apisearch*,+*" \
                         -e "node.max_local_storage_nodes=10" \
                         -e "discovery.type=single-node" \
                          docker.elastic.co/elasticsearch/elasticsearch:6.2.4

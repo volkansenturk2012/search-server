@@ -19,7 +19,6 @@ use Apisearch\Config\Config;
 use Apisearch\Exception\ResourceNotAvailableException;
 use Apisearch\Model\IndexUUID;
 use Apisearch\Plugin\Elastica\Domain\ElasticaWrapperWithRepositoryReference;
-use Apisearch\Plugin\Elastica\Domain\ItemElasticaWrapper;
 use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Repository\AppRepository\ConfigRepository as ConfigRepositoryInterface;
 
@@ -49,14 +48,14 @@ class ConfigRepository extends ElasticaWrapperWithRepositoryReference implements
             $config
         );
 
-        if ($this->elasticaWrapper instanceof ItemElasticaWrapper) {
-            $this
-                ->elasticaWrapper
-                ->configureIndex(
-                    $newRepositoryReference,
-                    $config
-                );
-        }
+        $this
+            ->elasticaWrapper
+            ->configureIndex(
+                $newRepositoryReference,
+                $config
+            );
+
+        $this->refresh();
     }
 
     /**

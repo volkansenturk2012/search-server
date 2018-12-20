@@ -27,12 +27,20 @@ trait IndexConfigurationTest
     /**
      * Test index check.
      */
+    public function testSimpleReindex()
+    {
+        $this->assertCount(5, $this->query(Query::createMatchAll())->getItems());
+        $this->configureIndex(Config::createEmpty());
+        $this->assertCount(5, $this->query(Query::createMatchAll())->getItems());
+    }
+
+    /**
+     * Test index check.
+     */
     public function testConfigureIndexWithSynonyms()
     {
         $this->assertCount(0, $this->query(Query::create('Flipencio'))->getItems());
         $this->configureIndex(Config::createEmpty()->addSynonym(Synonym::createByWords(['Alfaguarra', 'Flipencio'])));
-        sleep(1);
-        $this->indexTestingItems();
         $this->assertCount(1, $this->query(Query::create('Flipencio'))->getItems());
     }
 }

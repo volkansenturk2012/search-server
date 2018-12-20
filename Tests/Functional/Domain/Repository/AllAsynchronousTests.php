@@ -30,7 +30,6 @@ trait AllAsynchronousTests
     use SearchNestedTest;
     use IndexStatusTest;
     use ErrorRecoveryTest;
-    use CampaignBoostingTest;
     use SynonymsTest;
     use EventRepositoryPermissionsTest;
     use RepositoryResetTest;

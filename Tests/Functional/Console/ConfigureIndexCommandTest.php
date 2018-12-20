@@ -56,10 +56,8 @@ class ConfigureIndexCommandTest extends CommandTest
             ],
         ]);
 
-        sleep(1);
-
         $this->assertEquals(
-            0,
+            2,
             $this->query(Query::create('efervescencio'))->getTotalHits()
         );
 
@@ -113,10 +111,8 @@ class ConfigureIndexCommandTest extends CommandTest
             '--synonyms-file' => __DIR__.'/synonyms.csv',
         ]);
 
-        sleep(1);
-
         $this->assertEquals(
-            0,
+            2,
             $this->query(Query::create('efervescencio'))->getTotalHits()
         );
 
