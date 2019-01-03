@@ -104,6 +104,20 @@ class ConfigureIndexCommand extends CommandWithBusAndGodToken
                 InputOption::VALUE_OPTIONAL,
                 'Synonyms file',
                 ''
+            )
+            ->addOption(
+                'shards',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Shards for the index',
+                Config::DEFAULT_SHARDS
+            )
+            ->addOption(
+                'replicas',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Replicas for the index',
+                Config::DEFAULT_REPLICAS
             );
     }
 
@@ -166,6 +180,8 @@ class ConfigureIndexCommand extends CommandWithBusAndGodToken
                         'synonyms' => $synonyms = array_map(function (Synonym $synonym) {
                             return $synonym->toArray();
                         }, $synonyms),
+                        'shards' => $input->getOption('shards'),
+                        'replicas' => $input->getOption('replicas'),
                     ])
                 ));
         } catch (ResourceNotAvailableException $exception) {
