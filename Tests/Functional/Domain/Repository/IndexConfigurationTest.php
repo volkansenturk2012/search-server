@@ -17,6 +17,8 @@ namespace Apisearch\Server\Tests\Functional\Domain\Repository;
 
 use Apisearch\Config\Config;
 use Apisearch\Config\Synonym;
+use Apisearch\Model\Item;
+use Apisearch\Model\ItemUUID;
 use Apisearch\Query\Query;
 
 /**
@@ -42,5 +44,29 @@ trait IndexConfigurationTest
         $this->assertCount(0, $this->query(Query::create('Flipencio'))->getItems());
         $this->configureIndex(Config::createEmpty()->addSynonym(Synonym::createByWords(['Alfaguarra', 'Flipencio'])));
         $this->assertCount(1, $this->query(Query::create('Flipencio'))->getItems());
+    }
+
+    /**
+     * Test index check.
+     *
+     * @group lele
+     */
+    public function testIndexAndDeleteAfterConfigure()
+    {
+        $this->configureIndex(Config::createEmpty());
+        self::indexItems([
+            Item::create(ItemUUID::createByComposedUUID('1~lele')),
+        ]);
+        $this->assertCount(
+            6,
+            $this->query(Query::createMatchAll())->getItems()
+        );
+        self::deleteItems([
+            ItemUUID::createByComposedUUID('1~lele'),
+        ]);
+        $this->assertCount(
+            5,
+            $this->query(Query::createMatchAll())->getItems()
+        );
     }
 }
