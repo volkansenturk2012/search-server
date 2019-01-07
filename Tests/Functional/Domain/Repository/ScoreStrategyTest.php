@@ -266,4 +266,84 @@ trait ScoreStrategyTest
             ['4', '1', '5', '{2', '3}']
         );
     }
+
+    /**
+     * Test several score strategies.
+     */
+    public function testSeveralScoreStrategiesTypeSUM()
+    {
+        $result = $this->query(
+            Query::create('c')
+                ->setScoreStrategies(
+                    ScoreStrategies::createEmpty(ScoreStrategies::SUM)
+                        ->addScoreStrategy(ScoreStrategy::createFieldBoosting(
+                            'relevance',
+                            1.0,
+                            1.0,
+                            ScoreStrategy::MODIFIER_LN,
+                            1.0
+                        ))
+                        ->addScoreStrategy(ScoreStrategy::createCustomFunction(
+                            'doc["indexed_metadata.simple_int"].value',
+                            1.0
+                        ))
+                        ->addScoreStrategy(ScoreStrategy::createDecayFunction(
+                            ScoreStrategy::DECAY_GAUSS,
+                            'relevance',
+                            '110',
+                            '50',
+                            '10',
+                            0.5,
+                            50,
+                            Filter::create('price', [2000], Filter::MUST_ALL, Filter::TYPE_FIELD)
+                        ))
+                )
+        );
+
+        $firstResultScore = $result
+            ->getFirstItem()
+            ->getScore();
+
+        $this->assertTrue(
+            23 > $firstResultScore &&
+            $firstResultScore > 22
+        );
+
+        $result = $this->query(
+            Query::create('c')
+                ->setScoreStrategies(
+                    ScoreStrategies::createEmpty(ScoreStrategies::MULTIPLY)
+                        ->addScoreStrategy(ScoreStrategy::createFieldBoosting(
+                            'relevance',
+                            1.0,
+                            1.0,
+                            ScoreStrategy::MODIFIER_LN,
+                            1.0
+                        ))
+                        ->addScoreStrategy(ScoreStrategy::createCustomFunction(
+                            'doc["indexed_metadata.simple_int"].value',
+                            1.0
+                        ))
+                        ->addScoreStrategy(ScoreStrategy::createDecayFunction(
+                            ScoreStrategy::DECAY_GAUSS,
+                            'relevance',
+                            '110',
+                            '50',
+                            '10',
+                            0.5,
+                            50,
+                            Filter::create('price', [2000], Filter::MUST_ALL, Filter::TYPE_FIELD)
+                        ))
+                )
+        );
+
+        $firstResultScore = $result
+            ->getFirstItem()
+            ->getScore();
+
+        $this->assertTrue(
+            291 > $firstResultScore &&
+            $firstResultScore > 290
+        );
+    }
 }
