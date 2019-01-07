@@ -10,5 +10,6 @@ services:
             - "@apisearch_server.time_format_builder"
             - "%apisearch_plugin.elk.key%"
             - "%apisearch_plugin.elk.service%"
+            - "%apisearch_server.environment%"
         tags:
             - { name: apisearch_server.domain_event_subscriber }

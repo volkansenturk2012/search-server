@@ -32,6 +32,9 @@ class ApisearchServerConfiguration extends BaseConfiguration
     {
         $rootNode
             ->children()
+                ->scalarNode('environment')
+                    ->defaultValue('dev')
+                ->end()
                 ->scalarNode('middleware_domain_events_service')
                     ->defaultValue('apisearch_server.middleware.enqueue_events')
                 ->end()

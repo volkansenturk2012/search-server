@@ -18,6 +18,7 @@ namespace Apisearch\Plugin\ELK\Domain\Event;
 use Apisearch\Plugin\Redis\Domain\RedisWrapper;
 use Apisearch\Server\Domain\Event\DomainEventWithRepositoryReference;
 use Apisearch\Server\Domain\Event\EventSubscriber;
+use Apisearch\Server\Domain\Event\ExceptionWasCached;
 use Apisearch\Server\Domain\Formatter\TimeFormatBuilder;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\RedisHandler;
@@ -67,23 +68,33 @@ class DomainEventSubscriber implements EventSubscriber
     private $logger;
 
     /**
+     * @var string
+     *
+     * Environment
+     */
+    private $environment;
+
+    /**
      * RedisMetadataRepository constructor.
      *
      * @param RedisWrapper      $redisWrapper
      * @param TimeFormatBuilder $timeFormatBuilder
      * @param string            $key
      * @param string            $service
+     * @param string            $environment
      */
     public function __construct(
         RedisWrapper $redisWrapper,
         TimeFormatBuilder $timeFormatBuilder,
         string $key,
-        string $service
+        string $service,
+        string $environment
     ) {
         $this->redisWrapper = $redisWrapper;
         $this->timeFormatBuilder = $timeFormatBuilder;
         $this->key = $key;
         $this->service = $service;
+        $this->environment = $environment;
     }
 
     /**
@@ -134,6 +145,9 @@ class DomainEventSubscriber implements EventSubscriber
     public function handle(DomainEventWithRepositoryReference $domainEventWithRepositoryReference)
     {
         $event = $domainEventWithRepositoryReference->getDomainEvent();
+        $level = $event instanceof ExceptionWasCached
+            ? Logger::ERROR
+            : Logger::INFO;
         $reducedArray = $event->toLogger();
         $reducedArray['occurred_on'] = $this
             ->timeFormatBuilder
@@ -144,8 +158,10 @@ class DomainEventSubscriber implements EventSubscriber
         try {
             $this
                 ->getLogger()
-                ->info(
+                ->addRecord(
+                    $level,
                     json_encode([
+                            'environment' => $this->environment,
                             'service' => $this->service,
                             'repository_reference' => $domainEventWithRepositoryReference
                                 ->getRepositoryReference()
