@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\ELK\Tests\Functional;
 
+use Apisearch\Exception\ResourceNotAvailableException;
 use Apisearch\Query\Query;
 
 /**
@@ -46,6 +47,28 @@ class BasicUsageTest extends ELKFunctionalTest
             2,
             $redis->lLen('apisearch_test.elk')
         );
+
+        $body = json_decode($redis->lPop('apisearch_test.elk'), true);
+        $message = json_decode($body['@message'], true);
+
+        $this->assertEquals(200, $body['@fields']['level']);
+        $this->assertEquals('dev', $message['environment']);
+        $this->assertEquals('apisearch', $message['service']);
+        $this->assertEquals('26178621test_default', $message['repository_reference']);
+        $this->assertEquals('ItemsWereIndexed', $message['type']);
+        $body = json_decode($redis->lPop('apisearch_test.elk'), true);
+        $message = json_decode($body['@message'], true);
+        $this->assertEquals(200, $body['@fields']['level']);
+        $this->assertEquals('QueryWasMade', $message['type']);
+
+        try {
+            $this->deleteIndex('non-existing', 'non-existing');
+        } catch (ResourceNotAvailableException $e) {
+            // Ignoring exception
+        }
+
+        $body = json_decode($redis->lPop('apisearch_test.elk'), true);
+        $this->assertEquals(400, $body['@fields']['level']);
     }
 
     /**

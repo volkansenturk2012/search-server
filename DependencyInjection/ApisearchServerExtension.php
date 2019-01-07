@@ -91,6 +91,7 @@ class ApisearchServerExtension extends BaseExtension
     protected function getParametrizationValues(array $config): array
     {
         return [
+            'apisearch_server.environment' => Env::get('APISEARCH_ENV', $config['environment']),
             'apisearch_server.middleware_domain_events_service' => Env::get('APISEARCH_EVENTS_MIDDLEWARE', $config['middleware_domain_events_service']),
             'apisearch_server.command_bus_service' => $config['command_bus_service'],
             'apisearch_server.token_repository_service' => $config['token_repository_service'],
