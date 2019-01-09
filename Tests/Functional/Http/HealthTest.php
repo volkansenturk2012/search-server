@@ -69,7 +69,6 @@ class HealthTest extends HttpFunctionalTest
                     'callbacks' => CallbacksPluginBundle::class,
                     'elastica' => ElasticaPluginBundle::class,
                     'redis_storage' => RedisStoragePluginBundle::class,
-                    'rsqueue' => RSQueuePluginBundle::class,
                 ],
                 $content['info']['plugins']
             );
@@ -83,8 +82,6 @@ class HealthTest extends HttpFunctionalTest
      */
     public function dataCheckHealth(): array
     {
-        self::loadEnv();
-
         return [
             [$_ENV['APISEARCH_GOD_TOKEN'], 200],
             [$_ENV['APISEARCH_PING_TOKEN'], 200],

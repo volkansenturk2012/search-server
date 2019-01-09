@@ -72,7 +72,7 @@ class ServerConfigurationCommand extends ApisearchCommand
      * execute() method, you set the code to execute by passing
      * a Closure to the setCode() method.
      *
-     * @return null|int null or 0 if everything went fine, or an error code
+     * @return int|null null or 0 if everything went fine, or an error code
      *
      * @see setCode()
      */
@@ -83,13 +83,12 @@ class ServerConfigurationCommand extends ApisearchCommand
         $this->printMessage($output, '##', 'Server started');
         $this->printInfoMessage($output, '##', ' ~~ with');
         $this->printInfoMessage($output, '##', sprintf(' ~~ --env = %s', $this->kernel->getEnvironment()));
-        foreach ($_ENV as $item => $value) {
-            if (!is_string($value)) {
-                continue;
-            }
-
-            $this->printInfoMessage($output, '##', sprintf(' ~~ %s = %s', $item, $value));
-        }
+        $this->printInfoMessage($output, '##', '');
+        $this->printInfoMessage($output, '##', '$_ENV values');
+        $this->printStringsArray($output, $_ENV);
+        $this->printInfoMessage($output, '##', '');
+        $this->printInfoMessage($output, '##', '$_SERVER values');
+        $this->printStringsArray($output, $_SERVER);
         $this->printInfoMessage($output, '##', '');
         $this->printInfoMessage($output, '##', 'Loaded plugins');
 
@@ -139,5 +138,24 @@ class ServerConfigurationCommand extends ApisearchCommand
         ';
 
         $output->writeln($logo);
+    }
+
+    /**
+     * Print array string values.
+     *
+     * @param OutputInterface $output
+     * @param array           $array
+     */
+    private function printStringsArray(
+        OutputInterface $output,
+        array $array
+    ) {
+        foreach ($array as $item => $value) {
+            if (!is_string($value)) {
+                continue;
+            }
+
+            $this->printInfoMessage($output, '##', sprintf(' ~~ %s = %s', $item, $value));
+        }
     }
 }

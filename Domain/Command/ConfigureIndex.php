@@ -20,8 +20,8 @@ use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
 use Apisearch\Repository\RepositoryReference;
 use Apisearch\Repository\WithRepositoryReference;
-use Apisearch\Server\Domain\AsynchronousableCommand;
 use Apisearch\Server\Domain\CommandWithRepositoryReferenceAndToken;
+use Apisearch\Server\Domain\ExclusiveCommand;
 use Apisearch\Server\Domain\IndexRequiredCommand;
 use Apisearch\Server\Domain\LoggableCommand;
 use Apisearch\Server\Domain\WriteCommand;
@@ -29,7 +29,7 @@ use Apisearch\Server\Domain\WriteCommand;
 /**
  * Class ConfigureIndex.
  */
-class ConfigureIndex extends CommandWithRepositoryReferenceAndToken implements WithRepositoryReference, WriteCommand, LoggableCommand, AsynchronousableCommand, IndexRequiredCommand
+class ConfigureIndex extends CommandWithRepositoryReferenceAndToken implements WithRepositoryReference, WriteCommand, LoggableCommand, ExclusiveCommand, IndexRequiredCommand
 {
     /**
      * @var IndexUUID

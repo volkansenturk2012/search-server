@@ -29,7 +29,6 @@ use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
 use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
 use Apisearch\Plugin\RSQueue\RSQueuePluginBundle;
 use Apisearch\Query\Query as QueryModel;
-use Apisearch\Result\Events;
 use Apisearch\Result\Result;
 use Apisearch\Server\ApisearchServerBundle;
 use Apisearch\Server\Exception\ErrorException;
@@ -103,7 +102,6 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
      */
     protected static function getKernel(): KernelInterface
     {
-        static::loadEnv();
         self::$godToken = $_ENV['APISEARCH_GOD_TOKEN'];
         self::$pingToken = $_ENV['APISEARCH_PING_TOKEN'];
         self::$readonlyToken = $_ENV['APISEARCH_READONLY_TOKEN'];
@@ -125,7 +123,6 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
             ApisearchServerBundle::class,
             ElasticaPluginBundle::class,
             RedisStoragePluginBundle::class,
-            RSQueuePluginBundle::class,
             CallbacksPluginBundle::class,
         ];
 
@@ -236,18 +233,6 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
             ]),
             'prod', false
         );
-    }
-
-    /**
-     * Load env vars.
-     */
-    protected static function loadEnv()
-    {
-        $envPath = __DIR__.'/../../.env';
-        if (file_exists($envPath)) {
-            $dotenv = new Dotenv();
-            $dotenv->load($envPath);
-        }
     }
 
     /**

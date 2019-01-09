@@ -101,7 +101,7 @@ class RedisConfig
     /**
      * Get Database.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getDatabase(): ? string
     {

@@ -485,9 +485,9 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      * Make a curl execution.
      *
      * @param string       $routeName
-     * @param null|string  $appId
-     * @param null|string  $index
-     * @param null|Token   $token
+     * @param string|null  $appId
+     * @param string|null  $index
+     * @param Token|null   $token
      * @param array|string $body
      *
      * @return array

@@ -1,0 +1,24 @@
+services:
+
+    apiserach_plugin.rabbitmq.channel:
+        class: PhpAmqpLib\Channel\AMQPChannel
+        arguments:
+            - "%apisearch_plugin.rabbitmq.host%"
+            - "%apisearch_plugin.rabbitmq.port%"
+            - "%apisearch_plugin.rabbitmq.user%"
+            - "%apisearch_plugin.rabbitmq.password%"
+        factory:
+            - Apisearch\Plugin\RabbitMQ\Domain\RabbitMQChannel
+            - create
+
+    apisearch_server.command_enqueuer:
+        class: Apisearch\Plugin\RabbitMQ\Domain\RabbitMQCommandEnqueuer
+        arguments:
+            - "@apiserach_plugin.rabbitmq.channel"
+            - "%apisearch_plugin.rabbitmq.commands_queue_name%"
+
+    apisearch_server.event_enqueuer:
+        class: Apisearch\Plugin\RabbitMQ\Domain\RabbitMQEventEnqueuer
+        arguments:
+            - "@apiserach_plugin.rabbitmq.channel"
+            - "%apisearch_plugin.rabbitmq.events_queue_name%"
