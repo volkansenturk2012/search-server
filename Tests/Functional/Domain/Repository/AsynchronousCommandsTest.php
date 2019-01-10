@@ -21,7 +21,7 @@ use Apisearch\Server\Tests\Functional\AsynchronousFunctionalTest;
 /**
  * Class AsynchronousCommandsTest.
  */
-class AsynchronousCommandsTest extends AsynchronousFunctionalTest
+abstract class AsynchronousCommandsTest extends AsynchronousFunctionalTest
 {
     use AllAsynchronousTests;
 

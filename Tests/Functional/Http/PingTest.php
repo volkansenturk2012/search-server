@@ -57,8 +57,6 @@ class PingTest extends HttpFunctionalTest
      */
     public function dataPing(): array
     {
-        self::loadEnv();
-
         return [
             [$_ENV['APISEARCH_GOD_TOKEN'], 200],
             [$_ENV['APISEARCH_PING_TOKEN'], 200],

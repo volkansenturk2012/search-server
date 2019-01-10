@@ -20,7 +20,6 @@ use Apisearch\Server\DependencyInjection\ApisearchServerExtension;
 use Apisearch\Server\DependencyInjection\CompilerPass;
 use League\Tactician\Bundle\TacticianBundle;
 use Mmoreram\BaseBundle\BaseBundle;
-use RSQueueBundle\RSQueueBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -73,8 +72,6 @@ class ApisearchServerBundle extends BaseBundle
             ApisearchBundle::class,
             FrameworkBundle::class,
             BaseBundle::class,
-            RSQueueBundle::class,
-            ApisearchBundle::class,
             new TacticianBundle(),
         ];
     }
@@ -96,6 +93,7 @@ class ApisearchServerBundle extends BaseBundle
             new CompilerPass\EnabledPluginsMiddlewareCompilerPass($this->kernel),
             new CompilerPass\DomainEventsSubscribersCompilerPass(),
             new CompilerPass\TokenLocatorsCompilerPass(),
+            new CompilerPass\QueuesPluginCheckerCompilerPass($this->kernel),
         ];
     }
 }

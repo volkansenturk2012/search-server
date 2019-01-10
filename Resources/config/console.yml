@@ -124,3 +124,12 @@ services:
         tags:
             -  { name: console.command, command: apisearch-server:server-configuration }
 
+    #
+    # Queues
+    #
+    apisearch_server.commands_consumer:
+        class: Symfony\Component\Console\Command\Command
+
+    apisearch_server.domain_events_consumer:
+        class: Symfony\Component\Console\Command\Command
+

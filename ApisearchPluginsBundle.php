@@ -21,6 +21,7 @@ use Apisearch\Plugin\ELK\ELKPluginBundle;
 use Apisearch\Plugin\MostRelevantWords\MostRelevantWordsPluginBundle;
 use Apisearch\Plugin\Multilanguage\MultilanguagePluginBundle;
 use Apisearch\Plugin\NewRelic\NewRelicPluginBundle;
+use Apisearch\Plugin\RabbitMQ\RabbitMQPluginBundle;
 use Apisearch\Plugin\RedisMetadataFields\RedisMetadataFieldsPluginBundle;
 use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
 use Apisearch\Plugin\RSQueue\RSQueuePluginBundle;
@@ -85,6 +86,7 @@ class ApisearchPluginsBundle extends BaseBundle
             'redis_storage' => RedisStoragePluginBundle::class,
             'rsqueue' => RSQueuePluginBundle::class,
             'static_tokens' => StaticTokensPluginBundle::class,
+            'rabbitmq' => RabbitMQPluginBundle::class,
         ];
 
         $combined = array_combine(

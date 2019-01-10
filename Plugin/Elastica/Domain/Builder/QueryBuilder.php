@@ -123,7 +123,7 @@ class QueryBuilder
      * @param ElasticaQuery\BoolQuery $boolQuery
      * @param Filter[]                $filters
      * @param string[]                $filterFields
-     * @param null|string             $filterToIgnore
+     * @param string|null             $filterToIgnore
      * @param bool                    $takeInAccountDefinedTermFilter
      */
     private function addFilters(
@@ -298,7 +298,7 @@ class QueryBuilder
      * @param mixed  $value
      * @param bool   $checkNested
      *
-     * @return null|ElasticaQuery\AbstractQuery
+     * @return ElasticaQuery\AbstractQuery|null
      */
     private function createQueryFilter(
         Filter $filter,
@@ -415,7 +415,7 @@ class QueryBuilder
      * @param Filter $filter
      * @param string $value
      *
-     * @return null|ElasticaQuery\AbstractQuery
+     * @return ElasticaQuery\AbstractQuery|null
      */
     private function createRangeFilter(
         Filter $filter,
@@ -640,7 +640,7 @@ class QueryBuilder
      *
      * @param string            $queryString
      * @param array             $filterFields
-     * @param null|float|string $fuzziness
+     * @param float|string|null $fuzziness
      *
      * @return ElasticaQuery\AbstractQuery
      */

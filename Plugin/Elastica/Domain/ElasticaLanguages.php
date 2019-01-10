@@ -23,7 +23,7 @@ class ElasticaLanguages
     /**
      * Get stopwords language by language iso.
      *
-     * @param null|string $iso
+     * @param string|null $iso
      *
      * @return string
      */
@@ -67,9 +67,9 @@ class ElasticaLanguages
     /**
      * Get stemmer language by language iso.
      *
-     * @param null|string $iso
+     * @param string|null $iso
      *
-     * @return null|string
+     * @return string|null
      */
     public static function getStemmerLanguageByIso(? string $iso): ? string
     {

@@ -31,7 +31,6 @@ trait AllAsynchronousTests
     use IndexStatusTest;
     use ErrorRecoveryTest;
     use SynonymsTest;
-    use EventRepositoryPermissionsTest;
     use RepositoryResetTest;
     use HighlightTest;
     use AggregationsTest;

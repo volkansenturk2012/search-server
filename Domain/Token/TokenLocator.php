@@ -37,7 +37,7 @@ interface TokenLocator
      * @param AppUUID   $appUUID
      * @param TokenUUID $tokenUUID
      *
-     * @return null|Token
+     * @return Token|null
      */
     public function getTokenByUUID(
         AppUUID $appUUID,
