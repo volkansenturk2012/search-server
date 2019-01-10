@@ -129,6 +129,7 @@ class RabbitMQPluginExtension extends BaseExtension
             'apisearch_plugin.rabbitmq.port' => (int) $rabbitmqPort,
             'apisearch_plugin.rabbitmq.user' => (string) Env::get('RABBITMQ_QUEUE_USER', $config['user']),
             'apisearch_plugin.rabbitmq.password' => (string) Env::get('RABBITMQ_QUEUE_PASSWORD', $config['password']),
+            'apisearch_plugin.rabbitmq.vhost' => (string) Env::get('RABBITMQ_QUEUE_VHOST', $config['vhost']),
             'apisearch_plugin.rabbitmq.commands_queue_name' => Env::get('COMMANDS_QUEUE_NAME', $config['commands_queue_name']),
             'apisearch_plugin.rabbitmq.events_queue_name' => Env::get('EVENTS_QUEUE_NAME', $config['events_queue_name']),
             'apisearch_plugin.rabbitmq.busy_queue_name' => Env::get('BUSY_QUEUE_NAME', $config['busy_queue_name']),

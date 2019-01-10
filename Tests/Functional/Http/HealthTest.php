@@ -18,7 +18,6 @@ namespace Apisearch\Server\Tests\Functional\Http;
 use Apisearch\Plugin\Callbacks\CallbacksPluginBundle;
 use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
 use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
-use Apisearch\Plugin\RSQueue\RSQueuePluginBundle;
 use Apisearch\Server\Tests\Functional\HttpFunctionalTest;
 
 /**

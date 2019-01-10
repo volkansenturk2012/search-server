@@ -257,16 +257,16 @@
         },
         {
             "name": "ekino/newrelic-bundle",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ekino/EkinoNewRelicBundle.git",
-                "reference": "17c140db645439d973e69181713555158a69ae16"
+                "reference": "91aad2d593982ab200b62a89fe82ce6388b137bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ekino/EkinoNewRelicBundle/zipball/17c140db645439d973e69181713555158a69ae16",
-                "reference": "17c140db645439d973e69181713555158a69ae16",
+                "url": "https://api.github.com/repos/ekino/EkinoNewRelicBundle/zipball/91aad2d593982ab200b62a89fe82ce6388b137bf",
+                "reference": "91aad2d593982ab200b62a89fe82ce6388b137bf",
                 "shasum": ""
             },
             "require": {
@@ -300,7 +300,10 @@
             "autoload": {
                 "psr-4": {
                     "Ekino\\NewRelicBundle\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -320,7 +323,7 @@
                 "monitoring",
                 "performance"
             ],
-            "time": "2018-08-01T09:57:44+00:00"
+            "time": "2019-01-09T19:01:41+00:00"
         },
         {
             "name": "elasticsearch/elasticsearch",

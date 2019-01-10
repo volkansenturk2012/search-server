@@ -27,7 +27,6 @@ use Apisearch\Model\TokenUUID;
 use Apisearch\Plugin\Callbacks\CallbacksPluginBundle;
 use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
 use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
-use Apisearch\Plugin\RSQueue\RSQueuePluginBundle;
 use Apisearch\Query\Query as QueryModel;
 use Apisearch\Result\Result;
 use Apisearch\Server\ApisearchServerBundle;
@@ -35,7 +34,6 @@ use Apisearch\Server\Exception\ErrorException;
 use Mmoreram\BaseBundle\BaseBundle;
 use Mmoreram\BaseBundle\Kernel\BaseKernel;
 use Mmoreram\BaseBundle\Tests\BaseFunctionalTest;
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
 

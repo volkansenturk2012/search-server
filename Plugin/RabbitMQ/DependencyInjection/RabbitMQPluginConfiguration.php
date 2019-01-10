@@ -45,13 +45,16 @@ class RabbitMQPluginConfiguration extends BaseConfiguration
                     ->defaultNull()
                 ->end()
                 ->integerNode('port')
-                    ->defaultNull()
+                    ->defaultValue(5672)
                 ->end()
                 ->scalarNode('user')
                     ->defaultFalse()
                 ->end()
                 ->scalarNode('password')
                     ->defaultNull()
+                ->end()
+                ->scalarNode('vhost')
+                    ->defaultValue('/')
                 ->end();
     }
 }

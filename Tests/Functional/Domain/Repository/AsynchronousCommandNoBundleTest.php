@@ -15,8 +15,8 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Tests\Functional\Domain\Repository;
 
-use RuntimeException;
 use Apisearch\Server\Tests\Functional\AsynchronousFunctionalTest;
+use RuntimeException;
 
 /**
  * Class AsynchronousCommandNoBundleTest.
@@ -33,12 +33,11 @@ class AsynchronousCommandNoBundleTest extends AsynchronousFunctionalTest
             parent::setUpBeforeClass();
             self::fail('Kernel should fail because no queue plugin is instanced');
         } catch (RuntimeException $e) {
-            //
         }
     }
 
     /**
-     * Do something
+     * Do something.
      */
     public function testSomething()
     {

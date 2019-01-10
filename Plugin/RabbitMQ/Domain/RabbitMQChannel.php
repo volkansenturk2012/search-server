@@ -30,6 +30,7 @@ class RabbitMQChannel
      * @param int    $port
      * @param string $user
      * @param string $password
+     * @param string $vhost
      *
      * @return AMQPChannel
      */
@@ -37,13 +38,15 @@ class RabbitMQChannel
         string $host,
         int $port,
         string $user,
-        string $password
+        string $password,
+        string $vhost
     ): AMQPChannel {
         $connection = new AMQPStreamConnection(
             $host,
             $port,
             $user,
-            $password
+            $password,
+            $vhost
         );
 
         return $connection->channel();
