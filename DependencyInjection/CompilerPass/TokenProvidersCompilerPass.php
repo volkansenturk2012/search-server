@@ -18,9 +18,9 @@ namespace Apisearch\Server\DependencyInjection\CompilerPass;
 use Mmoreram\BaseBundle\CompilerPass\TagCompilerPass;
 
 /**
- * Class TokenLocatorsCompilerPass.
+ * Class TokenProvidersCompilerPass.
  */
-class TokenLocatorsCompilerPass extends TagCompilerPass
+class TokenProvidersCompilerPass extends TagCompilerPass
 {
     /**
      * Get collector service name.
@@ -29,7 +29,7 @@ class TokenLocatorsCompilerPass extends TagCompilerPass
      */
     public function getCollectorServiceName(): string
     {
-        return 'apisearch_server.token_locators';
+        return 'apisearch_server.token_providers';
     }
 
     /**
@@ -39,7 +39,7 @@ class TokenLocatorsCompilerPass extends TagCompilerPass
      */
     public function getCollectorMethodName(): string
     {
-        return 'addTokenLocator';
+        return 'addTokenProvider';
     }
 
     /**
@@ -49,6 +49,6 @@ class TokenLocatorsCompilerPass extends TagCompilerPass
      */
     public function getTagName(): string
     {
-        return 'apisearch_server.token_locator';
+        return 'apisearch_server.token_provider';
     }
 }

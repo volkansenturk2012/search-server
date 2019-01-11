@@ -20,11 +20,12 @@ use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
 use Apisearch\Model\TokenUUID;
 use Apisearch\Server\Domain\Token\TokenLocator;
+use Apisearch\Server\Domain\Token\TokenProvider;
 
 /**
  * Class TokenRedisRepository.
  */
-class StaticTokenLocator implements TokenLocator
+class StaticTokenLocator implements TokenLocator, TokenProvider
 {
     /**
      * @var Token[]
@@ -92,5 +93,24 @@ class StaticTokenLocator implements TokenLocator
         return empty($tokens)
             ? null
             : $tokens[0];
+    }
+
+    /**
+     * Get tokens by AppUUID.
+     *
+     * @param AppUUID $appUUID
+     *
+     * @return Token[]
+     */
+    public function getTokensByAppUUID(AppUUID $appUUID): array
+    {
+        return array_values(
+            array_filter(
+                $this->tokens,
+                function (Token $token) use ($appUUID) {
+                    return $token->getAppUUID()->composeUUID() === $appUUID->composeUUID();
+                }
+            )
+        );
     }
 }

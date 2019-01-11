@@ -93,6 +93,7 @@ class ApisearchServerBundle extends BaseBundle
             new CompilerPass\EnabledPluginsMiddlewareCompilerPass($this->kernel),
             new CompilerPass\DomainEventsSubscribersCompilerPass(),
             new CompilerPass\TokenLocatorsCompilerPass(),
+            new CompilerPass\TokenProvidersCompilerPass(),
             new CompilerPass\QueuesPluginCheckerCompilerPass($this->kernel),
         ];
     }

@@ -24,9 +24,7 @@ use Apisearch\Model\Item;
 use Apisearch\Model\ItemUUID;
 use Apisearch\Model\Token;
 use Apisearch\Model\TokenUUID;
-use Apisearch\Plugin\Callbacks\CallbacksPluginBundle;
 use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
-use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
 use Apisearch\Query\Query as QueryModel;
 use Apisearch\Result\Result;
 use Apisearch\Server\ApisearchServerBundle;
@@ -120,8 +118,6 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
             BaseBundle::class,
             ApisearchServerBundle::class,
             ElasticaPluginBundle::class,
-            RedisStoragePluginBundle::class,
-            CallbacksPluginBundle::class,
         ];
 
         $configuration = [

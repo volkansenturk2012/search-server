@@ -58,11 +58,9 @@ class CheckHealthCommand extends CommandWithBusAndGodToken
 
         $this->printInfoMessage($output, 'Memory Used', $health['process']['memory_used']);
         $this->printInfoMessage($output, 'Plugins', implode(', ', array_keys($health['info']['plugins'])));
-        $this->printInfoMessage($output, 'Elasticsearch', $health['status']['elasticsearch']);
-        $this->printInfoMessage($output, 'Redis', '1' == $health['status']['redis']
-            ? 'Ok'
-            : 'Error'
-        );
+        foreach ($health['status'] as $key => $value) {
+            $this->printInfoMessage($output, ucfirst($key), $this->getStringRepresentationOfValue($value));
+        }
 
         return true === $health['healthy']
             ? 0
@@ -82,5 +80,31 @@ class CheckHealthCommand extends CommandWithBusAndGodToken
         $result
     ): string {
         return '';
+    }
+
+    /**
+     * Get string value of mixed.
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    private function getStringRepresentationOfValue($value): string
+    {
+        switch ($value) {
+            case is_bool($value):
+                return $value ? 'Ok' : 'Error';
+            case is_string($value):
+                switch ($value) {
+                    case '1':
+                        return 'Ok';
+                    case '0':
+                        return 'Error';
+                    default:
+                        return $value;
+                }
+        }
+
+        return (string) $value;
     }
 }

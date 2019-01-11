@@ -13,9 +13,9 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Server\Tests\Functional\Http;
+namespace Apisearch\Plugin\RedisStorage\Tests\Functional;
 
-use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
+use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
 use Apisearch\Server\Tests\Functional\HttpFunctionalTest;
 
 /**
@@ -23,6 +23,30 @@ use Apisearch\Server\Tests\Functional\HttpFunctionalTest;
  */
 class HealthTest extends HttpFunctionalTest
 {
+    /**
+     * Decorate bundles.
+     *
+     * @param array $bundles
+     *
+     * @return array
+     */
+    protected static function decorateBundles(array $bundles): array
+    {
+        $bundles[] = RedisStoragePluginBundle::class;
+
+        return $bundles;
+    }
+
+    /**
+     * Save events.
+     *
+     * @return bool
+     */
+    protected static function saveEvents(): bool
+    {
+        return false;
+    }
+
     /**
      * Test check health with different tokens.
      *
@@ -53,33 +77,7 @@ class HealthTest extends HttpFunctionalTest
 
         if (200 === $responseCode) {
             $content = json_decode($response->getContent(), true);
-            $this->assertTrue($content['healthy']);
-            $this->assertTrue(
-                in_array(
-                    $content['status']['elasticsearch'],
-                    ['green', 'yellow']
-                )
-            );
-            $this->assertEquals(
-                [
-                    'elastica' => ElasticaPluginBundle::class,
-                ],
-                $content['info']['plugins']
-            );
+            $this->assertTrue($content['status']['redis']);
         }
-    }
-
-    /**
-     * Data for check health testing.
-     *
-     * @return array
-     */
-    public function dataCheckHealth(): array
-    {
-        return [
-            [$_ENV['APISEARCH_GOD_TOKEN'], 200],
-            [$_ENV['APISEARCH_PING_TOKEN'], 200],
-            ['non-existing-key', 401],
-        ];
     }
 }

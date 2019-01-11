@@ -47,13 +47,15 @@ trait WithRepositories
      *
      * @return WithRepositoryReference
      */
-    private function getRepository(string $class)
+    private function getRepository(string $class): ? WithRepositoryReference
     {
         foreach ($this->repositories as $repository) {
             if ($repository instanceof $class) {
                 return $repository;
             }
         }
+
+        return null;
     }
 
     /**

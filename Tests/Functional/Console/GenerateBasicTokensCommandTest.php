@@ -24,7 +24,7 @@ use Apisearch\Query\Query;
 /**
  * Class GenerateBasicTokensCommandTest.
  */
-class GenerateBasicTokensCommandTest extends CommandTest
+abstract class GenerateBasicTokensCommandTest extends CommandTest
 {
     /**
      * Test token creation.

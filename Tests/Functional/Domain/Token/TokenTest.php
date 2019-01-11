@@ -25,7 +25,7 @@ use Apisearch\Server\Tests\Functional\HttpFunctionalTest;
 /**
  * Class TokenTest.
  */
-class TokenTest extends HttpFunctionalTest
+abstract class TokenTest extends HttpFunctionalTest
 {
     /**
      * Test token creation.
@@ -247,10 +247,12 @@ class TokenTest extends HttpFunctionalTest
             $tokenUUID,
             AppUUID::createById(self::$appId)
         );
+        $this->deleteToken(TokenUUID::createById('12345'));
+        $this->assertCount(3, $this->getTokens());
         $this->addToken($token);
-        $this->assertCount(1, $this->getTokens());
+        $this->assertCount(4, $this->getTokens());
         $this->deleteToken($tokenUUID);
-        $this->assertCount(0, $this->getTokens());
+        $this->assertCount(3, $this->getTokens());
         $this->addToken($token);
         $this->addToken($token);
         $this->addToken($token);
@@ -262,7 +264,7 @@ class TokenTest extends HttpFunctionalTest
             TokenUUID::createById('56789'),
             AppUUID::createById(self::$appId)
         ));
-        $this->assertCount(2, $this->getTokens());
+        $this->assertCount(5, $this->getTokens());
     }
 
     /**
@@ -286,8 +288,8 @@ class TokenTest extends HttpFunctionalTest
             TokenUUID::createById('bbbbb'),
             AppUUID::createById(self::$appId)
         ));
-        $this->assertCount(5, $this->getTokens());
+        $this->assertCount(8, $this->getTokens());
         $this->deleteTokens();
-        $this->assertCount(0, $this->getTokens());
+        $this->assertCount(3, $this->getTokens());
     }
 }

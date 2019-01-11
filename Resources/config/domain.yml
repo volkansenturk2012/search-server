@@ -260,6 +260,8 @@ services:
 
     apisearch_server.app_repository:
         class: Apisearch\Server\Domain\Repository\AppRepository\Repository
+        arguments:
+            - "@apisearch_server.token_providers"
 
     apisearch_server.user_repository:
         class: Apisearch\Server\Domain\Repository\UserRepository\Repository
@@ -275,9 +277,18 @@ services:
             - "%apisearch_server.ping_token%"
         tags:
             - { name: apisearch_server.token_locator }
+            - { name: apisearch_server.token_provider }
 
     apisearch_server.token_validator:
         class: Apisearch\Server\Domain\Token\TokenValidator
+        arguments:
+            - "@apisearch_server.token_locators"
+
+    apisearch_server.token_locators:
+        class: Apisearch\Server\Domain\Token\TokenLocators
+
+    apisearch_server.token_providers:
+        class: Apisearch\Server\Domain\Token\TokenProviders
 
     #
     # Formatter

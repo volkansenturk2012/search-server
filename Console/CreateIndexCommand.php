@@ -156,6 +156,7 @@ class CreateIndexCommand extends CommandWithBusAndGodToken
             "Index ID: <strong>{$indexUUID->composeUUID()}</strong>"
         );
 
+        $synonymsFile = $input->getOption('synonyms-file');
         $synonyms = $this
             ->synonymReader
             ->readSynonymsFromFile($input->getOption('synonyms-file'));

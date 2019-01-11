@@ -28,20 +28,20 @@ use Carbon\Carbon;
 class TokenValidator
 {
     /**
-     * @var TokenLocator[]
+     * @var TokenLocators
      *
      * Token locators
      */
-    private $tokenLocators = [];
+    private $tokenLocators;
 
     /**
-     * Add token locator.
+     * TokenValidator constructor.
      *
-     * @param TokenLocator $tokenLocator
+     * @param TokenLocators $tokenLocators
      */
-    public function addTokenLocator(TokenLocator $tokenLocator)
+    public function __construct(TokenLocators $tokenLocators)
     {
-        $this->tokenLocators[] = $tokenLocator;
+        $this->tokenLocators = $tokenLocators;
     }
 
     /**
@@ -67,11 +67,11 @@ class TokenValidator
         string $verb
     ): Token {
         $token = null;
-        foreach ($this->tokenLocators as $tokenLocator) {
-            if (!$tokenLocator->isValid()) {
-                continue;
-            }
+        $tokenLocators = $this
+            ->tokenLocators
+            ->getValidTokenLocators();
 
+        foreach ($tokenLocators as $tokenLocator) {
             $token = $tokenLocator->getTokenByUUID(
                 $appUUID,
                 $tokenUUID

@@ -23,7 +23,7 @@ use Apisearch\Model\TokenUUID;
 /**
  * Class StaticTokenLocator.
  */
-class StaticTokenLocator implements TokenLocator
+class StaticTokenLocator implements TokenLocator, TokenProvider
 {
     /**
      * @var string
@@ -171,5 +171,29 @@ class StaticTokenLocator implements TokenLocator
             Token::INFINITE_HITS_PER_QUERY,
             Token::NO_CACHE
         );
+    }
+
+    /**
+     * Get tokens by AppUUID.
+     *
+     * @param AppUUID $appUUID
+     *
+     * @return Token[]
+     */
+    public function getTokensByAppUUID(AppUUID $appUUID): array
+    {
+        $tokens = [
+            $this->createGodToken($appUUID),
+        ];
+
+        if (!empty($this->readonlyToken)) {
+            $tokens[] = $this->createReadOnlyToken($appUUID);
+        }
+
+        if (!empty($this->pingToken)) {
+            $tokens[] = $this->createPingToken();
+        }
+
+        return $tokens;
     }
 }

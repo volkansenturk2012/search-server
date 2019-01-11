@@ -26,6 +26,7 @@ use Apisearch\Model\Token;
 use Apisearch\Model\TokenUUID;
 use Apisearch\Repository\RepositoryWithCredentials;
 use Apisearch\Server\Domain\Repository\WithRepositories;
+use Apisearch\Server\Domain\Token\TokenProviders;
 
 /**
  * Class Repository.
@@ -35,15 +36,33 @@ class Repository extends RepositoryWithCredentials implements BaseRepository
     use WithRepositories;
 
     /**
+     * @var TokenProviders
+     *
+     * Token providers
+     */
+    private $tokenProviders;
+
+    /**
+     * Repository constructor.
+     *
+     * @param TokenProviders $tokenProviders
+     */
+    public function __construct(TokenProviders $tokenProviders)
+    {
+        $this->tokenProviders = $tokenProviders;
+    }
+
+    /**
      * Add token.
      *
      * @param Token $token
      */
     public function addToken(Token $token)
     {
-        $this
-            ->getRepository(TokenRepository::class)
-            ->addToken($token);
+        $tokenRepository = $this->getRepository(TokenRepository::class);
+        if ($tokenRepository instanceof TokenRepository) {
+            $tokenRepository->addToken($token);
+        }
     }
 
     /**
@@ -53,9 +72,10 @@ class Repository extends RepositoryWithCredentials implements BaseRepository
      */
     public function deleteToken(TokenUUID $tokenUUID)
     {
-        $this
-            ->getRepository(TokenRepository::class)
-            ->deleteToken($tokenUUID);
+        $tokenRepository = $this->getRepository(TokenRepository::class);
+        if ($tokenRepository instanceof TokenRepository) {
+            $tokenRepository->deleteToken($tokenUUID);
+        }
     }
 
     /**
@@ -66,8 +86,8 @@ class Repository extends RepositoryWithCredentials implements BaseRepository
     public function getTokens(): array
     {
         return $this
-            ->getRepository(TokenRepository::class)
-            ->getTokens();
+            ->tokenProviders
+            ->getTokensByAppUUID($this->getAppUUID());
     }
 
     /**
@@ -75,9 +95,10 @@ class Repository extends RepositoryWithCredentials implements BaseRepository
      */
     public function deleteTokens()
     {
-        $this
-            ->getRepository(TokenRepository::class)
-            ->deleteTokens();
+        $tokenRepository = $this->getRepository(TokenRepository::class);
+        if ($tokenRepository instanceof TokenRepository) {
+            $tokenRepository->deleteTokens();
+        }
     }
 
     /**

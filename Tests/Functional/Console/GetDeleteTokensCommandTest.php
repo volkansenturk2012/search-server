@@ -18,7 +18,7 @@ namespace Apisearch\Server\Tests\Functional\Console;
 /**
  * Class GetDeleteTokensCommandTest.
  */
-class GetDeleteTokensCommandTest extends CommandTest
+abstract class GetDeleteTokensCommandTest extends CommandTest
 {
     /**
      * Test token creation.
