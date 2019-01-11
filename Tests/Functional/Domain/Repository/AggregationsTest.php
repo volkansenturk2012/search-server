@@ -38,7 +38,7 @@ trait AggregationsTest
                     ->aggregateBy(
                         'author',
                         'author_data',
-                        FILTER::MUST_ALL
+                        Filter::MUST_ALL
                     )
             )
             ->getAggregations();
@@ -54,7 +54,7 @@ trait AggregationsTest
         $aggregations = $this
             ->query(
                 Query::createMatchAll()
-                    ->filterBy('color', 'color', ['pink'], FILTER::AT_LEAST_ONE)
+                    ->FilterBy('color', 'color', ['pink'], Filter::AT_LEAST_ONE)
             )
             ->getAggregations();
 
@@ -82,7 +82,7 @@ trait AggregationsTest
     {
         $aggregations = $this->query(
             Query::createMatchAll()
-                ->filterBy('nonexistent', 'nonexistent', [])
+                ->FilterBy('nonexistent', 'nonexistent', [])
         )
         ->getAggregations();
 
@@ -100,7 +100,7 @@ trait AggregationsTest
         $aggregations = $this
             ->query(
                 Query::createMatchAll()
-                    ->filterBy('color', 'color', ['1'], FILTER::AT_LEAST_ONE)
+                    ->FilterBy('color', 'color', ['1'], Filter::AT_LEAST_ONE)
                     ->disableAggregations()
             )
             ->getAggregations();
@@ -119,7 +119,7 @@ trait AggregationsTest
                     ->aggregateBy(
                         'editorial',
                         'editorial_data',
-                        FILTER::AT_LEAST_ONE
+                        Filter::AT_LEAST_ONE
                     )
             )
             ->getAggregations();
@@ -138,7 +138,7 @@ trait AggregationsTest
                     ->aggregateBy(
                         'stores',
                         'stores',
-                        FILTER::AT_LEAST_ONE
+                        Filter::AT_LEAST_ONE
                     )
             )
             ->getAggregations();
@@ -157,7 +157,7 @@ trait AggregationsTest
                     ->aggregateBy(
                         'author',
                         'author_data',
-                        FILTER::AT_LEAST_ONE
+                        Filter::AT_LEAST_ONE
                     )
             )
             ->getAggregations();
@@ -190,7 +190,7 @@ trait AggregationsTest
                     ->aggregateBy(
                         'author',
                         'author_data',
-                        FILTER::AT_LEAST_ONE
+                        Filter::AT_LEAST_ONE
                     )
             )
             ->getAggregations();
@@ -211,7 +211,7 @@ trait AggregationsTest
         $aggregation = $this
             ->query(
                 Query::createMatchAll()
-                    ->aggregateBy('category', 'category_data', FILTER::MUST_ALL_WITH_LEVELS)
+                    ->aggregateBy('category', 'category_data', Filter::MUST_ALL_WITH_LEVELS)
             )
             ->getAggregation('category');
         $this->assertCount(2, $aggregation->getCounters());
@@ -221,8 +221,8 @@ trait AggregationsTest
         $aggregation = $this
             ->query(
                 Query::createMatchAll()
-                    ->filterBy('category', 'category', ['1'], FILTER::MUST_ALL_WITH_LEVELS)
-                    ->aggregateBy('category', 'category_data', FILTER::MUST_ALL_WITH_LEVELS)
+                    ->FilterBy('category', 'category', ['1'], Filter::MUST_ALL_WITH_LEVELS)
+                    ->aggregateBy('category', 'category_data', Filter::MUST_ALL_WITH_LEVELS)
             )
             ->getAggregation('category');
         $this->assertCount(2, $aggregation->getCounters());
@@ -232,8 +232,8 @@ trait AggregationsTest
         $aggregation = $this
             ->query(
                 Query::createMatchAll()
-                    ->filterBy('category', 'category', ['2'], FILTER::MUST_ALL_WITH_LEVELS)
-                    ->aggregateBy('category', 'category_data', FILTER::MUST_ALL_WITH_LEVELS)
+                    ->FilterBy('category', 'category', ['2'], Filter::MUST_ALL_WITH_LEVELS)
+                    ->aggregateBy('category', 'category_data', Filter::MUST_ALL_WITH_LEVELS)
             )
             ->getAggregation('category');
         $this->assertCount(2, $aggregation->getCounters());
@@ -249,7 +249,7 @@ trait AggregationsTest
         $this->assertCount(
             1,
             $this->query(Query::createMatchAll()
-                ->filterUniverseByDateRange('created_at', ['2020-02-02..2020-04-04'], Filter::AT_LEAST_ONE)
+                ->FilterUniverseByDateRange('created_at', ['2020-02-02..2020-04-04'], Filter::AT_LEAST_ONE)
                 ->aggregateByDateRange('created_at', 'created_at', ['2020-03-03..2020-04-04'], Filter::AT_LEAST_ONE)
             )->getAggregation('created_at')
         );
@@ -257,7 +257,7 @@ trait AggregationsTest
         $this->assertCount(
             2,
             $this->query(Query::createMatchAll()
-                ->filterUniverseByDateRange('created_at', ['2020-02-02..2020-04-04'], Filter::AT_LEAST_ONE)
+                ->FilterUniverseByDateRange('created_at', ['2020-02-02..2020-04-04'], Filter::AT_LEAST_ONE)
                 ->aggregateByDateRange('created_at', 'created_at', ['2020-02-02..2020-03-03', '2020-03-03..2020-04-04'], Filter::AT_LEAST_ONE)
             )->getAggregation('created_at')
         );
@@ -269,16 +269,16 @@ trait AggregationsTest
      * @param int   $firstId
      * @param array $order
      *
-     * @dataProvider dataSort
+     * @dataProvider dataAggregationsSort
      */
-    public function testSort(
+    public function testAggregationsSort(
         int $firstId,
         ? array $order
     ) {
         $query = Query::createMatchAll();
         is_null($order)
-            ? $query->aggregateBy('sortable', 'sortable_data', FILTER::AT_LEAST_ONE)
-            : $query->aggregateBy('sortable', 'sortable_data', FILTER::AT_LEAST_ONE, $order);
+            ? $query->aggregateBy('sortable', 'sortable_data', Filter::AT_LEAST_ONE)
+            : $query->aggregateBy('sortable', 'sortable_data', Filter::AT_LEAST_ONE, $order);
 
         $counters = $this
             ->query($query)
@@ -290,9 +290,9 @@ trait AggregationsTest
     }
 
     /**
-     * data for testSort.
+     * data for testAggregationsSort.
      */
-    public function dataSort()
+    public function dataAggregationsSort()
     {
         return [
             ['3', null],
@@ -306,7 +306,7 @@ trait AggregationsTest
     /**
      * Test aggregation limit.
      */
-    public function testLimit()
+    public function testAggregationsLimit()
     {
         $aggregations = $this
             ->query(
@@ -314,7 +314,7 @@ trait AggregationsTest
                     ->aggregateBy(
                         'stores',
                         'stores',
-                        FILTER::AT_LEAST_ONE,
+                        Filter::AT_LEAST_ONE,
                         Aggregation::SORT_BY_COUNT_DESC,
                         2
                     )

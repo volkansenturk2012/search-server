@@ -23,11 +23,12 @@ use Apisearch\Repository\WithRepositoryReference;
 use Apisearch\Repository\WithRepositoryReferenceTrait;
 use Apisearch\Server\Domain\Repository\AppRepository\TokenRepository;
 use Apisearch\Server\Domain\Token\TokenLocator;
+use Apisearch\Server\Domain\Token\TokenProvider;
 
 /**
  * Class TokenRedisRepository.
  */
-class TokenRedisRepository implements TokenRepository, TokenLocator, WithRepositoryReference
+class TokenRedisRepository implements TokenRepository, TokenLocator, TokenProvider, WithRepositoryReference
 {
     use WithRepositoryReferenceTrait;
 
@@ -128,14 +129,7 @@ class TokenRedisRepository implements TokenRepository, TokenLocator, WithReposit
      */
     public function getTokens(): array
     {
-        $tokens = $this
-            ->redisWrapper
-            ->getClient()
-            ->hGetAll($this->composeRedisKey($this->getAppUUID()));
-
-        return array_map(function (string $token) {
-            return Token::createFromArray(json_decode($token, true));
-        }, $tokens);
+        return $this->getTokensByAppUUID($this->getAppUUID());
     }
 
     /**
@@ -172,5 +166,24 @@ class TokenRedisRepository implements TokenRepository, TokenLocator, WithReposit
         return false === $token
             ? null
             : Token::createFromArray(json_decode($token, true));
+    }
+
+    /**
+     * Get tokens by AppUUID.
+     *
+     * @param AppUUID $appUUID
+     *
+     * @return Token[]
+     */
+    public function getTokensByAppUUID(AppUUID $appUUID): array
+    {
+        $tokens = $this
+            ->redisWrapper
+            ->getClient()
+            ->hGetAll($this->composeRedisKey($appUUID));
+
+        return array_map(function (string $token) {
+            return Token::createFromArray(json_decode($token, true));
+        }, $tokens);
     }
 }

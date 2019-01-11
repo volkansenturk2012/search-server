@@ -6,3 +6,4 @@ services:
             - "%apisearch_plugin.static_tokens.tokens%"
         tags:
             - { name: "apisearch_server.token_locator" }
+            - { name: "apisearch_server.token_provider" }

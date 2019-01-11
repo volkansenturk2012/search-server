@@ -28,6 +28,14 @@ use Apisearch\Query\Query;
 class SimpleStaticTokensWorkflowTest extends StaticTokensFunctionalTest
 {
     /**
+     * Test count.
+     */
+    public function testCount()
+    {
+        $this->assertCount(6, $this->getTokens());
+    }
+
+    /**
      * Test simple workflow.
      */
     public function testSimpleWorkflow()

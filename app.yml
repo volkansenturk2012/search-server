@@ -1,7 +1,7 @@
 bundles:
     - Apisearch\Server\ApisearchServerBundle
     - Apisearch\Plugin\Elastica\ElasticaPluginBundle
-    - Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle
+    #- Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle
     - Apisearch\Server\ApisearchPluginsBundle
 routes:
     - "@ApisearchServerBundle/Resources/config/routing.yml"

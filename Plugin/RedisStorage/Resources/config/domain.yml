@@ -25,4 +25,5 @@ services:
         tags:
             - { name: "apisearch_server.app_repository" }
             - { name: "apisearch_server.token_locator" }
+            - { name: "apisearch_server.token_provider" }
 

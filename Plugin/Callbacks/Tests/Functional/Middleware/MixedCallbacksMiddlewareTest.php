@@ -21,6 +21,7 @@ use Apisearch\Model\ItemUUID;
 use Apisearch\Model\Token;
 use Apisearch\Model\TokenUUID;
 use Apisearch\Plugin\Callbacks\Tests\Functional\EndpointsFunctionalTest;
+use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
 use Apisearch\Query\Query;
 
 /**
@@ -28,6 +29,21 @@ use Apisearch\Query\Query;
  */
 class MixedCallbacksMiddlewareTest extends EndpointsFunctionalTest
 {
+    /**
+     * Decorate bundles.
+     *
+     * @param array $bundles
+     *
+     * @return array
+     */
+    protected static function decorateBundles(array $bundles): array
+    {
+        $bundles = parent::decorateBundles($bundles);
+        $bundles[] = RedisStoragePluginBundle::class;
+
+        return $bundles;
+    }
+
     /**
      * Get callbacks configuration.
      *

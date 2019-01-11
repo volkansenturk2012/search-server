@@ -16,9 +16,9 @@ declare(strict_types=1);
 namespace Apisearch\Server\Tests\Functional\Console;
 
 /**
- * Class AddTokenCommandTest.
+ * Class AddDeleteTokensCommandTest.
  */
-class AddTokenCommandTest extends CommandTest
+abstract class AddDeleteTokensCommandTest extends CommandTest
 {
     /**
      * Test token creation.
