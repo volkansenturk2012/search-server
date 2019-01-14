@@ -13,31 +13,31 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\RSQueue\Domain;
+namespace Apisearch\Plugin\RedisQueue\Domain;
 
 use Apisearch\Server\Domain\CommandEnqueuer\CommandEnqueuer;
-use RSQueue\Services\Producer;
+use Apisearch\Server\Domain\Consumer\ConsumerManager;
 
 /**
- * Class RSQueueCommandEnqueuer.
+ * Class RedisQueueCommandEnqueuer.
  */
-class RSQueueCommandEnqueuer implements CommandEnqueuer
+class RedisQueueCommandEnqueuer implements CommandEnqueuer
 {
     /**
-     * @var Producer
+     * @var RedisQueueConsumerManager
      *
-     * Producer
+     * Consumer Manager
      */
-    private $producer;
+    protected $consumerManager;
 
     /**
-     * AsynchronousCommandIngestor constructor.
+     * RSQueueEventEnqueuer constructor.
      *
-     * @param Producer $producer
+     * @param RedisQueueConsumerManager $consumerManager
      */
-    public function __construct(Producer $producer)
+    public function __construct(RedisQueueConsumerManager $consumerManager)
     {
-        $this->producer = $producer;
+        $this->consumerManager = $consumerManager;
     }
 
     /**
@@ -50,9 +50,9 @@ class RSQueueCommandEnqueuer implements CommandEnqueuer
         $commandAsArray = $command->toArray();
         $commandAsArray['class'] = str_replace('Apisearch\Server\Domain\Command\\', '', get_class($command));
         $this
-            ->producer
-            ->produce(
-                'commands_queue',
+            ->consumerManager
+            ->enqueue(
+                ConsumerManager::COMMAND_CONSUMER_TYPE,
                 $commandAsArray
             );
     }

@@ -13,9 +13,9 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\RSQueue\Tests\Functional;
+namespace Apisearch\Plugin\RedisQueue\Tests\Functional;
 
-use Apisearch\Plugin\RSQueue\RSQueuePluginBundle;
+use Apisearch\Plugin\RedisQueue\RedisQueuePluginBundle;
 use Apisearch\Server\Tests\Functional\Domain\Repository\AsynchronousCommandsTest as BaseAsynchronousCommandsTest;
 
 /**
@@ -32,7 +32,8 @@ class AsynchronousCommandsTest extends BaseAsynchronousCommandsTest
      */
     protected static function decorateBundles(array $bundles): array
     {
-        $bundles[] = RSQueuePluginBundle::class;
+        $bundles = parent::decorateBundles($bundles);
+        $bundles[] = RedisQueuePluginBundle::class;
 
         return $bundles;
     }

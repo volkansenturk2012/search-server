@@ -482,6 +482,42 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
     }
 
     /**
+     * Pause consumers.
+     *
+     * @param string[] $types
+     */
+    public function pauseConsumers(array $types)
+    {
+        self::makeCurl(
+            'v1-pause-consumers',
+            null,
+            null,
+            null,
+            [
+                'types' => $types,
+            ]
+        );
+    }
+
+    /**
+     * Resume consumers.
+     *
+     * @param string[] $types
+     */
+    public function resumeConsumers(array $types)
+    {
+        self::makeCurl(
+            'v1-resume-consumers',
+            null,
+            null,
+            null,
+            [
+                'types' => $types,
+            ]
+        );
+    }
+
+    /**
      * Make a curl execution.
      *
      * @param string       $routeName

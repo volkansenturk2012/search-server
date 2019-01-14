@@ -35,11 +35,14 @@ class RabbitMQPluginConfiguration extends BaseConfiguration
                 ->scalarNode('commands_queue_name')
                     ->defaultValue('apisearch_commands')
                 ->end()
+                ->scalarNode('commands_busy_queue_name')
+                    ->defaultValue('apisearch_commands_busy')
+                ->end()
                 ->scalarNode('events_queue_name')
                     ->defaultValue('apisearch_domain_events')
                 ->end()
-                ->scalarNode('busy_queue_name')
-                    ->defaultValue('apisearch_busy')
+                ->scalarNode('events_busy_queue_name')
+                    ->defaultValue('apisearch_domain_events_busy')
                 ->end()
                 ->scalarNode('host')
                     ->defaultNull()
@@ -55,6 +58,9 @@ class RabbitMQPluginConfiguration extends BaseConfiguration
                 ->end()
                 ->scalarNode('vhost')
                     ->defaultValue('/')
+                ->end()
+                ->integerNode('seconds_to_wait_on_busy')
+                    ->defaultValue(10)
                 ->end();
     }
 }

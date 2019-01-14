@@ -23,8 +23,8 @@ use Apisearch\Plugin\Multilanguage\MultilanguagePluginBundle;
 use Apisearch\Plugin\NewRelic\NewRelicPluginBundle;
 use Apisearch\Plugin\RabbitMQ\RabbitMQPluginBundle;
 use Apisearch\Plugin\RedisMetadataFields\RedisMetadataFieldsPluginBundle;
+use Apisearch\Plugin\RedisQueue\RedisQueuePluginBundle;
 use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
-use Apisearch\Plugin\RSQueue\RSQueuePluginBundle;
 use Apisearch\Plugin\StaticTokens\StaticTokensPluginBundle;
 use Apisearch\Server\DependencyInjection\Env;
 use Apisearch\Server\Domain\Plugin\Plugin;
@@ -84,7 +84,7 @@ class ApisearchPluginsBundle extends BaseBundle
             'newrelic' => NewRelicPluginBundle::class,
             'redis_metadata_fields' => RedisMetadataFieldsPluginBundle::class,
             'redis_storage' => RedisStoragePluginBundle::class,
-            'rsqueue' => RSQueuePluginBundle::class,
+            'redis_queues' => RedisQueuePluginBundle::class,
             'static_tokens' => StaticTokensPluginBundle::class,
             'rabbitmq' => RabbitMQPluginBundle::class,
         ];

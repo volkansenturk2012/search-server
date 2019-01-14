@@ -3,21 +3,26 @@ services:
     #
     # Consumer workers
     #
-    apisearch_server.commands_consumer:
-        class: Apisearch\Plugin\RabbitMQ\Console\RabbitMQCommandsConsumer
+    apisearch_plugin.rabbitmq.consumer:
+        class: Apisearch\Plugin\RabbitMQ\Console\RabbitMQConsumer
+        abstract: true
         arguments:
             - "@apiserach_plugin.rabbitmq.channel"
+            - "@apisearch_server.consumer_manager"
+            - "%apisearch_plugin.rabbitmq.seconds_to_wait_on_busy%"
+
+    apisearch_server.commands_consumer:
+        class: Apisearch\Plugin\RabbitMQ\Console\RabbitMQCommandsConsumer
+        parent: apisearch_plugin.rabbitmq.consumer
+        arguments:
             - "@apisearch_server.command_consumer"
-            - "%apisearch_plugin.rabbitmq.commands_queue_name%"
-            - "%apisearch_plugin.rabbitmq.busy_queue_name%"
         tags:
-            -  { name: console.command, command: apisearch-worker:commands-consumer }
+            -  { name: console.command, command: apisearch-consumer:commands }
 
     apisearch_server.domain_events_consumer:
         class: Apisearch\Plugin\RabbitMQ\Console\RabbitMQDomainEventsConsumer
+        parent: apisearch_plugin.rabbitmq.consumer
         arguments:
-            - "@apiserach_plugin.rabbitmq.channel"
             - "@apisearch_server.event_consumer"
-            - "%apisearch_plugin.rabbitmq.events_queue_name%"
         tags:
-            -  { name: console.command, command: apisearch-worker:domain-events-consumer }
+            -  { name: console.command, command: apisearch-consumer:domain-events }

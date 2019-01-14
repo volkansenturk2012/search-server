@@ -40,7 +40,9 @@ use Apisearch\Server\Domain\Command\DeleteItems;
 use Apisearch\Server\Domain\Command\DeleteToken;
 use Apisearch\Server\Domain\Command\DeleteTokens;
 use Apisearch\Server\Domain\Command\IndexItems;
+use Apisearch\Server\Domain\Command\PauseConsumers;
 use Apisearch\Server\Domain\Command\ResetIndex;
+use Apisearch\Server\Domain\Command\ResumeConsumers;
 use Apisearch\Server\Domain\Command\UpdateItems;
 use Apisearch\Server\Domain\Query\CheckHealth;
 use Apisearch\Server\Domain\Query\CheckIndex;
@@ -601,5 +603,25 @@ abstract class ServiceFunctionalTest extends ApisearchServerBundleFunctionalTest
         self::getStatic('apisearch_server.command_bus')->handle(new CleanEnvironment());
 
         static::waitAfterWriteCommand();
+    }
+
+    /**
+     * Pause consumers.
+     *
+     * @param string[] $types
+     */
+    public function pauseConsumers(array $types)
+    {
+        self::get('apisearch_server.command_bus')->handle(new PauseConsumers($types));
+    }
+
+    /**
+     * Resume consumers.
+     *
+     * @param string[] $types
+     */
+    public function resumeConsumers(array $types)
+    {
+        self::get('apisearch_server.command_bus')->handle(new ResumeConsumers($types));
     }
 }

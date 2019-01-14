@@ -722,6 +722,20 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
     abstract public static function cleanEnvironment();
 
     /**
+     * Pause consumers.
+     *
+     * @param string[] $types
+     */
+    abstract public function pauseConsumers(array $types);
+
+    /**
+     * Resume consumers.
+     *
+     * @param string[] $types
+     */
+    abstract public function resumeConsumers(array $types);
+
+    /**
      * Get token id.
      *
      * @param Token $token

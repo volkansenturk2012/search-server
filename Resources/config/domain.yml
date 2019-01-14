@@ -119,6 +119,20 @@ services:
         tags:
             - { name: tactician.handler, command: Apisearch\Server\Domain\Command\DeleteAllInteractions }
 
+    apisearch_server.comand_handler.pause_consumers:
+        class: Apisearch\Server\Domain\CommandHandler\PauseConsumersHandler
+        arguments:
+            - "@apisearch_server.consumer_manager"
+        tags:
+            - { name: tactician.handler, command: Apisearch\Server\Domain\Command\PauseConsumers }
+
+    apisearch_server.comand_handler.resume_consumers:
+        class: Apisearch\Server\Domain\CommandHandler\ResumeConsumersHandler
+        arguments:
+            - "@apisearch_server.consumer_manager"
+        tags:
+            - { name: tactician.handler, command: Apisearch\Server\Domain\Command\ResumeConsumers }
+
     #
     # Query handlers
     #
@@ -308,3 +322,6 @@ services:
         class: Apisearch\Server\Domain\EventConsumer\EventConsumer
         arguments:
             - "@apisearch_server.event_publisher"
+
+    apisearch_server.consumer_manager:
+        class: Apisearch\Server\Domain\Consumer\ConsumerManager

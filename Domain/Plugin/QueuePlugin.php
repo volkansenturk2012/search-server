@@ -35,12 +35,12 @@ namespace Apisearch\Server\Domain\Plugin;
  *
  *  -
  *      type: Command
- *      command name: apisearch-worker:domain-events-consumer
+ *      command name: apisearch-consumer:domain-events
  *      description: Consumer for domain events
  *
  *  -
  *      type: Command
- *      command name: apisearch-worker:commands-consumer
+ *      command name: apisearch-consumer:commands
  *      description: Consumer for commands
  */
 interface QueuePlugin

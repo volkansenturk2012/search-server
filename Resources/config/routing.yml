@@ -108,3 +108,18 @@ search_server_api_ping:
     methods: ["HEAD"]
     defaults:
         _controller: apisearch_server.ping_controller
+
+#
+# Consumers management
+#
+search_server_pause_consumers:
+    path: /consumers/pause
+    methods: ["POST"]
+    defaults:
+        _controller: apisearch_server.pause_consumers_controller
+
+search_server_resume_consumers:
+    path: /consumers/resume
+    methods: ["POST"]
+    defaults:
+        _controller: apisearch_server.resume_consumers_controller
