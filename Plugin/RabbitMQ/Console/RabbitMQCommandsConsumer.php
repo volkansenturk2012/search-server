@@ -16,138 +16,90 @@ declare(strict_types=1);
 namespace Apisearch\Plugin\RabbitMQ\Console;
 
 use Apisearch\Server\Domain\CommandConsumer\CommandConsumer;
+use Apisearch\Server\Domain\Consumer\ConsumerManager;
 use Apisearch\Server\Domain\ExclusiveCommand;
-use LogicException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use ReflectionClass;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class RabbitMQCommandsConsumer.
  */
-class RabbitMQCommandsConsumer extends Command
+class RabbitMQCommandsConsumer extends RabbitMQConsumer
 {
-    /**
-     * @var AMQPChannel
-     *
-     * Channel
-     */
-    private $channel;
-
     /**
      * @var CommandConsumer
      *
      * Command consumer
      */
-    private $commandConsumer;
-
-    /**
-     * @var string
-     *
-     * Command queue name
-     */
-    private $commandQueueName;
-
-    /**
-     * @var string
-     *
-     * Busy queue name
-     */
-    private $busyQueueName;
-
-    /**
-     * @var bool
-     *
-     * Busy
-     */
-    private $busy = false;
+    protected $commandConsumer;
 
     /**
      * ConsumerCommand constructor.
      *
      * @param AMQPChannel     $channel
+     * @param ConsumerManager $consumerManager
+     * @param int             $secondsToWaitOnBusy
      * @param CommandConsumer $commandConsumer
-     * @param string          $commandQueueName
-     * @param string          $busyQueueName
      */
     public function __construct(
         AMQPChannel        $channel,
-        CommandConsumer $commandConsumer,
-        string $commandQueueName,
-        string $busyQueueName
+        ConsumerManager $consumerManager,
+        int $secondsToWaitOnBusy,
+        CommandConsumer $commandConsumer
     ) {
-        parent::__construct();
+        parent::__construct(
+            $channel,
+            $consumerManager,
+            $secondsToWaitOnBusy
+        );
 
-        $this->channel = $channel;
         $this->commandConsumer = $commandConsumer;
-        $this->commandQueueName = $commandQueueName;
-        $this->busyQueueName = $busyQueueName;
     }
 
     /**
-     * Executes the current command.
+     * Get queue type.
      *
-     * This method is not abstract because you can use this class
-     * as a concrete class. In this case, instead of defining the
-     * execute() method, you set the code to execute by passing
-     * a Closure to the setCode() method.
-     *
-     * @return int|null null or 0 if everything went fine, or an error code
-     *
-     * @throws LogicException When this abstract method is not implemented
-     *
-     * @see setCode()
+     * @return string
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getQueueType(): string
     {
+        return ConsumerManager::COMMAND_CONSUMER_TYPE;
+    }
+
+    /**
+     * Consume message.
+     *
+     * @param AMQPMessage     $message
+     * @param OutputInterface $output
+     */
+    protected function consumeMessage(
+        AMQPMessage $message,
+        OutputInterface $output
+    ) {
+        $consumerManager = $this->consumerManager;
+        $command = json_decode($message->body, true);
         $channel = $this->channel;
-        $channel->queue_declare($this->commandQueueName, false, false, false, false);
-        $channel->exchange_declare($this->busyQueueName, 'fanout', false, false, false);
-        $channel->basic_qos(null, 1, null);
-        list($busy_queue_name) = $channel->queue_declare('', false, false, true, false);
-        $channel->queue_bind($busy_queue_name, $this->busyQueueName);
+        $commandNamespace = 'Apisearch\Server\Domain\Command\\'.$command['class'];
+        $reflectionCommand = new ReflectionClass($commandNamespace);
+        $isExclusiveCommand = $reflectionCommand->implementsInterface(ExclusiveCommand::class);
 
-        $channel->basic_consume($this->commandQueueName, '', false, false, false, false, function ($msg) use ($channel, $output) {
-            $command = json_decode($msg->body, true);
-            $commandNamespace = 'Apisearch\Server\Domain\Command\\'.$command['class'];
-            $reflectionCommand = new ReflectionClass($commandNamespace);
-            $isExclusiveCommand = $reflectionCommand->implementsInterface(ExclusiveCommand::class);
+        if ($isExclusiveCommand) {
+            $consumerManager->pauseConsumers([ConsumerManager::COMMAND_CONSUMER_TYPE]);
+        }
 
-            while ($this->busy) {
-                echo 'Busy... waiting 10 second...'.PHP_EOL;
-                sleep(10);
-                $channel->basic_reject($msg->delivery_info['delivery_tag'], true);
+        $this
+            ->commandConsumer
+            ->consumeCommand(
+                $output,
+                $command
+            );
 
-                return;
-            }
+        $channel->basic_ack($message->delivery_info['delivery_tag']);
 
-            if ($isExclusiveCommand) {
-                $channel->basic_publish(new AMQPMessage(true), $this->busyQueueName);
-            }
-
-            $this
-                ->commandConsumer
-                ->consumeCommand(
-                    $output,
-                    $command
-                );
-
-            $channel->basic_ack($msg->delivery_info['delivery_tag']);
-
-            if ($isExclusiveCommand) {
-                $channel->basic_publish(new AMQPMessage(false), $this->busyQueueName);
-            }
-        });
-
-        $channel->basic_consume($busy_queue_name, '', false, true, false, false, function ($msg) use ($channel) {
-            $this->busy = boolval($msg->body);
-        });
-
-        while (count($channel->callbacks)) {
-            $channel->wait();
+        if ($isExclusiveCommand) {
+            $consumerManager->resumeConsumers([ConsumerManager::COMMAND_CONSUMER_TYPE]);
         }
     }
 }

@@ -48,20 +48,13 @@ class HealthTest extends HttpFunctionalTest
     }
 
     /**
-     * Test check health with different tokens.
-     *
-     * @param string $token
-     * @param int    $responseCode
-     *
-     * @dataProvider dataCheckHealth
+     * Test if health check has redis.
      */
-    public function testCheckHealth(
-        string $token,
-        int $responseCode
-    ) {
+    public function testCheckHealth()
+    {
         $client = $this->createClient();
         $testRoute = static::get('router')->generate('search_server_api_check_health', [
-            'token' => $token,
+            'token' => static::$godToken,
         ]);
 
         $client->request(
@@ -70,14 +63,7 @@ class HealthTest extends HttpFunctionalTest
         );
 
         $response = $client->getResponse();
-        $this->assertEquals(
-            $responseCode,
-            $response->getStatusCode()
-        );
-
-        if (200 === $responseCode) {
-            $content = json_decode($response->getContent(), true);
-            $this->assertTrue($content['status']['redis']);
-        }
+        $content = json_decode($response->getContent(), true);
+        $this->assertTrue($content['status']['redis']);
     }
 }

@@ -15,25 +15,17 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\RabbitMQ\Console;
 
+use Apisearch\Server\Domain\Consumer\ConsumerManager;
 use Apisearch\Server\Domain\EventConsumer\EventConsumer;
-use LogicException;
 use PhpAmqpLib\Channel\AMQPChannel;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
+use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class RabbitMQDomainEventsConsumer.
  */
-class RabbitMQDomainEventsConsumer extends Command
+class RabbitMQDomainEventsConsumer extends RabbitMQConsumer
 {
-    /**
-     * @var AMQPChannel
-     *
-     * Channel
-     */
-    private $channel;
-
     /**
      * @var EventConsumer
      *
@@ -42,63 +34,57 @@ class RabbitMQDomainEventsConsumer extends Command
     private $eventConsumer;
 
     /**
-     * @var string
-     *
-     * Event queue name
-     */
-    private $eventQueueName;
-
-    /**
      * ConsumerCommand constructor.
      *
-     * @param AMQPChannel   $channel
-     * @param EventConsumer $eventConsumer
-     * @param string        $eventQueueName
+     * @param AMQPChannel     $channel
+     * @param ConsumerManager $consumerManager
+     * @param int             $secondsToWaitOnBusy
+     * @param EventConsumer   $eventConsumer
      */
     public function __construct(
         AMQPChannel        $channel,
-        EventConsumer $eventConsumer,
-        string $eventQueueName
+        ConsumerManager $consumerManager,
+        int $secondsToWaitOnBusy,
+        EventConsumer $eventConsumer
     ) {
-        parent::__construct();
+        parent::__construct(
+            $channel,
+            $consumerManager,
+            $secondsToWaitOnBusy
+        );
 
-        $this->channel = $channel;
         $this->eventConsumer = $eventConsumer;
-        $this->eventQueueName = $eventQueueName;
     }
 
     /**
-     * Executes the current command.
+     * Get queue type.
      *
-     * This method is not abstract because you can use this class
-     * as a concrete class. In this case, instead of defining the
-     * execute() method, you set the code to execute by passing
-     * a Closure to the setCode() method.
-     *
-     * @return int|null null or 0 if everything went fine, or an error code
-     *
-     * @throws LogicException When this abstract method is not implemented
-     *
-     * @see setCode()
+     * @return string
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getQueueType(): string
     {
-        $channel = $this->channel;
-        $channel->queue_declare($this->eventQueueName, false, false, false, false);
+        return ConsumerManager::DOMAIN_EVENT_CONSUMER_TYPE;
+    }
 
-        $channel->basic_consume($this->eventQueueName, '', false, false, false, false, function ($msg) use ($channel, $output) {
-            $this
-                ->eventConsumer
-                ->consumeDomainEvent(
-                    $output,
-                    json_decode($msg->body, true)
-                );
+    /**
+     * Consume message.
+     *
+     * @param AMQPMessage     $message
+     * @param OutputInterface $output
+     */
+    protected function consumeMessage(
+        AMQPMessage $message,
+        OutputInterface $output
+    ) {
+        $this
+            ->eventConsumer
+            ->consumeDomainEvent(
+                $output,
+                json_decode($message->body, true)
+            );
 
-            $channel->basic_ack($msg->delivery_info['delivery_tag']);
-        });
-
-        while (count($channel->callbacks)) {
-            $channel->wait();
-        }
+        $this
+            ->channel
+            ->basic_ack($message->delivery_info['delivery_tag']);
     }
 }

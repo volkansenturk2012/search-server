@@ -15,11 +15,15 @@ services:
     apisearch_server.command_enqueuer:
         class: Apisearch\Plugin\RabbitMQ\Domain\RabbitMQCommandEnqueuer
         arguments:
-            - "@apiserach_plugin.rabbitmq.channel"
-            - "%apisearch_plugin.rabbitmq.commands_queue_name%"
+            - "@apisearch_server.consumer_manager"
 
     apisearch_server.event_enqueuer:
         class: Apisearch\Plugin\RabbitMQ\Domain\RabbitMQEventEnqueuer
         arguments:
+            - "@apisearch_server.consumer_manager"
+
+    apisearch_server.consumer_manager:
+        class: Apisearch\Plugin\RabbitMQ\Domain\RabbitMQConsumerManager
+        arguments:
+            - "%apisearch_plugin.rabbitmq.queues%"
             - "@apiserach_plugin.rabbitmq.channel"
-            - "%apisearch_plugin.rabbitmq.events_queue_name%"

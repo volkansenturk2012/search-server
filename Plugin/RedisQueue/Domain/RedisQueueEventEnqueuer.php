@@ -13,31 +13,31 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\RSQueue\Domain;
+namespace Apisearch\Plugin\RedisQueue\Domain;
 
+use Apisearch\Server\Domain\Consumer\ConsumerManager;
 use Apisearch\Server\Domain\EventEnqueuer\EventEnqueuer;
-use RSQueue\Services\Producer;
 
 /**
- * Class RSQueueEventEnqueuer.
+ * Class RedisQueueEventEnqueuer.
  */
-class RSQueueEventEnqueuer implements EventEnqueuer
+class RedisQueueEventEnqueuer implements EventEnqueuer
 {
     /**
-     * @var Producer
+     * @var RedisQueueConsumerManager
      *
-     * Producer
+     * Consumer Manager
      */
-    private $producer;
+    protected $consumerManager;
 
     /**
-     * AsynchronousCommandIngestor constructor.
+     * RSQueueEventEnqueuer constructor.
      *
-     * @param Producer $producer
+     * @param RedisQueueConsumerManager $consumerManager
      */
-    public function __construct(Producer $producer)
+    public function __construct(RedisQueueConsumerManager $consumerManager)
     {
-        $this->producer = $producer;
+        $this->consumerManager = $consumerManager;
     }
 
     /**
@@ -48,9 +48,9 @@ class RSQueueEventEnqueuer implements EventEnqueuer
     public function enqueueEvent(array $event)
     {
         $this
-            ->producer
-            ->produce(
-                'events_queue',
+            ->consumerManager
+            ->enqueue(
+                ConsumerManager::DOMAIN_EVENT_CONSUMER_TYPE,
                 $event
             );
     }

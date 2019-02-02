@@ -124,12 +124,15 @@ services:
         tags:
             -  { name: console.command, command: apisearch-server:server-configuration }
 
-    #
-    # Queues
-    #
-    apisearch_server.commands_consumer:
-        class: Symfony\Component\Console\Command\Command
+    apisearch_server.pause_consumers:
+        class: Apisearch\Server\Console\PauseConsumersCommand
+        parent: apisearch_server.command_with_command_bus_and_god_token
+        tags:
+            -  { name: console.command, command: apisearch-server:pause-consumers }
 
-    apisearch_server.domain_events_consumer:
-        class: Symfony\Component\Console\Command\Command
+    apisearch_server.resume_consumers:
+        class: Apisearch\Server\Console\ResumeConsumersCommand
+        parent: apisearch_server.command_with_command_bus_and_god_token
+        tags:
+            -  { name: console.command, command: apisearch-server:resume-consumers }
 

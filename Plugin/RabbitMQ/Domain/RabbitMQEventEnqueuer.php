@@ -15,9 +15,8 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\RabbitMQ\Domain;
 
+use Apisearch\Server\Domain\Consumer\ConsumerManager;
 use Apisearch\Server\Domain\EventEnqueuer\EventEnqueuer;
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Class RabbitMQEventEnqueuer.
@@ -25,31 +24,20 @@ use PhpAmqpLib\Message\AMQPMessage;
 class RabbitMQEventEnqueuer implements EventEnqueuer
 {
     /**
-     * @var AMQPChannel
+     * @var ConsumerManager
      *
-     * Channel
+     * Consumer manager
      */
-    private $channel;
+    private $consumerManager;
 
     /**
-     * @var string
+     * RabbitMQEventEnqueuer constructor.
      *
-     * Command queue name
+     * @param ConsumerManager $consumerManager
      */
-    private $domainEventQueueName;
-
-    /**
-     * RSQueueCommandEnqueuer constructor.
-     *
-     * @param AMQPChannel $channel
-     * @param string      $domainEventQueueName
-     */
-    public function __construct(
-        AMQPChannel $channel,
-        string $domainEventQueueName
-    ) {
-        $this->channel = $channel;
-        $this->domainEventQueueName = $domainEventQueueName;
+    public function __construct(ConsumerManager $consumerManager)
+    {
+        $this->consumerManager = $consumerManager;
     }
 
     /**
@@ -59,8 +47,8 @@ class RabbitMQEventEnqueuer implements EventEnqueuer
      */
     public function enqueueEvent(array $event)
     {
-        $channel = $this->channel;
-        $channel->queue_declare($this->domainEventQueueName, false, false, false, false);
-        $channel->basic_publish(new AMQPMessage(json_encode($event)), '', $this->domainEventQueueName);
+        $this
+            ->consumerManager
+            ->enqueue(ConsumerManager::DOMAIN_EVENT_CONSUMER_TYPE, $event);
     }
 }

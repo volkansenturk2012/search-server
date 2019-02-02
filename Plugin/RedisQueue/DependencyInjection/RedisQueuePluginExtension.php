@@ -13,18 +13,18 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\RSQueue\DependencyInjection;
+namespace Apisearch\Plugin\RedisQueue\DependencyInjection;
 
 use Apisearch\Server\DependencyInjection\Env;
+use Apisearch\Server\Domain\Consumer\ConsumerManager;
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
- * Class RSQueuePluginExtension.
+ * Class RedisQueuePluginExtension.
  */
-class RSQueuePluginExtension extends BaseExtension
+class RedisQueuePluginExtension extends BaseExtension
 {
     /**
      * Returns the recommended alias to use in XML.
@@ -52,7 +52,7 @@ class RSQueuePluginExtension extends BaseExtension
      */
     protected function getConfigurationInstance(): ? ConfigurationInterface
     {
-        return new RSQueuePluginConfiguration($this->getAlias());
+        return new RedisQueuePluginConfiguration($this->getAlias());
     }
 
     /**
@@ -126,40 +126,21 @@ class RSQueuePluginExtension extends BaseExtension
         }
 
         return [
-            'apisearch_plugin.rsqueue.host' => (string) $redisHost,
-            'apisearch_plugin.rsqueue.port' => (int) $redisPort,
-            'apisearch_plugin.rsqueue.is_cluster' => (bool) Env::get('REDIS_QUEUE_IS_CLUSTER', $config['is_cluster']),
-            'apisearch_plugin.rsqueue.database' => (string) Env::get('REDIS_QUEUE_DATABASE', $config['database']),
-            'apisearch_plugin.rsqueue.commands_queue_name' => Env::get('COMMANDS_QUEUE_NAME', $config['commands_queue_name']),
-            'apisearch_plugin.rsqueue.events_queue_name' => Env::get('EVENTS_QUEUE_NAME', $config['events_queue_name']),
-        ];
-    }
-
-    /**
-     * Allow an extension to prepend the extension configurations.
-     *
-     * @param ContainerBuilder $container
-     */
-    public function prepend(ContainerBuilder $container)
-    {
-        parent::prepend($container);
-
-        $container->prependExtensionConfig('rs_queue', [
-            'queues' => [
-                'commands_queue' => $container->getParameter('apisearch_plugin.rsqueue.commands_queue_name'),
-                'events_queue' => $container->getParameter('apisearch_plugin.rsqueue.events_queue_name'),
-            ],
-            'collector' => [
-                'enable' => false,
-            ],
-            'server' => [
-                'redis' => [
-                    'host' => $container->getParameter('apisearch_plugin.rsqueue.host'),
-                    'port' => $container->getParameter('apisearch_plugin.rsqueue.port'),
-                    'cluster' => $container->getParameter('apisearch_plugin.rsqueue.is_cluster'),
-                    'database' => $container->getParameter('apisearch_plugin.rsqueue.database'),
+            'apisearch_plugin.redis_queue.host' => (string) $redisHost,
+            'apisearch_plugin.redis_queue.port' => (int) $redisPort,
+            'apisearch_plugin.redis_queue.is_cluster' => (bool) Env::get('REDIS_QUEUE_IS_CLUSTER', $config['is_cluster']),
+            'apisearch_plugin.redis_queue.database' => (string) Env::get('REDIS_QUEUE_DATABASE', $config['database']),
+            'apisearch_plugin.redis_queue.seconds_to_wait_on_busy' => (int) Env::get('REDIS_QUEUE_SECONDS_TO_WAIT_ON_BUSY', $config['seconds_to_wait_on_busy']),
+            'apisearch_plugin.redis_queue.queues' => [
+                'queues' => [
+                    ConsumerManager::COMMAND_CONSUMER_TYPE => Env::get('COMMANDS_QUEUE_NAME', $config['commands_queue_name']),
+                    ConsumerManager::DOMAIN_EVENT_CONSUMER_TYPE => Env::get('DOMAIN_EVENTS_QUEUE_NAME', $config['events_queue_name']),
+                ],
+                'busy_queues' => [
+                    ConsumerManager::COMMAND_CONSUMER_TYPE => Env::get('COMMANDS_BUSY_QUEUE_NAME', $config['commands_busy_queue_name']),
+                    ConsumerManager::DOMAIN_EVENT_CONSUMER_TYPE => Env::get('DOMAIN_EVENTS_BUSY_QUEUE_NAME', $config['events_busy_queue_name']),
                 ],
             ],
-        ]);
+        ];
     }
 }

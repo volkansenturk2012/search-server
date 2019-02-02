@@ -17,8 +17,6 @@ namespace Apisearch\Server\Tests\Functional;
 
 use Apisearch\App\AppRepository;
 use Apisearch\Config\Config;
-use Apisearch\Event\EventRepository;
-use Apisearch\Log\LogRepository;
 use Apisearch\Model\AppUUID;
 use Apisearch\Model\Changes;
 use Apisearch\Model\Index;
@@ -31,8 +29,6 @@ use Apisearch\Model\User;
 use Apisearch\Query\Query as QueryModel;
 use Apisearch\Repository\Repository;
 use Apisearch\Repository\RepositoryReference;
-use Apisearch\Result\Events;
-use Apisearch\Result\Logs;
 use Apisearch\Result\Result;
 use Apisearch\User\Interaction;
 use Apisearch\User\UserRepository;
@@ -367,18 +363,46 @@ abstract class HttpFunctionalTest extends ApisearchServerBundleFunctionalTest
 
     /**
      * Configure environment.
+     *
+     * @throws Exception
      */
     public static function configureEnvironment()
     {
-        // Pass
+        // Nothing to do here
     }
 
     /**
      * Clean environment.
+     *
+     * @throws Exception
      */
     public static function cleanEnvironment()
     {
-        // Pass
+        // Nothing to do here
+    }
+
+    /**
+     * Pause consumers.
+     *
+     * @param string[] $types
+     *
+     * @throws Exception
+     */
+    public function pauseConsumers(array $types)
+    {
+        throw new Exception('Cannot test ping with this endpoint');
+    }
+
+    /**
+     * Resume consumers.
+     *
+     * @param string[] $types
+     *
+     * @throws Exception
+     */
+    public function resumeConsumers(array $types)
+    {
+        throw new Exception('Cannot test ping with this endpoint');
     }
 
     /**
@@ -422,56 +446,6 @@ abstract class HttpFunctionalTest extends ApisearchServerBundleFunctionalTest
             'apisearch.app_repository_'.static::getRepositoryName(),
             $appId,
             '*',
-            $token
-        );
-    }
-
-    /**
-     * Configure events repository.
-     *
-     * @param string $appId
-     * @param string $index
-     * @param Token  $token
-     *
-     * @return EventRepository
-     */
-    private static function configureEventsRepository(
-        string $appId = null,
-        string $index = null,
-        Token $token = null
-    ): EventRepository {
-        $index = $index ?? self::$index;
-        $realIndex = empty($index) ? self::$index : $index;
-
-        return self::configureAbstractRepository(
-            rtrim('apisearch.event_repository_'.static::getRepositoryName().'.'.$realIndex, '.'),
-            $appId,
-            $index,
-            $token
-        );
-    }
-
-    /**
-     * Configure logs repository.
-     *
-     * @param string $appId
-     * @param string $index
-     * @param Token  $token
-     *
-     * @return LogRepository
-     */
-    private static function configureLogsRepository(
-        string $appId = null,
-        string $index = null,
-        Token $token = null
-    ): LogRepository {
-        $index = $index ?? self::$index;
-        $realIndex = empty($index) ? self::$index : $index;
-
-        return self::configureAbstractRepository(
-            rtrim('apisearch.log_repository_'.static::getRepositoryName().'.'.$realIndex, '.'),
-            $appId,
-            $index,
             $token
         );
     }

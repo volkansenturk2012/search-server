@@ -13,22 +13,21 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\RSQueue;
+namespace Apisearch\Plugin\RedisQueue;
 
 use Apisearch\Plugin\Redis\RedisBundle;
-use Apisearch\Plugin\RSQueue\DependencyInjection\RSQueuePluginExtension;
+use Apisearch\Plugin\RedisQueue\DependencyInjection\RedisQueuePluginExtension;
 use Apisearch\Server\ApisearchServerBundle;
 use Apisearch\Server\Domain\Plugin\Plugin;
 use Apisearch\Server\Domain\Plugin\QueuePlugin;
 use Mmoreram\BaseBundle\BaseBundle;
-use RSQueueBundle\RSQueueBundle;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
- * Class RSQueuePluginBundle.
+ * Class RedisQueuePluginBundle.
  */
-class RSQueuePluginBundle extends BaseBundle implements Plugin, QueuePlugin
+class RedisQueuePluginBundle extends BaseBundle implements Plugin, QueuePlugin
 {
     /**
      * Return all bundle dependencies.
@@ -44,7 +43,6 @@ class RSQueuePluginBundle extends BaseBundle implements Plugin, QueuePlugin
         return [
             ApisearchServerBundle::class,
             RedisBundle::class,
-            RSQueueBundle::class,
         ];
     }
 
@@ -57,7 +55,7 @@ class RSQueuePluginBundle extends BaseBundle implements Plugin, QueuePlugin
      */
     public function getContainerExtension()
     {
-        return new RSQueuePluginExtension();
+        return new RedisQueuePluginExtension();
     }
 
     /**
@@ -67,6 +65,6 @@ class RSQueuePluginBundle extends BaseBundle implements Plugin, QueuePlugin
      */
     public function getPluginName(): string
     {
-        return 'rsqueue';
+        return 'redis_queues';
     }
 }

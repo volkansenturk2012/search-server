@@ -74,6 +74,18 @@ services:
         tags:
             - 'controller.service_arguments'
 
+    apisearch_server.pause_consumers_controller:
+        class: Apisearch\Server\Controller\PauseConsumersController
+        parent: apisearch_server.controller_with_command_bus
+        tags:
+            - 'controller.service_arguments'
+
+    apisearch_server.resume_consumers_controller:
+        class: Apisearch\Server\Controller\ResumeConsumersController
+        parent: apisearch_server.controller_with_command_bus
+        tags:
+            - 'controller.service_arguments'
+
     #
     # Controllers with query bus
     #

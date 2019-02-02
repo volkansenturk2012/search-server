@@ -32,6 +32,7 @@ class AsynchronousCommandsTest extends BaseAsynchronousCommandsTest
      */
     protected static function decorateBundles(array $bundles): array
     {
+        $bundles = parent::decorateBundles($bundles);
         $bundles[] = RabbitMQPluginBundle::class;
 
         return $bundles;

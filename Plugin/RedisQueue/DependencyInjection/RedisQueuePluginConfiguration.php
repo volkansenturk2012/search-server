@@ -13,15 +13,15 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\RSQueue\DependencyInjection;
+namespace Apisearch\Plugin\RedisQueue\DependencyInjection;
 
 use Mmoreram\BaseBundle\DependencyInjection\BaseConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 /**
- * Class RSQueuePluginConfiguration.
+ * Class RedisQueuePluginConfiguration.
  */
-class RSQueuePluginConfiguration extends BaseConfiguration
+class RedisQueuePluginConfiguration extends BaseConfiguration
 {
     /**
      * Configure the root node.
@@ -32,11 +32,17 @@ class RSQueuePluginConfiguration extends BaseConfiguration
     {
         $rootNode
             ->children()
-                ->booleanNode('commands_queue_name')
-                    ->defaultValue('apisearch:server:commands')
+                ->scalarNode('commands_queue_name')
+                    ->defaultValue('apisearch_commands')
                 ->end()
-                ->booleanNode('events_queue_name')
-                    ->defaultValue('apisearch:server:domain-events')
+                ->scalarNode('commands_busy_queue_name')
+                    ->defaultValue('apisearch_commands_busy')
+                ->end()
+                ->scalarNode('events_queue_name')
+                    ->defaultValue('apisearch_domain_events')
+                ->end()
+                ->scalarNode('events_busy_queue_name')
+                    ->defaultValue('apisearch_domain_events_busy')
                 ->end()
                 ->scalarNode('host')
                     ->defaultNull()
@@ -49,6 +55,9 @@ class RSQueuePluginConfiguration extends BaseConfiguration
                 ->end()
                 ->scalarNode('database')
                     ->defaultNull()
+                ->end()
+                ->integerNode('seconds_to_wait_on_busy')
+                    ->defaultValue(10)
                 ->end();
     }
 }

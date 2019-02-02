@@ -34,6 +34,7 @@
         <env name="RABBITMQ_QUEUE_PORT" value="5672" force="true" />
         <env name="RABBITMQ_QUEUE_USER" value="guest" force="true" />
         <env name="RABBITMQ_QUEUE_PASSWORD" value="guest" force="true" />
+        <env name="RABBITMQ_QUEUE_SECONDS_TO_WAIT_ON_BUSY" value="1" force="true" />
 
 
         <env name="REDIS_STORAGE_HOST" value="apisearch.redis" force="true" />

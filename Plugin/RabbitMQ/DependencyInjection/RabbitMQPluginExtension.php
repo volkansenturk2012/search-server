@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Apisearch\Plugin\RabbitMQ\DependencyInjection;
 
 use Apisearch\Server\DependencyInjection\Env;
+use Apisearch\Server\Domain\Consumer\ConsumerManager;
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -130,9 +131,17 @@ class RabbitMQPluginExtension extends BaseExtension
             'apisearch_plugin.rabbitmq.user' => (string) Env::get('RABBITMQ_QUEUE_USER', $config['user']),
             'apisearch_plugin.rabbitmq.password' => (string) Env::get('RABBITMQ_QUEUE_PASSWORD', $config['password']),
             'apisearch_plugin.rabbitmq.vhost' => (string) Env::get('RABBITMQ_QUEUE_VHOST', $config['vhost']),
-            'apisearch_plugin.rabbitmq.commands_queue_name' => Env::get('COMMANDS_QUEUE_NAME', $config['commands_queue_name']),
-            'apisearch_plugin.rabbitmq.events_queue_name' => Env::get('EVENTS_QUEUE_NAME', $config['events_queue_name']),
-            'apisearch_plugin.rabbitmq.busy_queue_name' => Env::get('BUSY_QUEUE_NAME', $config['busy_queue_name']),
+            'apisearch_plugin.rabbitmq.seconds_to_wait_on_busy' => (int) Env::get('RABBITMQ_QUEUE_SECONDS_TO_WAIT_ON_BUSY', $config['seconds_to_wait_on_busy']),
+            'apisearch_plugin.rabbitmq.queues' => [
+                'queues' => [
+                    ConsumerManager::COMMAND_CONSUMER_TYPE => Env::get('COMMANDS_QUEUE_NAME', $config['commands_queue_name']),
+                    ConsumerManager::DOMAIN_EVENT_CONSUMER_TYPE => Env::get('DOMAIN_EVENTS_QUEUE_NAME', $config['events_queue_name']),
+                ],
+                'busy_queues' => [
+                    ConsumerManager::COMMAND_CONSUMER_TYPE => Env::get('COMMANDS_BUSY_QUEUE_NAME', $config['commands_busy_queue_name']),
+                    ConsumerManager::DOMAIN_EVENT_CONSUMER_TYPE => Env::get('DOMAIN_EVENTS_BUSY_QUEUE_NAME', $config['events_busy_queue_name']),
+                ],
+            ],
         ];
     }
 }
