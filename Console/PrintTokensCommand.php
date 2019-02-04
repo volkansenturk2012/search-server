@@ -15,11 +15,12 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
+use Apisearch\Command\PrintTokensCommand as BasePrintTokensCommand;
 use Apisearch\Server\Domain\Query\GetTokens;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Apisearch\Command\PrintTokensCommand as BasePrintTokensCommand;
 
 /**
  * Class PrintTokensCommand.
@@ -37,6 +38,12 @@ class PrintTokensCommand extends CommandWithBusAndGodToken
                 'app-id',
                 InputArgument::REQUIRED,
                 'App id'
+            )
+            ->addOption(
+                'with-metadata',
+                null,
+                InputOption::VALUE_NONE,
+                'Print metadata'
             );
     }
 

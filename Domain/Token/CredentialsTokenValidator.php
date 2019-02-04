@@ -20,9 +20,9 @@ use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
 
 /**
- * Interface TokenValidator.
+ * Class CredentialsTokenValidator.
  */
-interface TokenValidator
+class CredentialsTokenValidator implements TokenValidator
 {
     /**
      * Validate token given basic fields.
@@ -45,5 +45,25 @@ interface TokenValidator
         string $referrer,
         string $path,
         string $verb
-    ): bool;
+    ): bool {
+        $endpoint = strtolower($verb.'~~'.trim($path, '/'));
+
+        return
+            ($token instanceof Token) &&
+            (
+                $appUUID->composeUUID() === $token->getAppUUID()->composeUUID()
+            ) &&
+            (
+                empty($indexUUID->composeUUID()) ||
+                empty($token->getIndices()) ||
+                array_reduce($token->getIndices(), function (bool $carry, IndexUUID $iterationIndexUUID) use ($indexUUID) {
+                    return $carry && $iterationIndexUUID->composeUUID() === $indexUUID->composeUUID();
+                }, true)
+            ) &&
+            (
+                empty($token->getEndpoints()) ||
+                in_array($endpoint, $token->getEndpoints())
+            )
+        ;
+    }
 }

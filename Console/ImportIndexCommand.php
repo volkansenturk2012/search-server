@@ -15,11 +15,11 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
+use Apisearch\Command\ImportIndexCommand as BaseImportIndexCommand;
 use Apisearch\Server\Domain\Command\IndexItems;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Apisearch\Command\ImportIndexCommand as BaseImportIndexCommand;
 
 /**
  * ImportIndexCommand.

@@ -15,12 +15,12 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
+use Apisearch\Command\ExportIndexCommand as BaseExportIndexCommand;
 use Apisearch\Query\Query as QueryModel;
 use Apisearch\Server\Domain\Query\Query;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Apisearch\Command\ExportIndexCommand as BaseExportIndexCommand;
 
 /**
  * ExportIndexCommand.

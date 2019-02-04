@@ -13,34 +13,16 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\Multilanguage\Domain\Middleware;
+namespace Apisearch\Plugin\Security\Domain\Middleware;
 
-use Apisearch\Server\Domain\Command\CleanEnvironment;
 use Apisearch\Server\Domain\Plugin\PluginMiddleware;
-use Elastica\Client;
+use Apisearch\Server\Domain\Query\Query;
 
 /**
- * Class CleanEnvironmentMiddleware.
+ * Class RestrictedFieldsMiddleware.
  */
-class CleanEnvironmentMiddleware implements PluginMiddleware
+class RestrictedFieldsMiddleware implements PluginMiddleware
 {
-    /**
-     * @var Client
-     *
-     * Elastica client
-     */
-    private $client;
-
-    /**
-     * Construct.
-     *
-     * @param Client $client
-     */
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
-
     /**
      * Execute middleware.
      *
@@ -53,12 +35,26 @@ class CleanEnvironmentMiddleware implements PluginMiddleware
         $command,
         $next
     ) {
-        $this
-            ->client
-            ->request(
-                '_template/apisearch_template_plugin_language_*',
-                'DELETE'
-            );
+        /**
+         * @var Query
+         */
+        $token = $command->getToken();
+        $query = $command->getQuery();
+        $restrictedFields = $token->getMetadataValue('restricted_fields', []);
+        $allowedFields = $token->getMetadataValue('allowed_fields', []);
+        $fields = $query->getFields();
+
+        foreach ($restrictedFields as $restrictedField) {
+            $fields[] = '!'.$restrictedField;
+        }
+
+        foreach ($allowedFields as $allowedField) {
+            $fields[] = $allowedField;
+        }
+
+        $query->setFields($fields);
+
+        return $next($command);
     }
 
     /**
@@ -71,6 +67,6 @@ class CleanEnvironmentMiddleware implements PluginMiddleware
      */
     public function getSubscribedEvents(): array
     {
-        return [CleanEnvironment::class];
+        return [Query::class];
     }
 }

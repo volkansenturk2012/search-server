@@ -156,12 +156,12 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: validateContentTypeOnKernelRequest }
 
-    apisearch_server.token_validation_over_http:
-        class: Apisearch\Server\Controller\Listener\TokenValidationOverHTTP
+    apisearch_server.token_check_over_http:
+        class: Apisearch\Server\Controller\Listener\TokenCheckOverHTTP
         arguments:
-            - "@apisearch_server.token_validator"
+            - "@apisearch_server.token_manager"
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: validateTokenOnKernelRequest }
+            - { name: kernel.event_listener, event: kernel.request, method: checkTokenOnKernelRequest }
 
     apisearch_server.token_cache_over_http:
         class: Apisearch\Server\Controller\Listener\TokenCacheOverHTTP

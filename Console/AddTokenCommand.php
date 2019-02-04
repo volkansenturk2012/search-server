@@ -55,13 +55,6 @@ class AddTokenCommand extends CommandWithBusAndGodToken
                 []
             )
             ->addOption(
-                'http-referrer',
-                null,
-                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
-                'Http referrers',
-                []
-            )
-            ->addOption(
                 'endpoint',
                 null,
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
@@ -74,20 +67,6 @@ class AddTokenCommand extends CommandWithBusAndGodToken
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
                 'Plugins',
                 []
-            )
-            ->addOption(
-                'seconds-valid',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Seconds valid',
-                Token::INFINITE_DURATION
-            )
-            ->addOption(
-                'max-hits-per-query',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Maximum hits per query',
-                Token::INFINITE_HITS_PER_QUERY
             )
             ->addOption(
                 'ttl',
@@ -110,6 +89,7 @@ class AddTokenCommand extends CommandWithBusAndGodToken
     {
         $objects = $this->getAppTokenAndIndices($input, $output);
         $endpoints = $this->getEndpoints($input);
+
         $this
             ->commandBus
             ->handle(new AddToken(
@@ -119,11 +99,8 @@ class AddTokenCommand extends CommandWithBusAndGodToken
                     $objects['token_uuid'],
                     $objects['app_uuid'],
                     $objects['indices_uuid'],
-                    $input->getOption('http-referrer'),
                     $endpoints,
                     $input->getOption('plugin'),
-                    (int) $input->getOption('seconds-valid'),
-                    (int) $input->getOption('max-hits-per-query'),
                     (int) $input->getOption('ttl')
                 )
             ));

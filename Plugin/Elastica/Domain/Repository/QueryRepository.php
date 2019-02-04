@@ -15,8 +15,6 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\Elastica\Domain\Repository;
 
-use Apisearch\Config\Campaign;
-use Apisearch\Config\Campaigns;
 use Apisearch\Model\Item;
 use Apisearch\Model\ItemUUID;
 use Apisearch\Plugin\Elastica\Domain\Builder\QueryBuilder;
@@ -26,10 +24,8 @@ use Apisearch\Plugin\Elastica\Domain\ItemElasticaWrapper;
 use Apisearch\Query\Query;
 use Apisearch\Result\Result;
 use Apisearch\Server\Domain\Repository\Repository\QueryRepository as QueryRepositoryInterface;
-use Carbon\Carbon;
 use Elastica\Query as ElasticaQuery;
 use Elastica\Suggest;
-use Exception;
 
 /**
  * Class QueryRepository.
@@ -103,8 +99,6 @@ class QueryRepository extends ElasticaWrapperWithRepositoryReference implements 
         if ($query->areHighlightEnabled()) {
             $this->addHighlights($mainQuery);
         }
-
-        $this->addCampaigns($query, $boolQuery);
 
         $this->addSuggest(
             $mainQuery,
@@ -289,93 +283,5 @@ class QueryRepository extends ElasticaWrapperWithRepositoryReference implements 
                 ],
             ],
         ]);
-    }
-
-    /**
-     * Add campaigns.
-     *
-     * @param Query                   $query
-     * @param ElasticaQuery\BoolQuery $elasticaQuery
-     */
-    private function addCampaigns(
-        Query $query,
-        ElasticaQuery\BoolQuery $elasticaQuery
-    ) {
-        $file = $this->getConfigPath($this->getRepositoryReference()).'/campaigns.json';
-        if (!is_file($file)) {
-            return;
-        }
-
-        try {
-            $campaignsAsArray = json_decode(file_get_contents($file), true);
-        } catch (Exception $e) {
-            return;
-        }
-
-        $now = Carbon::now('UTC')->timestamp;
-        $enabledCampaigns = array_filter(
-            Campaigns::createFromArray($campaignsAsArray)->getCampaigns(),
-            function (Campaign $campaign) use ($query, $now) {
-                return
-                    $campaign->isEnabled() &&
-                    !empty($campaign->getBoostClauses()) &&
-                    (
-                        is_null($campaign->getFrom()) ||
-                        $campaign->getFrom()->getTimestamp() <= $now
-                    ) &&
-                    (
-                        is_null($campaign->getTo()) ||
-                        $campaign->getTo()->getTimestamp() > $now
-                    ) &&
-                    (
-                        empty($campaign->getQueryText()) ||
-                        (1 === preg_match('~^'.$campaign->getQueryText().'$~i', $query->getQueryText()))
-                    ) &&
-                    (
-                        empty($campaign->getAppliedFilters()) ||
-                        empty(array_filter(
-                            $campaign->getAppliedFilters(),
-                            function ($values, string $field) use ($query) {
-                                $values = is_array($values) ? $values : [$values];
-                                $filter = $query->getFilterByField($field);
-                                if (is_null($filter)) {
-                                    return true;
-                                }
-
-                                return !empty(array_intersect($values, $filter->getValues()));
-                            },
-                            ARRAY_FILTER_USE_BOTH
-                        ))
-                    )
-                ;
-            }
-        );
-
-        if (empty($enabledCampaigns)) {
-            return;
-        }
-
-        /**
-         * @var Campaign
-         */
-        $boolQuery = new ElasticaQuery\BoolQuery();
-        foreach ($enabledCampaigns as $enabledCampaign) {
-            foreach ($enabledCampaign->getBoostClauses() as $boostClause) {
-                $boosting = $boostClause->getBoost();
-                foreach ($boostClause->getValues() as $value) {
-                    $term = new ElasticaQuery\Term([
-                        Item::getPathByField($boostClause->getField()) => [
-                            'value' => $value,
-                            'boost' => $boosting,
-                        ],
-                    ]);
-                    $boolQuery->addShould($term);
-                }
-            }
-        }
-
-        Campaign::MODE_BOOST === $enabledCampaign->getMode()
-            ? $elasticaQuery->addShould($boolQuery)
-            : $elasticaQuery->addMust($boolQuery);
     }
 }

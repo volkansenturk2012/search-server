@@ -13,16 +13,17 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Server\Domain\Token;
+namespace Apisearch\Plugin\Security\Domain\Token;
 
 use Apisearch\Model\AppUUID;
 use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
+use Apisearch\Server\Domain\Token\TokenValidator;
 
 /**
- * Interface TokenValidator.
+ * Class HttpReferrersTokenValidator.
  */
-interface TokenValidator
+class HttpReferrersTokenValidator implements TokenValidator
 {
     /**
      * Validate token given basic fields.
@@ -45,5 +46,12 @@ interface TokenValidator
         string $referrer,
         string $path,
         string $verb
-    ): bool;
+    ): bool {
+        $httpReferrers = $token->getMetadataValue('http_referrers', []);
+
+        return
+            empty($httpReferrers) ||
+            in_array($referrer, $httpReferrers)
+        ;
+    }
 }

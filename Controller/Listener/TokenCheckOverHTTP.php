@@ -21,29 +21,29 @@ use Apisearch\Model\AppUUID;
 use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
 use Apisearch\Model\TokenUUID;
-use Apisearch\Server\Domain\Token\TokenValidator;
+use Apisearch\Server\Domain\Token\TokenManager;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 /**
- * Class TokenValidationOverHTTP.
+ * Class TokenCheckOverHTTP.
  */
-class TokenValidationOverHTTP
+class TokenCheckOverHTTP
 {
     /**
-     * @var TokenValidator
+     * @var TokenManager
      *
-     * Token validator
+     * Token manager
      */
-    private $tokenValidator;
+    private $tokenManager;
 
     /**
      * TokenValidationOverHTTP constructor.
      *
-     * @param TokenValidator $tokenValidator
+     * @param TokenManager $tokenManager
      */
-    public function __construct(TokenValidator $tokenValidator)
+    public function __construct(TokenManager $tokenManager)
     {
-        $this->tokenValidator = $tokenValidator;
+        $this->tokenManager = $tokenManager;
     }
 
     /**
@@ -51,7 +51,7 @@ class TokenValidationOverHTTP
      *
      * @param GetResponseEvent $event
      */
-    public function validateTokenOnKernelRequest(GetResponseEvent $event)
+    public function checkTokenOnKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
         $query = $request->query;
@@ -64,12 +64,13 @@ class TokenValidationOverHTTP
             ? $token->getTokenUUID()->composeUUID()
             : $token;
 
-        $origin = $request->headers->get('Origin', '');
-        $origin = str_replace(['http://', 'https://'], ['', ''], $origin);
+        $origin = $request->headers->get('Referer', '');
+        $urlParts = parse_url($origin);
+        $origin = $urlParts['host'] ?? '';
 
         $token = $this
-            ->tokenValidator
-            ->validateToken(
+            ->tokenManager
+            ->checkToken(
                 AppUUID::createById($query->get(Http::APP_ID_FIELD, '')),
                 IndexUUID::createById($query->get(Http::INDEX_FIELD, '')),
                 TokenUUID::createById($tokenString),

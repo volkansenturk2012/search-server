@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\StaticTokens\DependencyInjection;
 
-use Apisearch\Model\Token;
 use Mmoreram\BaseBundle\DependencyInjection\BaseConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
@@ -40,13 +39,7 @@ class StaticTokensPluginConfiguration extends BaseConfiguration
                                 ->isRequired()
                             ->end()
                             ->arrayNode('indices')
-                                ->scalarPrototype()
-                                ->end()
-                                ->defaultValue([])
-                            ->end()
-                            ->arrayNode('http_referrers')
-                                ->scalarPrototype()
-                                ->end()
+                                ->scalarPrototype()->end()
                                 ->defaultValue([])
                             ->end()
                             ->arrayNode('endpoints')
@@ -59,14 +52,22 @@ class StaticTokensPluginConfiguration extends BaseConfiguration
                                 ->end()
                                 ->defaultValue([])
                             ->end()
-                            ->integerNode('seconds_valid')
-                                ->defaultValue(Token::INFINITE_DURATION)
-                            ->end()
-                            ->integerNode('max_hits_per_query')
-                                ->defaultValue(Token::INFINITE_HITS_PER_QUERY)
-                            ->end()
-                            ->integerNode('ttl')
-                                ->defaultValue(Token::DEFAULT_TTL)
+                            ->arrayNode('metadata')
+                                ->children()
+                                    ->arrayNode('http_referrers')
+                                        ->scalarPrototype()->end()
+                                        ->defaultValue([])
+                                    ->end()
+                                    ->integerNode('seconds_valid')
+                                        ->defaultValue(0)
+                                    ->end()
+                                    ->integerNode('max_hits_per_query')
+                                        ->defaultValue(0)
+                                    ->end()
+                                    ->integerNode('ttl')
+                                        ->defaultValue(60)
+                                    ->end()
+                                ->end()
                             ->end()
                         ->end()
                     ->end()

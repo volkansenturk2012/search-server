@@ -154,48 +154,6 @@ abstract class TokenTest extends HttpFunctionalTest
     }
 
     /**
-     * Test seconds available.
-     *
-     * @expectedException \Apisearch\Exception\InvalidTokenException
-     */
-    public function testSecondsAvailableFailing()
-    {
-        $token = new Token(
-            TokenUUID::createById('12345'),
-            AppUUID::createById(self::$appId)
-        );
-        $token->setSecondsValid(1);
-        $this->addToken($token, self::$appId);
-        sleep(2);
-        $this->query(
-            Query::createMatchAll(),
-            self::$appId,
-            self::$index,
-            $token
-        );
-    }
-
-    /**
-     * Test seconds available.
-     */
-    public function testSecondsAvailableAccepted()
-    {
-        $token = new Token(
-            TokenUUID::createById('12345'),
-            AppUUID::createById(self::$appId)
-        );
-        $token->setSecondsValid(2);
-        $this->addToken($token, self::$appId);
-        sleep(1);
-        $this->query(
-            Query::createMatchAll(),
-            self::$appId,
-            self::$index,
-            $token
-        );
-    }
-
-    /**
      * Test different app id.
      *
      * @expectedException \Apisearch\Exception\InvalidTokenException
@@ -210,28 +168,6 @@ abstract class TokenTest extends HttpFunctionalTest
         $this->query(
             Query::createMatchAll(),
             self::$anotherAppId,
-            self::$index,
-            $token
-        );
-    }
-
-    /**
-     * Test max hits per query.
-     *
-     * @expectedException \Apisearch\Exception\InvalidTokenException
-     * @expectedExceptionMessage Token 12345 not valid. Max 2 hits allowed
-     */
-    public function testMaxHitsPerQuery()
-    {
-        $token = new Token(
-            TokenUUID::createById('12345'),
-            AppUUID::createById(self::$appId)
-        );
-        $token->setMaxHitsPerQuery(2);
-        $this->addToken($token, self::$appId);
-        $this->query(
-            Query::createMatchAll(),
-            self::$appId,
             self::$index,
             $token
         );

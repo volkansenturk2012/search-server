@@ -244,10 +244,6 @@ services:
         class: Apisearch\Server\Domain\Middleware\RepositoryReferenceMiddleware
         public: false
 
-    apisearch_server.middleware.token:
-        class: Apisearch\Server\Domain\Middleware\TokenMiddleware
-        public: false
-
     apisearch_server.middleware.check_health_plugins:
         class: Apisearch\Server\Domain\Middleware\CheckHealthPluginsMiddleware
         arguments:
@@ -293,16 +289,25 @@ services:
             - { name: apisearch_server.token_locator }
             - { name: apisearch_server.token_provider }
 
-    apisearch_server.token_validator:
-        class: Apisearch\Server\Domain\Token\TokenValidator
+    apisearch_server.credentials_token_validator:
+        class: Apisearch\Server\Domain\Token\CredentialsTokenValidator
+        tags:
+            - { name: apisearch_server.token_validator }
+
+    apisearch_server.token_manager:
+        class: Apisearch\Server\Domain\Token\TokenManager
         arguments:
             - "@apisearch_server.token_locators"
+            - "@apisearch_server.token_validators"
 
     apisearch_server.token_locators:
         class: Apisearch\Server\Domain\Token\TokenLocators
 
     apisearch_server.token_providers:
         class: Apisearch\Server\Domain\Token\TokenProviders
+
+    apisearch_server.token_validators:
+        class: Apisearch\Server\Domain\Token\TokenValidators
 
     #
     # Formatter

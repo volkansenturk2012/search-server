@@ -32,9 +32,9 @@ use Elastica\Exception\ResponseException;
 use Elastica\Index;
 use Elastica\Query;
 use Elastica\Type;
+use Elasticsearch\Endpoints\Cat\Aliases;
 use Elasticsearch\Endpoints\Cat\Indices;
 use Elasticsearch\Endpoints\Indices\Mapping as MappingEndpoint;
-use Elasticsearch\Endpoints\Cat\Aliases;
 use Elasticsearch\Endpoints\Reindex;
 
 /**
@@ -331,7 +331,7 @@ class ItemElasticaWrapper
      * Build index mapping.
      *
      * @param Type\Mapping $mapping
-     * @param Config  $config
+     * @param Config       $config
      */
     public function buildIndexMapping(
         Type\Mapping $mapping,
@@ -505,7 +505,7 @@ class ItemElasticaWrapper
                     $mappingData[$metaData['fullname']] ?? [],
                     [
                         'allocated' => ('green' === $metaData['color']),
-                        'doc_deleted' => (int) $metaData['doc_deleted']
+                        'doc_deleted' => (int) $metaData['doc_deleted'],
                     ]
                 );
             }
@@ -515,13 +515,13 @@ class ItemElasticaWrapper
     }
 
     /**
-     * Given a Mapping response, create metadata values per index
+     * Given a Mapping response, create metadata values per index.
      *
      * @param array $response
      *
      * @return array
      */
-    private function getMappingMetadataByResponse(array $response) : array
+    private function getMappingMetadataByResponse(array $response): array
     {
         $metadataData = [];
         foreach ($response as $indexId => $metadataValues) {
@@ -542,22 +542,20 @@ class ItemElasticaWrapper
     }
 
     /**
-     * Get properties
+     * Get properties.
      *
-     * @param array $metadataBucket
+     * @param array  $metadataBucket
      * @param string $field
-     * @param array $data
-     *
-     * @return void
+     * @param array  $data
      */
     private function getMappingProperties(
         array &$metadataBucket,
         string $field,
         array $data
-    ) : void
-    {
+    ): void {
         if (isset($data['type'])) {
             $metadataBucket[$field] = $data['type'];
+
             return;
         }
 
