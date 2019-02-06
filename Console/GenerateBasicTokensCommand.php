@@ -48,31 +48,14 @@ class GenerateBasicTokensCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Create basic tokens';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return mixed
+     * @return mixed|null
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-        $godToken = $this->createGodToken($appUUID);
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "App ID: <strong>{$appUUID->composeUUID()}</strong>"
-        );
+        $objects = $this->getAppIndexToken($input, $output);
 
         foreach ([
             'admin' => [],
@@ -80,28 +63,13 @@ class GenerateBasicTokensCommand extends CommandWithBusAndGodToken
             'interaction' => Endpoints::interactionOnly(),
                  ] as $tokenName => $endpoints) {
             $this->generateReadOnlyToken(
-                $appUUID,
+                $objects['app_uuid'],
                 $endpoints,
                 $tokenName,
-                $godToken,
+                $objects['token'],
                 $output
             );
         }
-    }
-
-    /**
-     * Get success message.
-     *
-     * @param InputInterface $input
-     * @param mixed          $result
-     *
-     * @return string
-     */
-    protected function getSuccessMessage(
-        InputInterface $input,
-        $result
-    ): string {
-        return 'Tokens created properly';
     }
 
     /**
@@ -141,5 +109,30 @@ class GenerateBasicTokensCommand extends CommandWithBusAndGodToken
             $this->getHeader(),
             "Token with UUID <strong>$tokenId</strong> generated for $name"
         );
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Create basic tokens';
+    }
+
+    /**
+     * Get success message.
+     *
+     * @param InputInterface $input
+     * @param mixed          $result
+     *
+     * @return string
+     */
+    protected static function getSuccessMessage(
+        InputInterface $input,
+        $result
+    ): string {
+        return 'Tokens created properly';
     }
 }

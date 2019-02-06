@@ -15,11 +15,12 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Command\ApisearchCommand;
+use Apisearch\Command\ApisearchFormattedCommand;
 use Apisearch\Model\AppUUID;
+use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
 use Apisearch\Model\TokenUUID;
-use Exception;
+use Apisearch\Repository\RepositoryReference;
 use League\Tactician\CommandBus;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,7 +28,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class CommandWithBusAndGodToken.
  */
-abstract class CommandWithBusAndGodToken extends ApisearchCommand
+abstract class CommandWithBusAndGodToken extends ApisearchFormattedCommand
 {
     /**
      * @var CommandBus
@@ -52,7 +53,8 @@ abstract class CommandWithBusAndGodToken extends ApisearchCommand
     public function __construct(
         CommandBus $commandBus,
         string $godToken
-    ) {
+    )
+    {
         parent::__construct();
 
         $this->commandBus = $commandBus;
@@ -70,7 +72,8 @@ abstract class CommandWithBusAndGodToken extends ApisearchCommand
     protected function createToken(
         TokenUUID $tokenUUID,
         AppUUID $appUUID
-    ): Token {
+    ): Token
+    {
         return new Token(
             $tokenUUID,
             $appUUID
@@ -93,73 +96,114 @@ abstract class CommandWithBusAndGodToken extends ApisearchCommand
     }
 
     /**
-     * Executes the current command.
+     * Get app UUID and index UUID.
      *
-     * This method is not abstract because you can use this class
-     * as a concrete class. In this case, instead of defining the
-     * execute() method, you set the code to execute by passing
-     * a Closure to the setCode() method.
+     * @param InputInterface $input
+     * @param OutputInterface $output
      *
-     * @return int|null null or 0 if everything went fine, or an error code
+     * @return array
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getAppIndexToken(
+        InputInterface $input,
+        OutputInterface $output
+    ) : array
     {
-        $this->startCommand($output);
-        $result = null;
-        try {
-            $result = $this->dispatchDomainEvent(
-                $input,
-                $output
-            );
-            if (!empty($this->getSuccessMessage($input, $result))) {
-                $this->printMessage(
-                    $output,
-                    $this->getHeader(),
-                    $this->getSuccessMessage($input, $result)
-                );
-            }
-        } catch (Exception $e) {
-            $this->printMessageFail(
+        $appUUID = AppUUID::createById($input->getArgument('app-id'));
+        $indexUUID = null;
+        $tokenUUID = TokenUUID::createById($this->godToken);
+
+        self::printInfoMessage(
+            $output,
+            $this->getHeader(),
+            "App ID: <strong>{$appUUID->composeUUID()}</strong>"
+        );
+
+        if ($input->hasArgument('index')) {
+            $indexUUID = IndexUUID::createById($input->getArgument('index'));
+            self::printInfoMessage(
                 $output,
                 $this->getHeader(),
-                $e->getMessage()
+                "Index UUID: <strong>{$indexUUID->composeUUID()}</strong>"
             );
         }
 
-        $this->finishCommand($output);
+        if ($input->hasArgument('token')) {
+            $tokenUUID = TokenUUID::createById($input->getArgument('token'));
+            self::printInfoMessage(
+                $output,
+                $this->getHeader(),
+                "Token UUID: <strong>{$tokenUUID->composeUUID()}</strong>"
+            );
+        }
 
-        return is_int($result)
-            ? $result
-            : 0;
+        if (
+            $input->hasOption('token') &&
+            !empty($input->getOption('token'))
+        ) {
+            $tokenUUID = TokenUUID::createById($input->getOption('token'));
+            self::printInfoMessage(
+                $output,
+                $this->getHeader(),
+                "Token UUID: <strong>{$tokenUUID->composeUUID()}</strong>"
+            );
+        }
+
+        return [
+            'app_uuid' => $appUUID,
+            'index_uuid' => $indexUUID,
+            'token_uuid' => $tokenUUID,
+            'token' => new Token($tokenUUID, $appUUID),
+            'repository_reference' => $indexUUID instanceof IndexUUID
+                ? RepositoryReference::create($appUUID, $indexUUID)
+                : RepositoryReference::create($appUUID)
+        ];
     }
 
     /**
-     * Dispatch domain event.
-     *
-     * @return string
-     */
-    abstract protected function getHeader(): string;
-
-    /**
-     * Dispatch domain event.
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return mixed|null
-     */
-    abstract protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output);
-
-    /**
-     * Get success message.
+     * Get app UUID and indices UUID.
      *
      * @param InputInterface $input
-     * @param mixed          $result
+     * @param OutputInterface $output
      *
-     * @return string
+     * @return array
      */
-    abstract protected function getSuccessMessage(
+    protected function getAppTokenAndIndices(
         InputInterface $input,
-        $result
-    ): string;
+        OutputInterface $output
+    ) : array
+    {
+        $appUUID = AppUUID::createById($input->getArgument('app-id'));
+        $tokenUUID = TokenUUID::createById($input->getArgument('uuid'));
+        $indicesUUID = array_map(function(string $index) {
+            return IndexUUID::createById($index);
+        }, $input->getOption('index'));
+
+        self::printInfoMessage(
+            $output,
+            $this->getHeader(),
+            "App ID: <strong>{$appUUID->composeUUID()}</strong>"
+        );
+
+        self::printInfoMessage(
+            $output,
+            $this->getHeader(),
+            "Token UUID: <strong>{$tokenUUID->composeUUID()}</strong>"
+        );
+
+        foreach ($indicesUUID as $indexUUID) {
+            self::printInfoMessage(
+                $output,
+                $this->getHeader(),
+                "Index UUID: <strong>{$indexUUID->composeUUID()}</strong>"
+            );
+        }
+
+        return [
+            'app_uuid' => $appUUID,
+            'token_uuid' => $tokenUUID,
+            'indices_uuid' => $indicesUUID,
+            'token' => new Token($tokenUUID, $appUUID),
+            'repository_reference' => RepositoryReference::create($appUUID),
+        ];
+    }
 }

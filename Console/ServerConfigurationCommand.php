@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Command\ApisearchCommand;
+use Apisearch\Command\ApisearchFormattedCommand;
 use Apisearch\Server\Domain\Plugin\Plugin;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +25,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 /**
  * Class ServerConfigurationCommand.
  */
-class ServerConfigurationCommand extends ApisearchCommand
+class ServerConfigurationCommand extends ApisearchFormattedCommand
 {
     /**
      * @var KernelInterface
@@ -57,40 +57,25 @@ class ServerConfigurationCommand extends ApisearchCommand
     /**
      * Dispatch domain event.
      *
-     * @return string
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return mixed|null
      */
-    protected function getHeader(): string
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        return 'Server';
-    }
-
-    /**
-     * Executes the current command.
-     *
-     * This method is not abstract because you can use this class
-     * as a concrete class. In this case, instead of defining the
-     * execute() method, you set the code to execute by passing
-     * a Closure to the setCode() method.
-     *
-     * @return int|null null or 0 if everything went fine, or an error code
-     *
-     * @see setCode()
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $this->startCommand($output);
-        $this->printApisearchServer($output);
-        $this->printMessage($output, '##', 'Server started');
-        $this->printInfoMessage($output, '##', ' ~~ with');
-        $this->printInfoMessage($output, '##', sprintf(' ~~ --env = %s', $this->kernel->getEnvironment()));
-        $this->printInfoMessage($output, '##', '');
-        $this->printInfoMessage($output, '##', '$_ENV values');
-        $this->printStringsArray($output, $_ENV);
-        $this->printInfoMessage($output, '##', '');
-        $this->printInfoMessage($output, '##', '$_SERVER values');
-        $this->printStringsArray($output, $_SERVER);
-        $this->printInfoMessage($output, '##', '');
-        $this->printInfoMessage($output, '##', 'Loaded plugins');
+        self::printApisearchServer($output);
+        self::printMessage($output, '##', 'Server started');
+        self::printInfoMessage($output, '##', ' ~~ with');
+        self::printInfoMessage($output, '##', sprintf(' ~~ --env = %s', $this->kernel->getEnvironment()));
+        self::printInfoMessage($output, '##', '');
+        self::printInfoMessage($output, '##', '$_ENV values');
+        self::printStringsArray($output, $_ENV);
+        self::printInfoMessage($output, '##', '');
+        self::printInfoMessage($output, '##', '$_SERVER values');
+        self::printStringsArray($output, $_SERVER);
+        self::printInfoMessage($output, '##', '');
+        self::printInfoMessage($output, '##', 'Loaded plugins');
 
         $enabledPlugins = array_filter($this->kernel->getBundles(), function (BundleInterface $bundle) {
             return $bundle instanceof Plugin;
@@ -101,9 +86,19 @@ class ServerConfigurationCommand extends ApisearchCommand
         }, $enabledPlugins);
 
         foreach ($enabledPluginsName as $enabledPluginName) {
-            $this->printInfoMessage($output, '##', sprintf(' ~~ %s', $enabledPluginName));
+            self::printInfoMessage($output, '##', sprintf(' ~~ %s', $enabledPluginName));
         }
-        $this->printSystemMessage($output, '##', '');
+        self::printSystemMessage($output, '##', '');
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Server';
     }
 
     /**
@@ -114,7 +109,7 @@ class ServerConfigurationCommand extends ApisearchCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {
@@ -124,7 +119,7 @@ class ServerConfigurationCommand extends ApisearchCommand
     /**
      * @param OutputInterface $output
      */
-    private function printApisearchServer(OutputInterface $output)
+    private static function printApisearchServer(OutputInterface $output)
     {
         $logo = '
      _____                                            _
@@ -146,7 +141,7 @@ class ServerConfigurationCommand extends ApisearchCommand
      * @param OutputInterface $output
      * @param array           $array
      */
-    private function printStringsArray(
+    private static function printStringsArray(
         OutputInterface $output,
         array $array
     ) {
@@ -155,7 +150,7 @@ class ServerConfigurationCommand extends ApisearchCommand
                 continue;
             }
 
-            $this->printInfoMessage($output, '##', sprintf(' ~~ %s = %s', $item, $value));
+            self::printInfoMessage($output, '##', sprintf(' ~~ %s = %s', $item, $value));
         }
     }
 }

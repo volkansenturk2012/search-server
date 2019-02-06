@@ -15,11 +15,6 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\IndexUUID;
-use Apisearch\Model\Token;
-use Apisearch\Model\TokenUUID;
-use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Query\CheckIndex;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,41 +54,32 @@ class CheckIndexCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return mixed|null
      */
-    protected function getHeader(): string
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        return 'Check index';
+        $objects = $this->getAppIndexToken($input, $output);
+
+        return $this
+            ->commandBus
+            ->handle(new CheckIndex(
+                $objects['repository_reference'],
+                $objects['token'],
+                $objects['index_uuid']
+            ));
     }
 
     /**
      * Dispatch domain event.
      *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return mixed
+     * @return string
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected static function getHeader(): string
     {
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-        $indexUUID = IndexUUID::createById($input->getArgument('index'));
-        $token = $input->hasOption('token') && !empty($input->getOption('token'))
-            ? $input->getOption('token')
-            : $this->godToken;
-
-        $token = new Token(TokenUUID::createById($token), $appUUID);
-
-        return $this
-            ->commandBus
-            ->handle(new CheckIndex(
-                RepositoryReference::create(
-                    $appUUID,
-                    $indexUUID
-                ),
-                $token,
-                $indexUUID
-            ));
+        return 'Check index';
     }
 
     /**
@@ -104,7 +90,7 @@ class CheckIndexCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

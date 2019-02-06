@@ -15,17 +15,13 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Exception\ResourceNotAvailableException;
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\IndexUUID;
 use Apisearch\Query\Query as ModelQuery;
-use Apisearch\Repository\RepositoryReference;
-use Apisearch\Result\Result;
 use Apisearch\Server\Domain\Query\Query;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Apisearch\Command\QueryCommand as BaseQueryCommand;
 
 /**
  * Class QueryCommand.
@@ -38,7 +34,7 @@ class QueryCommand extends CommandWithBusAndGodToken
     protected function configure()
     {
         $this
-            ->setDescription('Create an index')
+            ->setDescription('Query an index')
             ->addArgument(
                 'app-id',
                 InputArgument::REQUIRED,
@@ -74,75 +70,38 @@ class QueryCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return mixed|null
      */
-    protected function getHeader(): string
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        return 'Query index';
+        $objects = $this->getAppIndexToken($input, $output);
+
+        BaseQueryCommand::makeQueryAndPrintResults(
+            $input,
+            $output,
+            function (ModelQuery $query) use ($objects) {
+                return $this
+                    ->commandBus
+                    ->handle(new Query(
+                        $objects['repository_reference'],
+                        $objects['token'],
+                        $query
+                    ));
+            }
+        );
     }
 
     /**
      * Dispatch domain event.
      *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return mixed
+     * @return string
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected static function getHeader(): string
     {
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-        $indexUUID = IndexUUID::createById($input->getArgument('index'));
-        $query = $input->getArgument('query');
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "App ID: <strong>{$appUUID->composeUUID()}</strong>"
-        );
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "Index ID: <strong>{$indexUUID->composeUUID()}</strong>"
-        );
-
-        $this->printInfoMessage(
-            $output,
-            'Query / Page / Size',
-            sprintf('<strong>%s</strong> / %d / %d',
-                '' === $query
-                    ? '*'
-                    : $query,
-                $input->getOption('page'),
-                $input->getOption('size')
-            )
-        );
-
-        try {
-            $result = $this
-                ->commandBus
-                ->handle(new Query(
-                    RepositoryReference::create(
-                        $appUUID,
-                        $indexUUID
-                    ),
-                    $this->createGodToken($appUUID),
-                    ModelQuery::create(
-                        $input->getArgument('query'),
-                        (int) $input->getOption('page'),
-                        (int) $input->getOption('size')
-                    )
-                ));
-
-            $this->printResult($output, $result);
-        } catch (ResourceNotAvailableException $exception) {
-            $this->printInfoMessage(
-                $output,
-                $this->getHeader(),
-                $output->writeln('Index not found. Skipping.')
-            );
-        }
+        return 'Query index';
     }
 
     /**
@@ -153,54 +112,10 @@ class QueryCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {
         return '';
-    }
-
-    /**
-     * Print results.
-     *
-     * @param OutputInterface $output
-     * @param Result          $result
-     */
-    private function printResult(
-        OutputInterface $output,
-        Result $result
-    ) {
-        $this->printInfoMessage(
-            $output,
-            'Number of resources in index',
-            $result->getTotalItems()
-        );
-
-        $this->printInfoMessage(
-            $output,
-            'Number of hits',
-            $result->getTotalHits()
-        );
-
-        $i = 1;
-        foreach ($result->getItems() as $item) {
-            $firstStringPosition = array_reduce($item->getAllMetadata(), function ($carry, $element) {
-                return is_string($carry)
-                    ? $carry
-                    : (
-                        is_string($element)
-                            ? $element
-                            : null
-                    );
-            }, null);
-            $this->printInfoMessage(
-                $output,
-                '    #'.$i,
-                sprintf('%s - %s',
-                    $item->getUUID()->composeUUID(),
-                    substr((string) $firstStringPosition, 0, 50)
-                )
-            );
-        }
     }
 }

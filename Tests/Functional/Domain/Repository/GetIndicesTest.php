@@ -65,7 +65,7 @@ trait GetIndicesTest
         $firstIndex = reset($indices);
         $this->assertEquals(1, $firstIndex->getShards());
         $this->assertEquals(0, $firstIndex->getReplicas());
-        $this->assertTrue($firstIndex->getMiscellanea()['allocated']);
+        $this->assertTrue($firstIndex->getMetadata()['allocated']);
 
         $this->deleteIndex(
             $appId,
@@ -95,7 +95,7 @@ trait GetIndicesTest
         $firstIndex = reset($indices);
         $this->assertEquals(5, $firstIndex->getShards());
         $this->assertEquals(4, $firstIndex->getReplicas());
-        $this->assertFalse($firstIndex->getMiscellanea()['allocated']);
+        $this->assertFalse($firstIndex->getMetadata()['allocated']);
 
         $this->deleteIndex(
             $appId,

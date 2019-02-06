@@ -15,9 +15,6 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\TokenUUID;
-use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Command\DeleteToken;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -50,33 +47,32 @@ class DeleteTokenCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return mixed|null
      */
-    protected function getHeader(): string
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        return 'Delete token';
+        $objects = $this->getAppTokenAndIndices($input, $output);
+
+        $this
+            ->commandBus
+            ->handle(new DeleteToken(
+                $objects['repository_reference'],
+                $this->createGodToken($objects['app_uuid']),
+                $objects['token_uuid']
+            ));
     }
 
     /**
      * Dispatch domain event.
      *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return mixed
+     * @return string
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected static function getHeader(): string
     {
-        $tokenUUID = TokenUUID::createById($input->getArgument('uuid'));
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-
-        $this
-            ->commandBus
-            ->handle(new DeleteToken(
-                RepositoryReference::create($appUUID),
-                $this->createGodToken($appUUID),
-                $tokenUUID
-            ));
+        return 'Delete token';
     }
 
     /**
@@ -87,7 +83,7 @@ class DeleteTokenCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

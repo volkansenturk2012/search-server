@@ -16,9 +16,6 @@ declare(strict_types=1);
 namespace Apisearch\Server\Console;
 
 use Apisearch\Exception\ResourceNotAvailableException;
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\IndexUUID;
-use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Command\DeleteIndex;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,35 +48,21 @@ class DeleteIndexCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Delete index';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return mixed
+     * @return mixed|null
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-        $indexUUID = IndexUUID::createById($input->getArgument('index'));
+        $objects = $this->getAppIndexToken($input, $output);
         try {
             $this
                 ->commandBus
                 ->handle(new DeleteIndex(
-                    RepositoryReference::create(
-                        $appUUID,
-                        $indexUUID
-                    ),
-                    $this->createGodToken($appUUID),
-                    $indexUUID
+                    $objects['repository_reference'],
+                    $objects['token'],
+                    $objects['index_uuid']
                 ));
         } catch (ResourceNotAvailableException $exception) {
             $this->printInfoMessage(
@@ -91,6 +74,16 @@ class DeleteIndexCommand extends CommandWithBusAndGodToken
     }
 
     /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Delete index';
+    }
+
+    /**
      * Get success message.
      *
      * @param InputInterface $input
@@ -98,7 +91,7 @@ class DeleteIndexCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

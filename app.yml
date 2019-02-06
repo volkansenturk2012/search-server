@@ -62,6 +62,6 @@ config:
             #     endpoint: __endpoint__
             #     app_id: __app_id__
             #     token: __token__
-            #     indexes:
+            #     indices:
             #         default: __default_index__
             #

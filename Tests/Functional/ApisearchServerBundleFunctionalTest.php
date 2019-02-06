@@ -177,7 +177,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
                         'user' => [
                             'repository_service' => 'apisearch_server.user_repository',
                         ],
-                        'indexes' => [
+                        'indices' => [
                             self::$index => self::$index,
                             self::$anotherIndex => self::$anotherIndex,
                         ],
@@ -188,7 +188,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
                         'app_id' => self::$appId,
                         'token' => '~',
                         'test' => true,
-                        'indexes' => [
+                        'indices' => [
                             self::$index => self::$index,
                             self::$anotherIndex => self::$anotherIndex,
                         ],
@@ -199,7 +199,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
                         'app_id' => self::$appId,
                         'token' => self::$godToken,
                         'test' => true,
-                        'indexes' => [
+                        'indices' => [
                             self::$index => self::$index,
                             self::$anotherIndex => self::$anotherIndex,
                         ],
@@ -210,7 +210,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
                         'app_id' => self::$appId,
                         'token' => self::$godToken,
                         'test' => true,
-                        'indexes' => [
+                        'indices' => [
                             self::$index => self::$index,
                             self::$anotherIndex => self::$anotherIndex,
                         ],
@@ -452,8 +452,8 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
      */
     public static function deleteEverything()
     {
-        static::deleteAppIdIndexes(self::$appId);
-        static::deleteAppIdIndexes(self::$anotherAppId);
+        static::deleteAppIdIndices(self::$appId);
+        static::deleteAppIdIndices(self::$anotherAppId);
     }
 
     /**
@@ -461,7 +461,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
      *
      * @param string $appId
      */
-    private static function deleteAppIdIndexes(string $appId)
+    private static function deleteAppIdIndices(string $appId)
     {
         try {
             static::deleteIndex($appId);

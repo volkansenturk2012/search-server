@@ -66,7 +66,7 @@ abstract class AddDeleteTokensCommandTest extends CommandTest
             'command' => 'apisearch-server:add-token',
             'app-id' => self::$appId,
         ]);
-
+        
         preg_match('~Token UUID: (.*?)~', $output, $match);
         $this->assertTokenNotExists($match[1]);
     }

@@ -15,8 +15,6 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Model\AppUUID;
-use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Command\DeleteTokens;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,32 +42,31 @@ class DeleteTokensCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return mixed|null
      */
-    protected function getHeader(): string
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        return 'Delete all tokens';
+        $objects = $this->getAppIndexToken($input, $output);
+
+        $this
+            ->commandBus
+            ->handle(new DeleteTokens(
+                $objects['repository_reference'],
+                $objects['token']
+            ));
     }
 
     /**
      * Dispatch domain event.
      *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return mixed
+     * @return string
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected static function getHeader(): string
     {
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-        $godToken = $this->createGodToken($appUUID);
-
-        $this
-            ->commandBus
-            ->handle(new DeleteTokens(
-                RepositoryReference::create($appUUID),
-                $godToken
-            ));
+        return 'Delete all tokens';
     }
 
     /**
@@ -80,7 +77,7 @@ class DeleteTokensCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

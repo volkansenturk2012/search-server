@@ -15,15 +15,11 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\IndexUUID;
-use Apisearch\Model\Token;
-use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Query\GetTokens;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Apisearch\Command\PrintTokensCommand as BasePrintTokensCommand;
 
 /**
  * Class PrintTokensCommand.
@@ -52,40 +48,21 @@ class PrintTokensCommand extends CommandWithBusAndGodToken
      *
      * @return mixed|null
      */
-    protected function dispatchDomainEvent(
-        InputInterface $input,
-        OutputInterface $output
-    ) {
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-        $godToken = $this->createGodToken($appUUID);
-
+    protected function runCommand(InputInterface $input, OutputInterface $output)
+    {
+        $objects = $this->getAppIndexToken($input, $output);
         $tokens = $this
             ->commandBus
             ->handle(new GetTokens(
-                RepositoryReference::create($appUUID),
-                $godToken
+                $objects['repository_reference'],
+                $objects['token']
             ));
 
-        /**
-         * @var Token
-         */
-        $table = new Table($output);
-        $table->setHeaders(['UUID', 'Indices', 'Seconds Valid', 'Max hits per query', 'HTTP Referrers', 'endpoints', 'plugins', 'ttl']);
-        foreach ($tokens as $token) {
-            $table->addRow([
-                $token->getTokenUUID()->composeUUID(),
-                implode(', ', array_map(function (IndexUUID $indexUUID) {
-                    return $indexUUID->composeUUID();
-                }, $token->getIndices())),
-                $token->getSecondsValid(),
-                $token->getMaxHitsPerQuery(),
-                implode(', ', $token->getHttpReferrers()),
-                implode(', ', $token->getEndpoints()),
-                implode(', ', $token->getPlugins()),
-                $token->getTtl(),
-            ]);
-        }
-        $table->render();
+        BasePrintTokensCommand::printTokens(
+            $input,
+            $output,
+            $tokens
+        );
     }
 
     /**
@@ -93,7 +70,7 @@ class PrintTokensCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getHeader(): string
+    protected static function getHeader(): string
     {
         return 'Get tokens';
     }
@@ -106,7 +83,7 @@ class PrintTokensCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

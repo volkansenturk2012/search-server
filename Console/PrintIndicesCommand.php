@@ -15,14 +15,12 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\Token;
-use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Query\GetIndices;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Apisearch\Command\PrintIndicesCommand as BasePrintIndicesCommand;
 
 /**
  * Class PrintTokensCommand.
@@ -35,11 +33,23 @@ class PrintIndicesCommand extends CommandWithBusAndGodToken
     protected function configure()
     {
         $this
-            ->setDescription('Print all indices of an app-id')
+            ->setDescription('Print all indices')
             ->addArgument(
                 'app-id',
                 InputArgument::REQUIRED,
                 'App id'
+            )
+            ->addOption(
+                'with-fields',
+                null,
+                InputOption::VALUE_NONE,
+                'Print the fields'
+            )
+            ->addOption(
+                'with-metadata',
+                null,
+                InputOption::VALUE_NONE,
+                'Print the metadata'
             );
     }
 
@@ -51,43 +61,23 @@ class PrintIndicesCommand extends CommandWithBusAndGodToken
      *
      * @return mixed|null
      */
-    protected function dispatchDomainEvent(
-        InputInterface $input,
-        OutputInterface $output
-    ) {
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-        $godToken = $this->createGodToken($appUUID);
-
+    protected function runCommand(InputInterface $input, OutputInterface $output)
+    {
+        $objects = $this->getAppIndexToken($input, $output);
         $indices = $this
             ->commandBus
             ->handle(new GetIndices(
-                RepositoryReference::create($appUUID),
-                $godToken
+                $objects['repository_reference'],
+                $objects['token']
             ));
 
-        /**
-         * @var Token
-         */
-        $table = new Table($output);
-        $table->setHeaders(['UUID', 'App ID', 'Doc Count', 'Size', 'Ok?', 'shards', 'replicas']);
+        BasePrintIndicesCommand::printIndices(
+            $input,
+            $output,
+            $indices
+        );
 
-        /*
-         * @var Index
-         */
-        foreach ($indices as $index) {
-            $table->addRow([
-                $index->getUUID()->composeUUID(),
-                $index->getAppUUID()->composeUUID(),
-                $index->getDocCount(),
-                $index->getSize(),
-                $index->isOK()
-                    ? 'Yes'
-                    : 'No',
-                $index->getShards(),
-                $index->getReplicas(),
-            ]);
-        }
-        $table->render();
+        return;
     }
 
     /**
@@ -95,7 +85,7 @@ class PrintIndicesCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getHeader(): string
+    protected static function getHeader(): string
     {
         return 'Get indices';
     }
@@ -108,7 +98,7 @@ class PrintIndicesCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {
