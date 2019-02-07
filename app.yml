@@ -51,7 +51,7 @@ config:
                     repository_service: "apisearch_server.app_repository"
                 user:
                     repository_service: "apisearch_server.user_repository"
-                indexes:
+                indices:
                     default: default
 
             #
