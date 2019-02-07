@@ -1,4 +1,13 @@
 .env
+.env.dist
+.formatter.yml
 .ppm
 .circleci
+.git
+.gitignore
+.idea
+.php_cs
+.php_cs.cache
+Dockerfile
+README.md
 var
