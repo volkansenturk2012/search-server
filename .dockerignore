@@ -8,6 +8,12 @@
 .idea
 .php_cs
 .php_cs.cache
+.dockerignore
+.editorconfig
+.github
+CODE_OF_CONDUCT.md
+LICENSE.md
 Dockerfile
 README.md
 var
+
