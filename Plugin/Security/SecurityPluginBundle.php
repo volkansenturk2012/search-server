@@ -13,10 +13,10 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\Multilanguage;
+namespace Apisearch\Plugin\Security;
 
-use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
-use Apisearch\Plugin\Multilanguage\DependencyInjection\MultilanguagePluginExtension;
+use Apisearch\Plugin\Redis\RedisBundle;
+use Apisearch\Plugin\Security\DependencyInjection\SecurityPluginExtension;
 use Apisearch\Server\ApisearchServerBundle;
 use Apisearch\Server\Domain\Plugin\Plugin;
 use Mmoreram\BaseBundle\BaseBundle;
@@ -24,20 +24,10 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
- * Class MultilanguagePluginBundle.
+ * Class SecurityPluginBundle.
  */
-class MultilanguagePluginBundle extends BaseBundle implements Plugin
+class SecurityPluginBundle extends BaseBundle implements Plugin
 {
-    /**
-     * Returns the bundle's container extension.
-     *
-     * @return ExtensionInterface|null The container extension
-     */
-    public function getContainerExtension()
-    {
-        return new MultilanguagePluginExtension();
-    }
-
     /**
      * Return all bundle dependencies.
      *
@@ -51,7 +41,31 @@ class MultilanguagePluginBundle extends BaseBundle implements Plugin
     {
         return [
             ApisearchServerBundle::class,
-            ElasticaPluginBundle::class,
+            RedisBundle::class,
+        ];
+    }
+
+    /**
+     * Returns the bundle's container extension.
+     *
+     * @return ExtensionInterface|null The container extension
+     *
+     * @throws \LogicException
+     */
+    public function getContainerExtension()
+    {
+        return new SecurityPluginExtension();
+    }
+
+    /**
+     * get config files.
+     *
+     * @return array
+     */
+    public function getConfigFiles(): array
+    {
+        return [
+            'domain',
         ];
     }
 
@@ -62,6 +76,6 @@ class MultilanguagePluginBundle extends BaseBundle implements Plugin
      */
     public function getPluginName(): string
     {
-        return 'multilanguage';
+        return 'security';
     }
 }

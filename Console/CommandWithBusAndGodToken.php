@@ -53,8 +53,7 @@ abstract class CommandWithBusAndGodToken extends ApisearchFormattedCommand
     public function __construct(
         CommandBus $commandBus,
         string $godToken
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->commandBus = $commandBus;
@@ -72,8 +71,7 @@ abstract class CommandWithBusAndGodToken extends ApisearchFormattedCommand
     protected function createToken(
         TokenUUID $tokenUUID,
         AppUUID $appUUID
-    ): Token
-    {
+    ): Token {
         return new Token(
             $tokenUUID,
             $appUUID
@@ -98,7 +96,7 @@ abstract class CommandWithBusAndGodToken extends ApisearchFormattedCommand
     /**
      * Get app UUID and index UUID.
      *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      *
      * @return array
@@ -106,8 +104,7 @@ abstract class CommandWithBusAndGodToken extends ApisearchFormattedCommand
     protected function getAppIndexToken(
         InputInterface $input,
         OutputInterface $output
-    ) : array
-    {
+    ): array {
         $appUUID = AppUUID::createById($input->getArgument('app-id'));
         $indexUUID = null;
         $tokenUUID = TokenUUID::createById($this->godToken);
@@ -155,14 +152,14 @@ abstract class CommandWithBusAndGodToken extends ApisearchFormattedCommand
             'token' => new Token($tokenUUID, $appUUID),
             'repository_reference' => $indexUUID instanceof IndexUUID
                 ? RepositoryReference::create($appUUID, $indexUUID)
-                : RepositoryReference::create($appUUID)
+                : RepositoryReference::create($appUUID),
         ];
     }
 
     /**
      * Get app UUID and indices UUID.
      *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      *
      * @return array
@@ -170,11 +167,10 @@ abstract class CommandWithBusAndGodToken extends ApisearchFormattedCommand
     protected function getAppTokenAndIndices(
         InputInterface $input,
         OutputInterface $output
-    ) : array
-    {
+    ): array {
         $appUUID = AppUUID::createById($input->getArgument('app-id'));
         $tokenUUID = TokenUUID::createById($input->getArgument('uuid'));
-        $indicesUUID = array_map(function(string $index) {
+        $indicesUUID = array_map(function (string $index) {
             return IndexUUID::createById($index);
         }, $input->getOption('index'));
 

@@ -62,7 +62,7 @@ class GenerateBasicTokensCommand extends CommandWithBusAndGodToken
             'query only' => Endpoints::queryOnly(),
             'interaction' => Endpoints::interactionOnly(),
                  ] as $tokenName => $endpoints) {
-            $this->generateReadOnlyToken(
+            $this->generateToken(
                 $objects['app_uuid'],
                 $endpoints,
                 $tokenName,
@@ -73,7 +73,7 @@ class GenerateBasicTokensCommand extends CommandWithBusAndGodToken
     }
 
     /**
-     * Generate readonly token.
+     * Generate token.
      *
      * @param AppUUID         $appUUID
      * @param string[]        $endpoints
@@ -81,7 +81,7 @@ class GenerateBasicTokensCommand extends CommandWithBusAndGodToken
      * @param Token           $godToken
      * @param OutputInterface $output
      */
-    protected function generateReadOnlyToken(
+    protected function generateToken(
         AppUUID $appUUID,
         array $endpoints,
         string $name,
@@ -98,7 +98,6 @@ class GenerateBasicTokensCommand extends CommandWithBusAndGodToken
                 new Token(
                     TokenUUID::createById($tokenId),
                     $appUUID,
-                    [],
                     [],
                     Endpoints::compose($endpoints)
                 )

@@ -13,15 +13,17 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\Multilanguage\DependencyInjection;
+namespace Apisearch\Plugin\Security\DependencyInjection;
 
 use Apisearch\Server\DependencyInjection\Env;
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 /**
- * Class MultilanguagePluginExtension.
+ * Class SecurityPluginExtension.
  */
-class MultilanguagePluginExtension extends BaseExtension
+class SecurityPluginExtension extends BaseExtension
 {
     /**
      * Returns the recommended alias to use in XML.
@@ -32,7 +34,24 @@ class MultilanguagePluginExtension extends BaseExtension
      */
     public function getAlias()
     {
-        return 'apisearch_plugin_multilanguage';
+        return 'apisearch_plugin_security';
+    }
+
+    /**
+     * Return a new Configuration instance.
+     *
+     * If object returned by this method is an instance of
+     * ConfigurationInterface, extension will use the Configuration to read all
+     * bundle config definitions.
+     *
+     * Also will call getParametrizationValues method to load some config values
+     * to internal parameters.
+     *
+     * @return ConfigurationInterface|null
+     */
+    protected function getConfigurationInstance(): ? ConfigurationInterface
+    {
+        return new SecurityPluginConfiguration($this->getAlias());
     }
 
     /**
@@ -69,7 +88,7 @@ class MultilanguagePluginExtension extends BaseExtension
     protected function getConfigFiles(array $config): array
     {
         return [
-            'middleware',
+            'domain',
         ];
     }
 
@@ -88,8 +107,27 @@ class MultilanguagePluginExtension extends BaseExtension
      */
     protected function getParametrizationValues(array $config): array
     {
+        $storageHost = Env::get('REDIS_SECURITY_HOST', $config['host']);
+        if (null === $storageHost) {
+            $exception = new InvalidConfigurationException('Please provide a host for security plugin.');
+            $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'host'));
+
+            throw $exception;
+        }
+
+        $storagePort = Env::get('REDIS_SECURITY_PORT', $config['port']);
+        if (null === $storageHost) {
+            $exception = new InvalidConfigurationException('Please provide a port for security plugin.');
+            $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'port'));
+
+            throw $exception;
+        }
+
         return [
-            'apisearch_plugin_callbacks.language_field' => Env::get('MULTILANGUAGE_FIELD', $config['language_field']),
+            'apisearch_plugin.security.host' => (string) $storageHost,
+            'apisearch_plugin.security.port' => (int) $storagePort,
+            'apisearch_plugin.security.is_cluster' => (bool) Env::get('REDIS_SECURITY_IS_CLUSTER', $config['is_cluster']),
+            'apisearch_plugin.security.database' => (string) Env::get('REDIS_SECURITY_DATABASE', $config['database']),
         ];
     }
 }

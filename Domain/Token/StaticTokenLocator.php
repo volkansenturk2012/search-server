@@ -121,9 +121,6 @@ class StaticTokenLocator implements TokenLocator, TokenProvider
             [],
             [],
             [],
-            [],
-            Token::INFINITE_DURATION,
-            Token::INFINITE_HITS_PER_QUERY,
             Token::NO_CACHE
         );
     }
@@ -141,11 +138,8 @@ class StaticTokenLocator implements TokenLocator, TokenProvider
             TokenUUID::createById($this->readonlyToken),
             $appUUID,
             [],
-            [],
             Endpoints::compose(Endpoints::queryOnly()),
             [],
-            Token::INFINITE_DURATION,
-            Token::INFINITE_HITS_PER_QUERY,
             Token::DEFAULT_TTL
         );
     }
@@ -161,14 +155,11 @@ class StaticTokenLocator implements TokenLocator, TokenProvider
             TokenUUID::createById($this->pingToken),
             AppUUID::createById(''),
             [],
-            [],
             [
                 'head~~/', // Ping
                 'get~~/health', // Check health
             ],
             [],
-            Token::INFINITE_DURATION,
-            Token::INFINITE_HITS_PER_QUERY,
             Token::NO_CACHE
         );
     }

@@ -13,16 +13,18 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Server\Domain\Token;
+namespace Apisearch\Plugin\Security\Domain\Token;
 
 use Apisearch\Model\AppUUID;
 use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
+use Apisearch\Server\Domain\Token\TokenValidator;
+use Carbon\Carbon;
 
 /**
- * Interface TokenValidator.
+ * Class SecondsValidTokenValidator.
  */
-interface TokenValidator
+class SecondsValidTokenValidator implements TokenValidator
 {
     /**
      * Validate token given basic fields.
@@ -45,5 +47,11 @@ interface TokenValidator
         string $referrer,
         string $path,
         string $verb
-    ): bool;
+    ): bool {
+        $secondsValid = $token->getMetadataValue('seconds_valid', 0);
+
+        return
+            0 === $secondsValid ||
+            $token->getUpdatedAt() + $secondsValid >= Carbon::now('UTC')->timestamp;
+    }
 }

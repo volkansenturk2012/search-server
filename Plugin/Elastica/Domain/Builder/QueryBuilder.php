@@ -111,9 +111,27 @@ class QueryBuilder
         }
 
         $fields = array_values($query->getFields());
-        $fields[] = 'uuid.*';
         $fields = array_unique($fields);
-        $mainQuery->setSource($fields);
+        $includes = array_filter($fields, function (string $field) {
+            return 0 !== strpos($field, '!');
+        });
+
+        $excludes = array_map(function (string $string) {
+            return ltrim($string, '!');
+        }, array_filter($fields, function (string $field) {
+            return 0 === strpos($field, '!');
+        }));
+
+        if (!empty($includes)) {
+            $includes[] = 'uuid.*';
+        } else {
+            $includes = ['*'];
+        }
+
+        $mainQuery->setSource([
+            'includes' => array_values($includes),
+            'excludes' => array_values($excludes),
+        ]);
     }
 
     /**

@@ -24,6 +24,13 @@ use RedisCluster;
 class RedisFactory
 {
     /**
+     * Redis instances.
+     *
+     * @param array
+     */
+    private $redisInstances = [];
+
+    /**
      * Generate new Predis instance.
      *
      * @param RedisConfig $redisConfig
@@ -32,9 +39,16 @@ class RedisFactory
      */
     public function create(RedisConfig $redisConfig)
     {
-        return $redisConfig->isCluster()
+        $key = md5($redisConfig->serialize());
+        if (isset($this->redisInstances[$key])) {
+            return $this->redisInstances[$key];
+        }
+
+        $this->redisInstances[$key] = $redisConfig->isCluster()
             ? $this->createCluster($redisConfig)
             : $this->createSimple($redisConfig);
+
+        return $this->redisInstances[$key];
     }
 
     /**

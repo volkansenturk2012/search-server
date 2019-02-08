@@ -19,12 +19,12 @@ use Apisearch\Plugin\Callbacks\Domain\Callbacks;
 use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
 use Apisearch\Plugin\ELK\ELKPluginBundle;
 use Apisearch\Plugin\MostRelevantWords\MostRelevantWordsPluginBundle;
-use Apisearch\Plugin\Multilanguage\MultilanguagePluginBundle;
 use Apisearch\Plugin\NewRelic\NewRelicPluginBundle;
 use Apisearch\Plugin\RabbitMQ\RabbitMQPluginBundle;
 use Apisearch\Plugin\RedisMetadataFields\RedisMetadataFieldsPluginBundle;
 use Apisearch\Plugin\RedisQueue\RedisQueuePluginBundle;
 use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
+use Apisearch\Plugin\Security\SecurityPluginBundle;
 use Apisearch\Plugin\StaticTokens\StaticTokensPluginBundle;
 use Apisearch\Server\DependencyInjection\Env;
 use Apisearch\Server\Domain\Plugin\Plugin;
@@ -80,13 +80,13 @@ class ApisearchPluginsBundle extends BaseBundle
             'elastica' => ElasticaPluginBundle::class,
             'elk' => ELKPluginBundle::class,
             'most_relevant_words' => MostRelevantWordsPluginBundle::class,
-            'multilanguage' => MultilanguagePluginBundle::class,
             'newrelic' => NewRelicPluginBundle::class,
             'redis_metadata_fields' => RedisMetadataFieldsPluginBundle::class,
             'redis_storage' => RedisStoragePluginBundle::class,
             'redis_queues' => RedisQueuePluginBundle::class,
             'static_tokens' => StaticTokensPluginBundle::class,
             'rabbitmq' => RabbitMQPluginBundle::class,
+            'security' => SecurityPluginBundle::class,
         ];
 
         $combined = array_combine(

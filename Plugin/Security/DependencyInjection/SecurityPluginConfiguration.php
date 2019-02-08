@@ -13,15 +13,15 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\Elastica\DependencyInjection;
+namespace Apisearch\Plugin\Security\DependencyInjection;
 
 use Mmoreram\BaseBundle\DependencyInjection\BaseConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 /**
- * Class MultilanguagePluginConfiguration.
+ * Class SecurityPluginConfiguration.
  */
-class MultilanguagePluginConfiguration extends BaseConfiguration
+class SecurityPluginConfiguration extends BaseConfiguration
 {
     /**
      * Configure the root node.
@@ -32,8 +32,17 @@ class MultilanguagePluginConfiguration extends BaseConfiguration
     {
         $rootNode
             ->children()
-                ->scalarNode('language_field')
-                   ->defaultValue('language')
+                ->scalarNode('host')
+                    ->defaultNull()
+                ->end()
+                ->integerNode('port')
+                    ->defaultNull()
+                ->end()
+                ->booleanNode('is_cluster')
+                    ->defaultFalse()
+                ->end()
+                ->scalarNode('database')
+                    ->defaultNull()
                 ->end();
     }
 }
