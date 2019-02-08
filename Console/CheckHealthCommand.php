@@ -35,22 +35,12 @@ class CheckHealthCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Check health';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return mixed
+     * @return mixed|null
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $health = $this
             ->commandBus
@@ -65,21 +55,6 @@ class CheckHealthCommand extends CommandWithBusAndGodToken
         return true === $health['healthy']
             ? 0
             : 1;
-    }
-
-    /**
-     * Get success message.
-     *
-     * @param InputInterface $input
-     * @param mixed          $result
-     *
-     * @return string
-     */
-    protected function getSuccessMessage(
-        InputInterface $input,
-        $result
-    ): string {
-        return '';
     }
 
     /**
@@ -106,5 +81,30 @@ class CheckHealthCommand extends CommandWithBusAndGodToken
         }
 
         return (string) $value;
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Check health';
+    }
+
+    /**
+     * Get success message.
+     *
+     * @param InputInterface $input
+     * @param mixed          $result
+     *
+     * @return string
+     */
+    protected static function getSuccessMessage(
+        InputInterface $input,
+        $result
+    ): string {
+        return '';
     }
 }

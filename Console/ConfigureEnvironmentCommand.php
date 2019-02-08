@@ -27,26 +27,26 @@ class ConfigureEnvironmentCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Configure Environment';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
      * @return mixed|null
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $this
             ->commandBus
             ->handle(new ConfigureEnvironment());
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Configure Environment';
     }
 
     /**
@@ -57,7 +57,7 @@ class ConfigureEnvironmentCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

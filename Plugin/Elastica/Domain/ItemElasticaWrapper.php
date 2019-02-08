@@ -32,9 +32,9 @@ use Elastica\Exception\ResponseException;
 use Elastica\Index;
 use Elastica\Query;
 use Elastica\Type;
-use Elastica\Type\Mapping;
-use Elasticsearch\Endpoints\Cat\Aliases;
 use Elasticsearch\Endpoints\Cat\Indices;
+use Elasticsearch\Endpoints\Indices\Mapping as MappingEndpoint;
+use Elasticsearch\Endpoints\Cat\Aliases;
 use Elasticsearch\Endpoints\Reindex;
 
 /**
@@ -330,11 +330,11 @@ class ItemElasticaWrapper
     /**
      * Build index mapping.
      *
-     * @param Mapping $mapping
+     * @param Type\Mapping $mapping
      * @param Config  $config
      */
     public function buildIndexMapping(
-        Mapping $mapping,
+        Type\Mapping $mapping,
         Config $config
     ) {
         $mapping->setParam('dynamic_templates', [
@@ -467,6 +467,8 @@ class ItemElasticaWrapper
         );
 
         $elasticaResponse = $this->client->requestEndpoint((new Indices())->setIndex($indexSearchKeyword));
+        $elasticaMappingResponse = $this->client->requestEndpoint((new MappingEndpoint\Get())->setIndex($indexSearchKeyword));
+        $mappingData = $this->getMappingMetadataByResponse($elasticaMappingResponse->getData());
 
         if (empty($elasticaResponse->getData())) {
             return [];
@@ -475,7 +477,7 @@ class ItemElasticaWrapper
         $regexToParse = '/^'.
             '(?P<color>[^\ ]+)\s+'.
             '(?P<status>[^\ ]+)\s+'.
-            'apisearch_\d+_item_(?P<app_id>[^_]+)_(?P<id>[^\ ]+)\s+'.
+            '(?P<fullname>apisearch_\d+_item_(?P<app_id>[^_]+)_(?P<id>[^\ ]+))\s+'.
             '(?P<uuid>[^\ ]+)\s+'.
             '(?P<primary_shards>[^\ ]+)\s+'.
             '(?P<replica_shards>[^\ ]+)\s+'.
@@ -500,15 +502,72 @@ class ItemElasticaWrapper
                     (string) $metaData['index_size'],
                     (int) $metaData['primary_shards'],
                     (int) $metaData['replica_shards'],
+                    $mappingData[$metaData['fullname']] ?? [],
                     [
                         'allocated' => ('green' === $metaData['color']),
-                        'doc_deleted' => (int) $metaData['doc_deleted'],
+                        'doc_deleted' => (int) $metaData['doc_deleted']
                     ]
                 );
             }
         }
 
         return $indices;
+    }
+
+    /**
+     * Given a Mapping response, create metadata values per index
+     *
+     * @param array $response
+     *
+     * @return array
+     */
+    private function getMappingMetadataByResponse(array $response) : array
+    {
+        $metadataData = [];
+        foreach ($response as $indexId => $metadataValues) {
+            if (!isset($metadataValues['mappings']['item'])) {
+                continue;
+            }
+
+            $metadataBucket = [];
+            $this->getMappingProperties(
+                $metadataBucket,
+                '',
+                $metadataValues['mappings']['item']
+            );
+            $metadataData[$indexId] = $metadataBucket;
+        }
+
+        return $metadataData;
+    }
+
+    /**
+     * Get properties
+     *
+     * @param array $metadataBucket
+     * @param string $field
+     * @param array $data
+     *
+     * @return void
+     */
+    private function getMappingProperties(
+        array &$metadataBucket,
+        string $field,
+        array $data
+    ) : void
+    {
+        if (isset($data['type'])) {
+            $metadataBucket[$field] = $data['type'];
+            return;
+        }
+
+        foreach ($data['properties'] ?? [] as $property => $value) {
+            $this->getMappingProperties(
+                $metadataBucket,
+                trim("$field.$property", '.'),
+                $value
+            );
+        }
     }
 
     /**
@@ -792,7 +851,7 @@ class ItemElasticaWrapper
         Config $config
     ) {
         try {
-            $itemMapping = new Mapping();
+            $itemMapping = new Type\Mapping();
             $itemMapping->setType($this->getItemTypeByIndexName($indexName));
             $this->buildIndexMapping($itemMapping, $config);
             $itemMapping->send();

@@ -19,9 +19,6 @@ use Apisearch\Config\Config;
 use Apisearch\Config\Synonym;
 use Apisearch\Config\SynonymReader;
 use Apisearch\Exception\ResourceExistsException;
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\IndexUUID;
-use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Command\CreateIndex;
 use League\Tactician\CommandBus;
 use Symfony\Component\Console\Input\InputArgument;
@@ -124,39 +121,14 @@ class CreateIndexCommand extends CommandWithBusAndGodToken
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Create index';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return mixed
+     * @return mixed|null
      */
-    protected function dispatchDomainEvent(InputInterface $input, OutputInterface $output)
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-        $indexUUID = IndexUUID::createById($input->getArgument('index'));
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "App ID: <strong>{$appUUID->composeUUID()}</strong>"
-        );
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "Index ID: <strong>{$indexUUID->composeUUID()}</strong>"
-        );
-
-        $synonymsFile = $input->getOption('synonyms-file');
+        $objects = $this->getAppIndexToken($input, $output);
         $synonyms = $this
             ->synonymReader
             ->readSynonymsFromFile($input->getOption('synonyms-file'));
@@ -169,12 +141,9 @@ class CreateIndexCommand extends CommandWithBusAndGodToken
             $this
                 ->commandBus
                 ->handle(new CreateIndex(
-                    RepositoryReference::create(
-                        $appUUID,
-                        $indexUUID
-                    ),
-                    $this->createGodToken($appUUID),
-                    $indexUUID,
+                    $objects['repository_reference'],
+                    $objects['token'],
+                    $objects['index_uuid'],
                     Config::createFromArray([
                         'language' => $input->getOption('language'),
                         'store_searchable_metadata' => !$input->getOption('no-store-searchable-metadata'),
@@ -195,6 +164,16 @@ class CreateIndexCommand extends CommandWithBusAndGodToken
     }
 
     /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Create index';
+    }
+
+    /**
      * Get success message.
      *
      * @param InputInterface $input
@@ -202,7 +181,7 @@ class CreateIndexCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

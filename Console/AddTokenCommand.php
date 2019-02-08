@@ -15,11 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Console;
 
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
-use Apisearch\Model\TokenUUID;
-use Apisearch\Repository\RepositoryReference;
 use Apisearch\Server\Domain\Command\AddToken;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\InputArgument;
@@ -107,38 +103,22 @@ class AddTokenCommand extends CommandWithBusAndGodToken
      *
      * @param InputInterface  $input
      * @param OutputInterface $output
+     *
+     * @return mixed|null
      */
-    protected function dispatchDomainEvent(
-        InputInterface $input,
-        OutputInterface $output
-    ) {
-        $tokenUUID = TokenUUID::createById($input->getArgument('uuid'));
-        $appUUID = AppUUID::createById($input->getArgument('app-id'));
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "App ID: <strong>{$appUUID->composeUUID()}</strong>"
-        );
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "Token UUID: <strong>{$tokenUUID->composeUUID()}</strong>"
-        );
-
-        $endpoints = $this->getEndpoints($input, $output);
+    protected function runCommand(InputInterface $input, OutputInterface $output)
+    {
+        $objects = $this->getAppTokenAndIndices($input, $output);
+        $endpoints = $this->getEndpoints($input);
         $this
             ->commandBus
             ->handle(new AddToken(
-                RepositoryReference::create($appUUID),
-                $this->createGodToken($appUUID),
+                $objects['repository_reference'],
+                $this->createGodToken($objects['app_uuid']),
                 new Token(
-                    $tokenUUID,
-                    $appUUID,
-                    array_map(function (string $index) {
-                        return IndexUUID::createById(trim($index));
-                    }, $input->getOption('index')),
+                    $objects['token_uuid'],
+                    $objects['app_uuid'],
+                    $objects['indices_uuid'],
                     $input->getOption('http-referrer'),
                     $endpoints,
                     $input->getOption('plugin'),
@@ -154,7 +134,7 @@ class AddTokenCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getHeader(): string
+    protected static function getHeader(): string
     {
         return 'Add token';
     }
@@ -167,7 +147,7 @@ class AddTokenCommand extends CommandWithBusAndGodToken
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {
