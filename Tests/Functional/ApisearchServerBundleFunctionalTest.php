@@ -152,10 +152,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
             ],
             'elastica_plugin' => [
                 'cluster' => [
-                    'localhost' => [
-                        'host' => $_ENV['ELASTICSEARCH_HOST'],
-                        'port' => $_ENV['ELASTICSEARCH_PORT'],
-                    ],
+                    'localhost' => static::getElasticsearchEndpoint(),
                 ],
                 'refresh_on_write' => true,
                 'repository_config_path' => '/tmp/config_{app_id}_{index_id}',
@@ -320,6 +317,19 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
      */
     protected static function waitAfterWriteCommand()
     {
+    }
+
+    /**
+     * Get elasticsearch endpoint
+     *
+     * @return array
+     */
+    protected static function getElasticsearchEndpoint(): array
+    {
+        return [
+            'host' => $_ENV['ELASTICSEARCH_HOST'],
+            'port' => $_ENV['ELASTICSEARCH_PORT'],
+        ];
     }
 
     /**
