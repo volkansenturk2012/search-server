@@ -43,7 +43,11 @@ trait IndexConfigurationTest
     {
         $this->assertCount(0, $this->query(Query::create('Flipencio'))->getItems());
         $this->configureIndex(Config::createEmpty()->addSynonym(Synonym::createByWords(['Alfaguarra', 'Flipencio'])));
-        $this->assertCount(1, $this->query(Query::create('Flipencio'))->getItems());
+        $this->configureIndex(Config::createEmpty()->addSynonym(Synonym::createByWords(['hermenegildo', 'Alfaguarra', 'eleuterio'])));
+        $this->assertCount(1, $this->query(Query::create('hermenegildo'))->getItems());
+        $this->assertCount(1, $this->query(Query::create('Hermenegildo'))->getItems());
+        $this->assertCount(1, $this->query(Query::create('eleuterio'))->getItems());
+        $this->assertCount(1, $this->query(Query::create('Eleuterio'))->getItems());
     }
 
     /**

@@ -39,6 +39,7 @@ class ResultBuilder
     ): ResultAggregations {
         $aggregations = new ResultAggregations($resultAggregations['doc_count']);
         unset($resultAggregations['doc_count']);
+        unset($resultAggregations['meta']);
         foreach ($resultAggregations as $aggregationName => $resultAggregation) {
             $queryAggregation = $query->getAggregation($aggregationName);
             $relatedFilter = $query->getFilter($aggregationName);
