@@ -24,31 +24,91 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 class RabbitMQChannel
 {
     /**
-     * Get channel.
+     * @var string
+     *
+     * Host
+     */
+    private $host;
+
+    /**
+     * @var int
+     *
+     * Port
+     */
+    private $port;
+
+    /**
+     * @var string
+     *
+     * User
+     */
+    private $user;
+
+    /**
+     * @var string
+     *
+     * Password
+     */
+    private $password;
+
+    /**
+     * @var string
+     *
+     * Vhost
+     */
+    private $vhost;
+
+    /**
+     * @var AMQPChannel
+     *
+     * Channel
+     */
+    private $channel;
+
+    /**
+     * RabbitMQChannel constructor.
      *
      * @param string $host
      * @param int    $port
      * @param string $user
      * @param string $password
      * @param string $vhost
-     *
-     * @return AMQPChannel
      */
-    public static function create(
+    public function __construct(
         string $host,
         int $port,
         string $user,
         string $password,
         string $vhost
-    ): AMQPChannel {
+    ) {
+        $this->host = $host;
+        $this->port = $port;
+        $this->user = $user;
+        $this->password = $password;
+        $this->vhost = $vhost;
+    }
+
+    /**
+     * Get channel.
+     *
+     * @return AMQPChannel
+     */
+    public function getChannel(): AMQPChannel
+    {
+        if ($this->channel instanceof AMQPChannel) {
+            return $this->channel;
+        }
+
         $connection = new AMQPStreamConnection(
-            $host,
-            $port,
-            $user,
-            $password,
-            $vhost
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vhost
         );
 
-        return $connection->channel();
+        $this->channel = $connection->channel();
+
+        return $this->channel;
     }
 }

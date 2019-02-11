@@ -320,7 +320,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
     }
 
     /**
-     * Get elasticsearch endpoint
+     * Get elasticsearch endpoint.
      *
      * @return array
      */
