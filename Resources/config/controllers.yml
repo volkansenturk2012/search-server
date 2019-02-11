@@ -146,22 +146,22 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 
-    apisearch_server.router_redirection_to_json_response:
-        class: Apisearch\Server\Controller\Listener\RouterRedirectionToJsonResponse
-        tags:
-            - { name: kernel.event_listener, event: kernel.response }
-
     apisearch_server.content_type_validation_over_http:
         class: Apisearch\Server\Controller\Listener\ContentTypeValidationOverHTTP
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: validateContentTypeOnKernelRequest }
+            - { name: kernel.event_listener, event: kernel.request, method: validateContentTypeOnKernelRequest, priority: 16 }
 
     apisearch_server.token_check_over_http:
         class: Apisearch\Server\Controller\Listener\TokenCheckOverHTTP
         arguments:
             - "@apisearch_server.token_manager"
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: checkTokenOnKernelRequest }
+            - { name: kernel.event_listener, event: kernel.request, method: checkTokenOnKernelRequest, priority: 8 }
+
+    apisearch_server.router_redirection_to_json_response:
+        class: Apisearch\Server\Controller\Listener\RouterRedirectionToJsonResponse
+        tags:
+            - { name: kernel.event_listener, event: kernel.response }
 
     apisearch_server.token_cache_over_http:
         class: Apisearch\Server\Controller\Listener\TokenCacheOverHTTP
