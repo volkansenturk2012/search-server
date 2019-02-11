@@ -15,10 +15,10 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\RabbitMQ\Console;
 
+use Apisearch\Plugin\RabbitMQ\Domain\RabbitMQChannel;
 use Apisearch\Server\Domain\CommandConsumer\CommandConsumer;
 use Apisearch\Server\Domain\Consumer\ConsumerManager;
 use Apisearch\Server\Domain\ExclusiveCommand;
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use ReflectionClass;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,13 +38,13 @@ class RabbitMQCommandsConsumer extends RabbitMQConsumer
     /**
      * ConsumerCommand constructor.
      *
-     * @param AMQPChannel     $channel
+     * @param RabbitMQChannel $channel
      * @param ConsumerManager $consumerManager
      * @param int             $secondsToWaitOnBusy
      * @param CommandConsumer $commandConsumer
      */
     public function __construct(
-        AMQPChannel        $channel,
+        RabbitMQChannel        $channel,
         ConsumerManager $consumerManager,
         int $secondsToWaitOnBusy,
         CommandConsumer $commandConsumer
@@ -80,7 +80,6 @@ class RabbitMQCommandsConsumer extends RabbitMQConsumer
     ) {
         $consumerManager = $this->consumerManager;
         $command = json_decode($message->body, true);
-        $channel = $this->channel;
         $commandNamespace = 'Apisearch\Server\Domain\Command\\'.$command['class'];
         $reflectionCommand = new ReflectionClass($commandNamespace);
         $isExclusiveCommand = $reflectionCommand->implementsInterface(ExclusiveCommand::class);
@@ -96,7 +95,10 @@ class RabbitMQCommandsConsumer extends RabbitMQConsumer
                 $command
             );
 
-        $channel->basic_ack($message->delivery_info['delivery_tag']);
+        $this
+            ->channel
+            ->getChannel()
+            ->basic_ack($message->delivery_info['delivery_tag']);
 
         if ($isExclusiveCommand) {
             $consumerManager->resumeConsumers([ConsumerManager::COMMAND_CONSUMER_TYPE]);

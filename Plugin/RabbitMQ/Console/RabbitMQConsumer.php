@@ -16,8 +16,8 @@ declare(strict_types=1);
 namespace Apisearch\Plugin\RabbitMQ\Console;
 
 use Apisearch\Command\ApisearchCommand;
+use Apisearch\Plugin\RabbitMQ\Domain\RabbitMQChannel;
 use Apisearch\Server\Domain\Consumer\ConsumerManager;
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,7 +28,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class RabbitMQConsumer extends ApisearchCommand
 {
     /**
-     * @var AMQPChannel
+     * @var RabbitMQChannel
      *
      * Channel
      */
@@ -58,12 +58,12 @@ abstract class RabbitMQConsumer extends ApisearchCommand
     /**
      * ConsumerCommand constructor.
      *
-     * @param AMQPChannel     $channel
+     * @param RabbitMQChannel $channel
      * @param ConsumerManager $consumerManager
      * @param int             $secondsToWaitOnBusy
      */
     public function __construct(
-        AMQPChannel        $channel,
+        RabbitMQChannel        $channel,
         ConsumerManager $consumerManager,
         int $secondsToWaitOnBusy
     ) {
@@ -89,20 +89,20 @@ abstract class RabbitMQConsumer extends ApisearchCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->startCommand($output);
-        $channel = $this->channel;
         $consumerManager = $this->consumerManager;
         $queueType = $this->getQueueType();
         $consumerQueueName = $consumerManager->getQueueName($queueType, false);
         $queueType = $this->getQueueType();
         $consumerManager->declareConsumer($queueType);
-        $channel->basic_qos(0, 1, false);
+        $channel = $this
+            ->channel
+            ->getChannel();
 
-        $channel->basic_consume($consumerQueueName, '', false, false, false, false, function (AMQPMessage $message) use ($output) {
+        $channel->basic_qos(0, 1, false);
+        $channel->basic_consume($consumerQueueName, '', false, false, false, false, function (AMQPMessage $message) use ($output, $channel) {
             if ($this->busy) {
                 $output->writeln('Busy channel. Rejecting and waiting '.$this->secondsToWaitOnBusy.' seconds');
-                $this
-                    ->channel
-                    ->basic_reject($message->delivery_info['delivery_tag'], true);
+                $channel->basic_reject($message->delivery_info['delivery_tag'], true);
                 sleep($this->secondsToWaitOnBusy);
 
                 return;

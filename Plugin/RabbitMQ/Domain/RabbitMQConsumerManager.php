@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace Apisearch\Plugin\RabbitMQ\Domain;
 
 use Apisearch\Server\Domain\Consumer\ConsumerManager;
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -25,7 +24,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 class RabbitMQConsumerManager extends ConsumerManager
 {
     /**
-     * @var AMQPChannel
+     * @var RabbitMQChannel
      *
      * Channel
      */
@@ -34,12 +33,12 @@ class RabbitMQConsumerManager extends ConsumerManager
     /**
      * RabbitMQConsumerManager constructor.
      *
-     * @param array       $queues
-     * @param AMQPChannel $channel
+     * @param array           $queues
+     * @param RabbitMQChannel $channel
      */
     public function __construct(
         array $queues,
-        AMQPChannel $channel
+        RabbitMQChannel $channel
     ) {
         parent::__construct($queues);
         $this->channel = $channel;
@@ -62,6 +61,7 @@ class RabbitMQConsumerManager extends ConsumerManager
 
         $this
             ->channel
+            ->getChannel()
             ->queue_declare($queueName, false, false, false, false);
 
         return true;
@@ -81,7 +81,9 @@ class RabbitMQConsumerManager extends ConsumerManager
             return null;
         }
 
-        $channel = $this->channel;
+        $channel = $this
+            ->channel
+            ->getChannel();
         $channel->exchange_declare($busyQueueName, 'fanout', false, false, false);
         list($createdBusyQueueName) = $channel->queue_declare('', false, false, true, false);
         $channel->queue_bind($createdBusyQueueName, $busyQueueName);
@@ -105,6 +107,7 @@ class RabbitMQConsumerManager extends ConsumerManager
 
         $this
             ->channel
+            ->getChannel()
             ->basic_publish(new AMQPMessage(json_encode($data), [
                 'delivery_mode' => 2,
             ]), '', $this->queues['queues'][$type]);
@@ -127,6 +130,7 @@ class RabbitMQConsumerManager extends ConsumerManager
 
         $data = $this
             ->channel
+            ->getChannel()
             ->queue_declare($queueName, true);
 
         return \intval($data[1]);
@@ -145,6 +149,7 @@ class RabbitMQConsumerManager extends ConsumerManager
         foreach ($queues as $queue) {
             $this
                 ->channel
+                ->getChannel()
                 ->basic_publish(new AMQPMessage($value), $queue);
         }
     }

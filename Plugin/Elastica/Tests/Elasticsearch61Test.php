@@ -14,15 +14,16 @@
 declare(strict_types=1);
 
 namespace Apisearch\Plugin\Elastica;
+
 use Apisearch\Server\Tests\Functional\Domain\Repository\ServiceRepositoryTest;
 
 /**
- * Class Elasticsearch61Test
+ * Class Elasticsearch61Test.
  */
 class Elasticsearch61Test extends ServiceRepositoryTest
 {
     /**
-     * Get elasticsearch endpoint
+     * Get elasticsearch endpoint.
      *
      * @return array
      */

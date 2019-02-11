@@ -1,16 +1,13 @@
 services:
 
     apiserach_plugin.rabbitmq.channel:
-        class: PhpAmqpLib\Channel\AMQPChannel
+        class: Apisearch\Plugin\RabbitMQ\Domain\RabbitMQChannel
         arguments:
             - "%apisearch_plugin.rabbitmq.host%"
             - "%apisearch_plugin.rabbitmq.port%"
             - "%apisearch_plugin.rabbitmq.user%"
             - "%apisearch_plugin.rabbitmq.password%"
             - "%apisearch_plugin.rabbitmq.vhost%"
-        factory:
-            - Apisearch\Plugin\RabbitMQ\Domain\RabbitMQChannel
-            - create
 
     apisearch_server.command_enqueuer:
         class: Apisearch\Plugin\RabbitMQ\Domain\RabbitMQCommandEnqueuer
