@@ -32,9 +32,6 @@ class ElasticaPluginConfiguration extends BaseConfiguration
     {
         $rootNode
             ->children()
-                ->scalarNode('repository_config_path')
-                    ->defaultValue('{root}/elastic/{app_id}/{index_id}/')
-                ->end()
                 ->booleanNode('refresh_on_write')
                     ->defaultFalse()
                 ->end()

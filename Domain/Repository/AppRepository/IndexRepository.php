@@ -47,6 +47,19 @@ interface IndexRepository
     );
 
     /**
+     * Config the index.
+     *
+     * @param IndexUUID $indexUUID
+     * @param Config    $config
+     *
+     * @throws ResourceNotAvailableException
+     */
+    public function configureIndex(
+        IndexUUID $indexUUID,
+        Config $config
+    );
+
+    /**
      * Delete an index.
      *
      * @param IndexUUID $indexUUID

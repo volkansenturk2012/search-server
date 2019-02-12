@@ -52,6 +52,14 @@ class ApisearchServerConfiguration extends BaseConfiguration
                 ->end()
                 ->scalarNode('ping_token')
                     ->defaultValue('')
+                ->end()
+                ->arrayNode('limitations')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->integerNode('number_of_results')
+                            ->defaultValue(100)
+                        ->end()
+                    ->end()
                 ->end();
     }
 }

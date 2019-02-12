@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/apisearch-io/apisearch-bundle.git",
-                "reference": "2edc5c0a527fb5cd31fe7ca64a5653e866d13b88"
+                "reference": "95b4e700bdd2c3961fad66841e27fedd21238d0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apisearch-io/apisearch-bundle/zipball/2edc5c0a527fb5cd31fe7ca64a5653e866d13b88",
-                "reference": "2edc5c0a527fb5cd31fe7ca64a5653e866d13b88",
+                "url": "https://api.github.com/repos/apisearch-io/apisearch-bundle/zipball/95b4e700bdd2c3961fad66841e27fedd21238d0a",
+                "reference": "95b4e700bdd2c3961fad66841e27fedd21238d0a",
                 "shasum": ""
             },
             "require": {
@@ -57,7 +57,7 @@
                     "email": "hello@puntmig.com"
                 }
             ],
-            "time": "2019-02-11T19:25:11+00:00"
+            "time": "2019-02-19T15:29:32+00:00"
         },
         {
             "name": "apisearch-io/php-client",
@@ -65,12 +65,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/apisearch-io/php-client.git",
-                "reference": "559e5b01cc6c1bc1900db729e51c0d74565890a4"
+                "reference": "d661a02dfa61f793acc819ff108e1e532b10ce6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/559e5b01cc6c1bc1900db729e51c0d74565890a4",
-                "reference": "559e5b01cc6c1bc1900db729e51c0d74565890a4",
+                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/d661a02dfa61f793acc819ff108e1e532b10ce6c",
+                "reference": "d661a02dfa61f793acc819ff108e1e532b10ce6c",
                 "shasum": ""
             },
             "require": {
@@ -103,7 +103,7 @@
                     "email": "yuhu@mmoreram.com"
                 }
             ],
-            "time": "2019-02-13T08:28:48+00:00"
+            "time": "2019-02-19T14:41:59+00:00"
         },
         {
             "name": "cboden/ratchet",
@@ -4046,16 +4046,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v2.14.1",
+            "version": "v2.14.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "2e82abd1322897eb8aacb861e5ff551af3888349"
+                "reference": "ff401e58261ffc5934a58f795b3f95b355e276cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/2e82abd1322897eb8aacb861e5ff551af3888349",
-                "reference": "2e82abd1322897eb8aacb861e5ff551af3888349",
+                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/ff401e58261ffc5934a58f795b3f95b355e276cb",
+                "reference": "ff401e58261ffc5934a58f795b3f95b355e276cb",
                 "shasum": ""
             },
             "require": {
@@ -4075,9 +4075,6 @@
                 "symfony/polyfill-php72": "^1.4",
                 "symfony/process": "^3.0 || ^4.0",
                 "symfony/stopwatch": "^3.0 || ^4.0"
-            },
-            "conflict": {
-                "hhvm": "*"
             },
             "require-dev": {
                 "johnkary/phpunit-speedtrap": "^1.1 || ^2.0 || ^3.0",
@@ -4133,7 +4130,7 @@
                 }
             ],
             "description": "A tool to automatically fix PHP code style",
-            "time": "2019-02-10T22:52:33+00:00"
+            "time": "2019-02-17T17:44:13+00:00"
         },
         {
             "name": "mmoreram/php-formatter",

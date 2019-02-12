@@ -34,13 +34,6 @@ abstract class ElasticaWrapperWithRepositoryReference implements WithRepositoryR
     protected $elasticaWrapper;
 
     /**
-     * @var string
-     *
-     * Repository config path
-     */
-    protected $repositoryConfigPath;
-
-    /**
      * @var bool
      *
      * Refresh on write
@@ -51,16 +44,13 @@ abstract class ElasticaWrapperWithRepositoryReference implements WithRepositoryR
      * ElasticaSearchRepository constructor.
      *
      * @param ItemElasticaWrapper $elasticaWrapper
-     * @param string              $repositoryConfigPath
      * @param bool                $refreshOnWrite
      */
     public function __construct(
         ItemElasticaWrapper $elasticaWrapper,
-        string $repositoryConfigPath,
         bool $refreshOnWrite
     ) {
         $this->elasticaWrapper = $elasticaWrapper;
-        $this->repositoryConfigPath = $repositoryConfigPath;
         $this->refreshOnWrite = $refreshOnWrite;
     }
 
@@ -72,33 +62,6 @@ abstract class ElasticaWrapperWithRepositoryReference implements WithRepositoryR
         $this
             ->elasticaWrapper
             ->refresh($this->getRepositoryReference());
-    }
-
-    /**
-     * Get config path.
-     *
-     * @param RepositoryReference $repositoryReference
-     *
-     * @return string
-     */
-    protected function getConfigPath(RepositoryReference $repositoryReference): string
-    {
-        return rtrim(str_replace(
-            ['{app_id}', '{index_id}'],
-            [
-                $repositoryReference->getAppUUID()
-                    ? $repositoryReference
-                        ->getAppUUID()
-                        ->composeUUID()
-                    : '',
-                $repositoryReference->getIndexUUID()
-                    ? $repositoryReference
-                        ->getIndexUUID()
-                        ->composeUUID()
-                    : '',
-            ],
-            $this->repositoryConfigPath
-        ), '/');
     }
 
     /**

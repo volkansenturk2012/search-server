@@ -34,7 +34,6 @@ config:
     # created
     #
     elastica_plugin:
-        repository_config_path: '/tmp/config_{app_id}_{index_id}'
         cluster:
             docker_elasticsearch_service:
                 host: "%env(ELASTICSEARCH_HOST)%"

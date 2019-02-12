@@ -91,7 +91,6 @@ class ElasticaPluginExtension extends BaseExtension
     protected function getParametrizationValues(array $config): array
     {
         return [
-            'apisearch_plugin.elastica.repository_config_path' => $config['repository_config_path'],
             'apisearch_plugin.elastica.cluster' => ['servers' => $config['cluster']],
             'apisearch_plugin.elastica.refresh_on_write' => (bool) Env::get('ELASTICSEARCH_REFRESH_ON_WRITE', $config['refresh_on_write']),
         ];

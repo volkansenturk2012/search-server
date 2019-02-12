@@ -99,8 +99,7 @@ class ConfigureIndexCommand extends CommandWithBusAndGodToken
                 'synonyms-file',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'Synonyms file',
-                ''
+                'Synonyms file'
             )
             ->addOption(
                 'shards',
@@ -129,9 +128,13 @@ class ConfigureIndexCommand extends CommandWithBusAndGodToken
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $objects = $this->getAppIndexToken($input, $output);
-        $synonyms = $this
-            ->synonymReader
-            ->readSynonymsFromFile($input->getOption('synonyms-file'));
+        $synonymsFile = $input->getOption('synonyms-file');
+
+        $synonyms = !is_null($synonymsFile)
+            ? $this
+                ->synonymReader
+                ->readSynonymsFromFile($input->getOption('synonyms-file'))
+            : [];
 
         $synonyms += $this
             ->synonymReader

@@ -41,19 +41,16 @@ class UpdateRepository extends ElasticaWrapperWithRepositoryReference implements
      * ElasticaSearchRepository constructor.
      *
      * @param ItemElasticaWrapper $elasticaWrapper
-     * @param string              $repositoryConfigPath
      * @param bool                $refreshOnWrite
      * @param QueryBuilder        $queryBuilder
      */
     public function __construct(
         ItemElasticaWrapper $elasticaWrapper,
-        string $repositoryConfigPath,
         bool $refreshOnWrite,
         QueryBuilder $queryBuilder
     ) {
         parent::__construct(
             $elasticaWrapper,
-            $repositoryConfigPath,
             $refreshOnWrite
         );
 

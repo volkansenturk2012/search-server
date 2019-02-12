@@ -59,6 +59,12 @@ abstract class StaticTokensFunctionalTest extends HttpFunctionalTest
                 'app_id' => self::$appId,
                 'endpoints' => Endpoints::compose(Endpoints::queryOnly()),
             ],
+            'base_filtered_token' => [
+                'app_id' => self::$appId,
+                'metadata' => [
+                    'base_query' => ['q' => 'Matutano'],
+                ],
+            ],
         ];
 
         return $configuration;

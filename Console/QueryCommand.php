@@ -64,6 +64,13 @@ class QueryCommand extends CommandWithBusAndGodToken
                 InputOption::VALUE_OPTIONAL,
                 'Number of results',
                 ModelQuery::DEFAULT_SIZE
+            )
+            ->addOption(
+                'parameter',
+                null,
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Query parameters',
+                []
             );
     }
 
@@ -78,17 +85,19 @@ class QueryCommand extends CommandWithBusAndGodToken
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $objects = $this->getAppIndexToken($input, $output);
+        $parameters = $input->getOption('parameter');
 
         BaseQueryCommand::makeQueryAndPrintResults(
             $input,
             $output,
-            function (ModelQuery $query) use ($objects) {
+            function (ModelQuery $query) use ($objects, $parameters) {
                 return $this
                     ->commandBus
                     ->handle(new Query(
                         $objects['repository_reference'],
                         $objects['token'],
-                        $query
+                        $query,
+                        $parameters
                     ));
             }
         );

@@ -262,6 +262,12 @@ services:
             - "@apisearch_server.inline_event_publisher"
         public: false
 
+    apisearch_server.middleware.token_query:
+        class: Apisearch\Server\Domain\Middleware\TokenQueryMiddleware
+        arguments:
+            - "%apisearch_server.limitations_number_of_results%"
+        public: false
+
     #
     # Repositories
     #
