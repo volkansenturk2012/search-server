@@ -15,13 +15,11 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\Elastica;
 
-use Apisearch\Plugin\Elastica\DependencyInjection\CompilerPass\ElasticaConfigPathCompilerPass;
 use Apisearch\Plugin\Elastica\DependencyInjection\ElasticaPluginExtension;
 use Apisearch\Server\ApisearchServerBundle;
 use Apisearch\Server\Domain\Plugin\Plugin;
 use Apisearch\Server\Domain\Plugin\SearchEnginePlugin;
 use Mmoreram\BaseBundle\BaseBundle;
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -56,18 +54,6 @@ class ElasticaPluginBundle extends BaseBundle implements Plugin, SearchEnginePlu
     public function getContainerExtension()
     {
         return new ElasticaPluginExtension();
-    }
-
-    /**
-     * Return a CompilerPass instance array.
-     *
-     * @return CompilerPassInterface[]
-     */
-    public function getCompilerPasses(): array
-    {
-        return [
-            new ElasticaConfigPathCompilerPass(),
-        ];
     }
 
     /**

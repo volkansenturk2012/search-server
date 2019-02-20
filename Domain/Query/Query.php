@@ -35,16 +35,25 @@ class Query extends CommandWithRepositoryReferenceAndToken implements LoggableCo
     private $query;
 
     /**
+     * @var array
+     *
+     * Parameters
+     */
+    private $parameters = [];
+
+    /**
      * DeleteCommand constructor.
      *
      * @param RepositoryReference $repositoryReference
      * @param Token               $token
      * @param SearchQuery         $query
+     * @param array               $parameters
      */
     public function __construct(
         RepositoryReference $repositoryReference,
         Token $token,
-        SearchQuery $query
+        SearchQuery $query,
+        array $parameters = []
     ) {
         parent::__construct(
             $repositoryReference,
@@ -52,6 +61,7 @@ class Query extends CommandWithRepositoryReferenceAndToken implements LoggableCo
         );
 
         $this->query = $query;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -62,5 +72,15 @@ class Query extends CommandWithRepositoryReferenceAndToken implements LoggableCo
     public function getQuery(): SearchQuery
     {
         return $this->query;
+    }
+
+    /**
+     * Get parameters.
+     *
+     * @return array
+     */
+    public function getParameters(): array
+    {
+        return $this->parameters;
     }
 }

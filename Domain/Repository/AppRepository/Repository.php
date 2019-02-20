@@ -194,7 +194,7 @@ class Repository extends RepositoryWithCredentials implements BaseRepository
         Config $config
     ) {
         $this
-            ->getRepository(ConfigRepository::class)
+            ->getRepository(IndexRepository::class)
             ->configureIndex(
                 $indexUUID,
                 $config

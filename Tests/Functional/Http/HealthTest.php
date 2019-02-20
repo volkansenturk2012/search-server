@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Apisearch\Server\Tests\Functional\Http;
 
 use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
+use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
 use Apisearch\Server\Tests\Functional\HttpFunctionalTest;
 
 /**
@@ -63,6 +64,7 @@ class HealthTest extends HttpFunctionalTest
             $this->assertEquals(
                 [
                     'elastica' => ElasticaPluginBundle::class,
+                    'redis_storage' => RedisStoragePluginBundle::class,
                 ],
                 $content['info']['plugins']
             );

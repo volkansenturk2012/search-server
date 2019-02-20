@@ -46,6 +46,7 @@ abstract class HttpFunctionalTest extends ApisearchServerBundleFunctionalTest
      * @param string     $appId
      * @param string     $index
      * @param Token      $token
+     * @param array      $parameters
      *
      * @return Result
      */
@@ -53,10 +54,11 @@ abstract class HttpFunctionalTest extends ApisearchServerBundleFunctionalTest
         QueryModel $query,
         string $appId = null,
         string $index = null,
-        Token $token = null
+        Token $token = null,
+        array $parameters = []
     ): Result {
         return self::configureRepository($appId, $index, $token)
-            ->query($query);
+            ->query($query, $parameters);
     }
 
     /**

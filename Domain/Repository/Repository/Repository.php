@@ -74,13 +74,16 @@ class Repository extends BaseRepository
      * Search across the index types.
      *
      * @param Query $query
+     * @param array $parameters
      *
      * @return Result
      *
      * @throws ResourceNotAvailableException
      */
-    public function query(Query $query): Result
-    {
+    public function query(
+        Query $query,
+        array $parameters = []
+    ): Result {
         return $this
             ->getRepository(QueryRepository::class)
             ->query($query);

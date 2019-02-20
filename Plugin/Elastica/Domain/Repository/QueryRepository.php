@@ -50,21 +50,18 @@ class QueryRepository extends ElasticaWrapperWithRepositoryReference implements 
      * ElasticaSearchRepository constructor.
      *
      * @param ItemElasticaWrapper $elasticaWrapper
-     * @param string              $repositoryConfigPath
      * @param bool                $refreshOnWrite
      * @param QueryBuilder        $queryBuilder
      * @param ResultBuilder       $resultBuilder
      */
     public function __construct(
         ItemElasticaWrapper $elasticaWrapper,
-        string $repositoryConfigPath,
         bool $refreshOnWrite,
         QueryBuilder $queryBuilder,
         ResultBuilder $resultBuilder
     ) {
         parent::__construct(
             $elasticaWrapper,
-            $repositoryConfigPath,
             $refreshOnWrite
         );
 

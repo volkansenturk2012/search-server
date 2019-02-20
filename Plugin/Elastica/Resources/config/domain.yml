@@ -22,14 +22,19 @@ services:
     #
     # Elastica repositories
     #
-    apisearch_plugin.elastica.item_elastica_with_app_id_wrapper:
+    apisearch_plugin.elastica.elastica_wrapper_with_repository_reference:
         class: Apisearch\Plugin\Elastica\Domain\ElasticaWrapperWithRepositoryReference
         abstract: true
         public: false
         arguments:
             - "@apisearch_plugin.elastica.item_elastica_wrapper"
-            - "%apisearch_plugin.elastica.repository_config_path%"
             - "%apisearch_plugin.elastica.refresh_on_write%"
+
+    apisearch_plugin.elastica.item_elastica_with_app_id_wrapper:
+        class: Apisearch\Plugin\Elastica\Domain\ElasticaWrapperWithRepositoryReference
+        parent: apisearch_plugin.elastica.elastica_wrapper_with_repository_reference
+        abstract: true
+        public: false
 
     apisearch_plugin.elastica.elastica_query_repository:
         class: Apisearch\Plugin\Elastica\Domain\Repository\QueryRepository
@@ -67,18 +72,9 @@ services:
 
     apisearch_plugin.elastica.app_elastica_with_app_id_wrapper:
         class: Apisearch\Plugin\Elastica\Domain\ElasticaWithAppIdWrapper
+        parent: apisearch_plugin.elastica.elastica_wrapper_with_repository_reference
         abstract: true
         public: false
-        arguments:
-            - "@apisearch_plugin.elastica.item_elastica_wrapper"
-            - "%apisearch_plugin.elastica.repository_config_path%"
-            - "%apisearch_plugin.elastica.refresh_on_write%"
-
-    apisearch_plugin.elastica.elastica_config_app_repository:
-        class: Apisearch\Plugin\Elastica\Domain\AppRepository\ConfigRepository
-        parent: apisearch_plugin.elastica.app_elastica_with_app_id_wrapper
-        tags:
-            - {name: "apisearch_server.app_repository"}
 
     apisearch_plugin.elastica.elastica_index_app_repository:
         class: Apisearch\Plugin\Elastica\Domain\AppRepository\IndexRepository

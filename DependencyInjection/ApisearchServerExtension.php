@@ -98,6 +98,11 @@ class ApisearchServerExtension extends BaseExtension
             'apisearch_server.god_token' => Env::get('APISEARCH_GOD_TOKEN', $config['god_token']),
             'apisearch_server.readonly_token' => Env::get('APISEARCH_READONLY_TOKEN', $config['readonly_token']),
             'apisearch_server.ping_token' => Env::get('APISEARCH_PING_TOKEN', $config['ping_token']),
+
+            /*
+             * Limitations
+             */
+            'apisearch_server.limitations_number_of_results' => $config['limitations']['number_of_results'],
         ];
     }
 

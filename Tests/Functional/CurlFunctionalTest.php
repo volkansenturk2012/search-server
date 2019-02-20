@@ -44,6 +44,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      * @param string     $appId
      * @param string     $index
      * @param Token      $token
+     * @param array      $parameters
      *
      * @return Result
      */
@@ -51,14 +52,16 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         QueryModel $query,
         string $appId = null,
         string $index = null,
-        Token $token = null
+        Token $token = null,
+        array $parameters = []
     ): Result {
         $result = self::makeCurl(
             'v1-query',
             $appId,
             $index,
             $token,
-            ['query' => $query->toArray()]
+            ['query' => $query->toArray()],
+            $parameters
         );
 
         return Result::createFromArray($result['body']);
@@ -525,6 +528,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      * @param string|null  $index
      * @param Token|null   $token
      * @param array|string $body
+     * @param array        $queryParameters
      *
      * @return array
      */
@@ -533,11 +537,20 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         ?string $appId,
         ?string $index,
         ?Token $token,
-        $body = []
+        $body = [],
+        $queryParameters = []
     ): array {
         $endpoint = Endpoints::all()[$routeName];
         $tmpFile = tempnam('/tmp', 'curl_tmp');
-        $command = sprintf('curl -s -o %s -w "%%{http_code}" %s %s "http://localhost:'.static::HTTP_TEST_SERVICE_PORT.'%s?app_id=%s&index=%s&token=%s" -d\'%s\'',
+        $parameters = [
+            'app_id' => $appId ?? self::$appId,
+            'index' => $index ?? self::$index,
+            'token' => $token
+                ? $token->getTokenUUID()->composeUUID()
+                : self::getParameterStatic('apisearch_server.god_token'),
+        ] + $queryParameters;
+
+        $command = sprintf('curl -s -o %s -w "%%{http_code}" %s %s "http://localhost:'.static::HTTP_TEST_SERVICE_PORT.'%s?%s" -d\'%s\'',
             $tmpFile,
             (
                 'head' === $endpoint['verb']
@@ -550,11 +563,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
                     : '-H "Content-Type: application/json"'
             ),
             $endpoint['path'],
-            $appId ?? self::$appId,
-            $index ?? self::$index,
-            $token
-                ? $token->getTokenUUID()->composeUUID()
-                : self::getParameterStatic('apisearch_server.god_token'),
+            http_build_query($parameters),
             is_string($body)
                 ? $body
                 : json_encode($body)

@@ -45,6 +45,7 @@ trait AllAsynchronousTests
     use StopwordsSteemerTest;
     use FuzzinessTest;
     use GetIndicesTest;
+    use TokenQueriesTest;
 
     /**
      * Assert IDS sequence.

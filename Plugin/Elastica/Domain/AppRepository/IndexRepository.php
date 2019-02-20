@@ -53,11 +53,6 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
         IndexUUID $indexUUID,
         Config $config
     ) {
-        $configPath = $this->getConfigPath($this->getRepositoryReference());
-        is_dir($configPath)
-            ? chmod($configPath, 0755)
-            : @mkdir($configPath, 0755, true);
-
         $newRepositoryReference = $this
             ->getRepositoryReference()
             ->changeIndex($indexUUID);
@@ -92,12 +87,6 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
                 ->getRepositoryReference()
                 ->changeIndex($indexUUID)
             );
-
-        $configPath = $this->getConfigPath($this->getRepositoryReference());
-        $this->deleteConfigFolder();
-        if (is_dir($configPath)) {
-            @rmdir($configPath);
-        }
     }
 
     /**
@@ -156,19 +145,5 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
                 ->getRepositoryReference()
                 ->changeIndex($indexUUID)
             );
-    }
-
-    /**
-     * Delete all config folder.
-     */
-    private function deleteConfigFolder()
-    {
-        $configPath = $this->getConfigPath($this->getRepositoryReference());
-        $files = glob($configPath.'/*');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
-        }
     }
 }

@@ -27,6 +27,7 @@ use Apisearch\Model\TokenUUID;
 use Apisearch\Plugin\Elastica\ElasticaPluginBundle;
 use Apisearch\Query\Query as QueryModel;
 use Apisearch\Result\Result;
+use Apisearch\Server\ApisearchPluginsBundle;
 use Apisearch\Server\ApisearchServerBundle;
 use Apisearch\Server\Exception\ErrorException;
 use Mmoreram\BaseBundle\BaseBundle;
@@ -118,6 +119,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
             BaseBundle::class,
             ApisearchServerBundle::class,
             ElasticaPluginBundle::class,
+            ApisearchPluginsBundle::class,
         ];
 
         $configuration = [
@@ -155,7 +157,6 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
                     'localhost' => static::getElasticsearchEndpoint(),
                 ],
                 'refresh_on_write' => true,
-                'repository_config_path' => '/tmp/config_{app_id}_{index_id}',
             ],
             'apisearch' => [
                 'repositories' => [
@@ -486,6 +487,7 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
      * @param string     $appId
      * @param string     $index
      * @param Token      $token
+     * @param array      $parameters
      *
      * @return Result
      */
@@ -493,7 +495,8 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
         QueryModel $query,
         string $appId = null,
         string $index = null,
-        Token $token = null
+        Token $token = null,
+        array $parameters = []
     ): Result;
 
     /**

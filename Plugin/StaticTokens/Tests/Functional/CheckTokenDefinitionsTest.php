@@ -23,18 +23,10 @@ use Apisearch\Model\TokenUUID;
 use Apisearch\Query\Query;
 
 /**
- * Class SimpleTokensWorkflowTest.
+ * Class CheckTokenDefinitionsTest.
  */
-class SimpleStaticTokensWorkflowTest extends StaticTokensFunctionalTest
+class CheckTokenDefinitionsTest extends StaticTokensFunctionalTest
 {
-    /**
-     * Test count.
-     */
-    public function testCount()
-    {
-        $this->assertCount(6, $this->getTokens());
-    }
-
     /**
      * Test simple workflow.
      */

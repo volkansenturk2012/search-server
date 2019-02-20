@@ -69,7 +69,14 @@ class QueryController extends ControllerWithBus
                     IndexUUID::createById($query->get(Http::INDEX_FIELD, '*'))
                 ),
                 $query->get(Http::TOKEN_FIELD, ''),
-                QueryModel::createFromArray($queryAsArray)
+                QueryModel::createFromArray($queryAsArray),
+                array_filter($query->all(), function (string $key) {
+                    return !in_array($key, [
+                        Http::TOKEN_FIELD,
+                        Http::APP_ID_FIELD,
+                        Http::INDEX_FIELD,
+                    ]);
+                }, ARRAY_FILTER_USE_KEY)
             ))
             ->toArray();
 
