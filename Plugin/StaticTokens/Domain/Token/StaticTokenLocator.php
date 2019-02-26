@@ -42,9 +42,9 @@ class StaticTokenLocator implements TokenLocator, TokenProvider
     public function __construct(array $tokensAsArray)
     {
         $tokens = [];
-        array_walk($tokensAsArray, function (array $tokenAsArray, string $tokenId) use (&$tokens) {
-            $tokenAsArray['uuid'] = TokenUUID::createById($tokenId)->toArray();
-            $tokenAsArray['app_uuid'] = AppUUID::createById($tokenAsArray['app_id'])->toArray();
+        array_walk($tokensAsArray, function (array $tokenAsArray, string $_) use (&$tokens) {
+            $tokenAsArray['uuid'] = TokenUUID::createById($tokenAsArray['uuid'])->toArray();
+            $tokenAsArray['app_uuid'] = AppUUID::createById($tokenAsArray['app_uuid'])->toArray();
             $tokenAsArray['indices'] = array_map(function (string $indexId) {
                 return IndexUUID::createById($indexId)->toArray();
             }, $tokenAsArray['indices']);

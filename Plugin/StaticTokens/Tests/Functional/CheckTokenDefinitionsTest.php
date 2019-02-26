@@ -107,4 +107,18 @@ class CheckTokenDefinitionsTest extends StaticTokensFunctionalTest
             // Pass
         }
     }
+
+    /**
+     * Test wrong format.
+     */
+    public function testLongTokenIdFormat()
+    {
+        $token = new Token(TokenUUID::createById('bla-bla-blah'), AppUUID::createById(self::$appId));
+        $this->query(
+            Query::createMatchAll(),
+            null,
+            null,
+            $token
+        );
+    }
 }

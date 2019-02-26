@@ -47,23 +47,31 @@ abstract class StaticTokensFunctionalTest extends HttpFunctionalTest
     {
         $configuration['apisearch_plugin_static_tokens']['tokens'] = [
             'blablabla' => [
-                'app_id' => self::$appId,
+                'uuid' => 'blablabla',
+                'app_uuid' => self::$appId,
             ],
             'onlyindex' => [
-                'app_id' => self::$appId,
+                'uuid' => 'onlyindex',
+                'app_uuid' => self::$appId,
                 'indices' => [
                     self::$index,
                 ],
             ],
             'onlyaddtoken' => [
-                'app_id' => self::$appId,
+                'uuid' => 'onlyaddtoken',
+                'app_uuid' => self::$appId,
                 'endpoints' => Endpoints::compose(Endpoints::queryOnly()),
             ],
             'base_filtered_token' => [
-                'app_id' => self::$appId,
+                'uuid' => 'base_filtered_token',
+                'app_uuid' => self::$appId,
                 'metadata' => [
                     'base_query' => ['q' => 'Matutano'],
                 ],
+            ],
+            'bla-bla-blah-another' => [
+                'uuid' => 'bla-bla-blah',
+                'app_uuid' => self::$appId,
             ],
         ];
 
