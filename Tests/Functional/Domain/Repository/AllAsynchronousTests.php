@@ -46,6 +46,7 @@ trait AllAsynchronousTests
     use FuzzinessTest;
     use GetIndicesTest;
     use TokenQueriesTest;
+    use MultiqueryTest;
 
     /**
      * Assert IDS sequence.

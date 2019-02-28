@@ -30,7 +30,11 @@ use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException as BulkResponseException;
 use Elastica\Exception\ResponseException;
 use Elastica\Index;
+use Elastica\Multi\ResultSet as ElasticaMultiResultSet;
+use Elastica\Multi\Search as ElasticaMultiSearch;
 use Elastica\Query;
+use Elastica\ResultSet as ElasticaResultSet;
+use Elastica\Search as ElasticaSearch;
 use Elastica\Type;
 use Elasticsearch\Endpoints\Cat\Aliases;
 use Elasticsearch\Endpoints\Cat\Indices;
@@ -669,28 +673,27 @@ class ItemElasticaWrapper
     }
 
     /**
-     * Search.
+     * Simple search.
      *
      * @param RepositoryReference $repositoryReference
-     * @param Query               $query
-     * @param int                 $from
-     * @param int                 $size
+     * @param Search              $search
      *
-     * @return array
+     * @return ElasticaResultSet
      */
-    public function search(
+    public function simpleSearch(
         RepositoryReference $repositoryReference,
-        Query $query,
-        int $from,
-        int $size
-    ): array {
+        Search $search
+    ): ElasticaResultSet {
+        $index = $this->getIndex($repositoryReference);
+        $client = $index->getClient();
+
         try {
-            $queryResult = $this
-                ->getIndex($repositoryReference)
-                ->search($query, [
-                    'from' => $from,
-                    'size' => $size,
-                ]);
+            $elasticsearchSearch = new ElasticaSearch($client);
+            $elasticsearchSearch->addIndex($index);
+            $resultSet = $elasticsearchSearch->search($search->getQuery(), [
+                'from' => $search->getFrom(),
+                'size' => $search->getSize(),
+            ]);
         } catch (ResponseException $exception) {
             /*
              * The index resource cannot be deleted.
@@ -700,12 +703,36 @@ class ItemElasticaWrapper
             throw $this->getIndexNotAvailableException($exception->getMessage());
         }
 
-        return [
-            'results' => $queryResult->getResults(),
-            'suggests' => $queryResult->getSuggests(),
-            'aggregations' => $queryResult->getAggregations(),
-            'total_hits' => $queryResult->getTotalHits(),
-        ];
+        return $resultSet;
+    }
+
+    /**
+     * Multi search.
+     *
+     * @param RepositoryReference $repositoryReference
+     * @param Search[]            $searches
+     *
+     * @return ElasticaMultiResultSet
+     */
+    public function multisearch(
+        RepositoryReference $repositoryReference,
+        array $searches
+    ): ElasticaMultiResultSet {
+        $index = $this->getIndex($repositoryReference);
+        $client = $index->getClient();
+
+        $elasticsearchMultiSearch = new ElasticaMultiSearch($client);
+        foreach ($searches as $search) {
+            $elasticsearchSearch = new ElasticaSearch($this->client);
+            $elasticsearchSearch->addIndex($index);
+            $elasticsearchSearch->setOptionsAndQuery([
+                'from' => $search->getFrom(),
+                'size' => $search->getSize(),
+            ], $search->getQuery());
+            $elasticsearchMultiSearch->addSearch($elasticsearchSearch, $search->getName());
+        }
+
+        return $elasticsearchMultiSearch->search();
     }
 
     /**

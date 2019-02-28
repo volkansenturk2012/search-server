@@ -21,10 +21,13 @@ use Apisearch\Plugin\Elastica\Domain\Builder\QueryBuilder;
 use Apisearch\Plugin\Elastica\Domain\Builder\ResultBuilder;
 use Apisearch\Plugin\Elastica\Domain\ElasticaWrapperWithRepositoryReference;
 use Apisearch\Plugin\Elastica\Domain\ItemElasticaWrapper;
+use Apisearch\Plugin\Elastica\Domain\Search;
 use Apisearch\Query\Query;
 use Apisearch\Result\Result;
 use Apisearch\Server\Domain\Repository\Repository\QueryRepository as QueryRepositoryInterface;
+use Elastica\Multi\ResultSet as ElasticaMultiResultSet;
 use Elastica\Query as ElasticaQuery;
+use Elastica\ResultSet as ElasticaResultSet;
 use Elastica\Suggest;
 
 /**
@@ -78,91 +81,121 @@ class QueryRepository extends ElasticaWrapperWithRepositoryReference implements 
      */
     public function query(Query $query): Result
     {
-        $mainQuery = new ElasticaQuery();
-        $boolQuery = new ElasticaQuery\BoolQuery();
-        $this
-            ->queryBuilder
-            ->buildQuery(
-                $query,
-                $mainQuery,
-                $boolQuery
-            );
+        $r = (count($query->getSubqueries()) > 0)
+            ? $this->makeMultiQuery($query)
+            : $this->makeSimpleQuery($query);
 
-        $this->promoteUUIDs(
-            $boolQuery,
-            $query->getItemsPromoted()
-        );
+        return $r;
+    }
 
-        if ($query->areHighlightEnabled()) {
-            $this->addHighlights($mainQuery);
-        }
-
-        $this->addSuggest(
-            $mainQuery,
-            $query
-        );
-
-        $mainQuery->setExplain(false);
-        $results = $this
+    /**
+     * Make simple query.
+     *
+     * @param Query $query
+     *
+     * @return Result
+     */
+    private function makeSimpleQuery(Query $query)
+    {
+        $resultSet = $this
             ->elasticaWrapper
-            ->search(
+            ->simpleSearch(
                 $this->getRepositoryReference(),
-                $mainQuery,
-                $query->areResultsEnabled()
-                    ? $query->getFrom()
-                    : 0,
-                $query->areResultsEnabled()
-                    ? $query->getSize()
-                    : 0
+                new Search(
+                    $this->createElasticaQueryByModelQuery($query),
+                    $query->areResultsEnabled()
+                        ? $query->getFrom()
+                        : 0,
+                    $query->areResultsEnabled()
+                        ? $query->getSize()
+                        : 0
+                )
             );
 
-        return $this->elasticaResultToResult(
+        return $this->elasticaResultSetToResult(
             $query,
-            $results
+            $resultSet
         );
     }
 
     /**
-     * Build a Result object given elastica result object.
+     * Make multi query.
      *
      * @param Query $query
-     * @param array $elasticaResults
      *
      * @return Result
      */
-    private function elasticaResultToResult(
+    private function makeMultiQuery(Query $query)
+    {
+        $searches = [];
+        foreach ($query->getSubqueries() as $name => $subquery) {
+            $searches[] = new Search(
+                $this->createElasticaQueryByModelQuery($subquery),
+                $subquery->areResultsEnabled()
+                    ? $subquery->getFrom()
+                    : 0,
+                $subquery->areResultsEnabled()
+                    ? $subquery->getSize()
+                    : 0,
+                $name
+            );
+        }
+
+        $multiResultSet = $this
+            ->elasticaWrapper
+            ->multisearch(
+                $this->getRepositoryReference(),
+                $searches
+            );
+
+        return $this->elasticaMultiResultSetToResult(
+            $query,
+            $multiResultSet
+        );
+    }
+
+    /**
+     * Build a Result object given elastica resultset.
+     *
+     * @param Query             $query
+     * @param ElasticaResultSet $resultSet
+     *
+     * @return Result
+     */
+    private function elasticaResultSetToResult(
         Query $query,
-        array $elasticaResults
+        ElasticaResultSet $resultSet
     ): Result {
         $resultAggregations = [];
+        $elasticaResultAggregations = $resultSet->getAggregations();
 
         /*
          * Build Result instance
          */
         if (
             $query->areAggregationsEnabled() &&
-            isset($elasticaResults['aggregations']['all'])
+            isset($elasticaResultAggregations['all'])
         ) {
-            $resultAggregations = $elasticaResults['aggregations']['all']['universe'];
+            $resultAggregations = $elasticaResultAggregations['all']['universe'];
             unset($resultAggregations['common']);
 
             $result = new Result(
                 $query,
-                $elasticaResults['aggregations']['all']['universe']['doc_count'],
-                $elasticaResults['total_hits']
+                $resultAggregations['doc_count'],
+                $resultSet->getTotalHits()
             );
         } else {
             $result = new Result(
                 $query,
                 0,
-                $elasticaResults['total_hits']
+                $resultSet->getTotalHits()
             );
         }
 
         /*
          * @var ElasticaResult
          */
-        foreach ($elasticaResults['results'] as $elasticaResult) {
+        foreach ($resultSet->getResults() as $elasticaResult) {
             $source = $elasticaResult->getSource();
 
             if (
@@ -208,13 +241,76 @@ class QueryRepository extends ElasticaWrapperWithRepositoryReference implements 
         /*
          * Build suggests
          */
-        if (isset($elasticaResults['suggests']['completion']) && $query->areSuggestionsEnabled()) {
-            foreach ($elasticaResults['suggests']['completion'][0]['options'] as $suggest) {
+        $suggests = $resultSet->getSuggests();
+        if (isset($suggests['completion']) && $query->areSuggestionsEnabled()) {
+            foreach ($suggests['completion'][0]['options'] as $suggest) {
                 $result->addSuggest($suggest['text']);
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Build a Result object given elastica multi resultset.
+     *
+     * @param Query                  $query
+     * @param ElasticaMultiResultSet $multiResultSet
+     *
+     * @return Result
+     */
+    private function elasticaMultiResultSetToResult(
+        Query $query,
+        ElasticaMultiResultSet $multiResultSet
+    ): Result {
+        $subqueries = $query->getSubqueries();
+        $subresults = [];
+        foreach ($multiResultSet->getResultSets() as $name => $resultSet) {
+            $subresults[$name] = $this->elasticaResultSetToResult($subqueries[$name], $resultSet);
+        }
+
+        return Result::createMultiResult(
+            $query,
+            $subresults
+        );
+    }
+
+    /**
+     * Create Elasticsearch query by model query.
+     *
+     * @param Query $query
+     *
+     * @return ElasticaQuery
+     */
+    private function createElasticaQueryByModelQuery(Query $query): ElasticaQuery
+    {
+        $mainQuery = new ElasticaQuery();
+        $boolQuery = new ElasticaQuery\BoolQuery();
+        $this
+            ->queryBuilder
+            ->buildQuery(
+                $query,
+                $mainQuery,
+                $boolQuery
+            );
+
+        $this->promoteUUIDs(
+            $boolQuery,
+            $query->getItemsPromoted()
+        );
+
+        if ($query->areHighlightEnabled()) {
+            $this->addHighlights($mainQuery);
+        }
+
+        $this->addSuggest(
+            $mainQuery,
+            $query
+        );
+
+        $mainQuery->setExplain(false);
+
+        return $mainQuery;
     }
 
     /**
