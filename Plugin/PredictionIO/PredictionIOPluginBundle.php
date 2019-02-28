@@ -15,16 +15,29 @@ declare(strict_types=1);
 
 namespace Apisearch\Plugin\PredictionIO;
 
+use Apisearch\Plugin\PredictionIO\DependencyInjection\PredictionIOPluginExtension;
 use Apisearch\Server\ApisearchServerBundle;
 use Apisearch\Server\Domain\Plugin\Plugin;
+use Mmoreram\BaseBundle\BaseBundle;
 use Mmoreram\BaseBundle\SimpleBaseBundle;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class PredictionIOPluginBundle
  */
-class PredictionIOPluginBundle extends SimpleBaseBundle implements Plugin
+class PredictionIOPluginBundle extends BaseBundle implements Plugin
 {
+    /**
+     * Returns the bundle's container extension.
+     *
+     * @return ExtensionInterface|null The container extension
+     */
+    public function getContainerExtension()
+    {
+        return new PredictionIOPluginExtension();
+    }
+
     /**
      * Return all bundle dependencies.
      *
@@ -39,18 +52,6 @@ class PredictionIOPluginBundle extends SimpleBaseBundle implements Plugin
         return [
             SimpleBaseBundle::class,
             ApisearchServerBundle::class,
-        ];
-    }
-
-    /**
-     * get config files.
-     *
-     * @return array
-     */
-    public function getConfigFiles(): array
-    {
-        return [
-            'middleware'
         ];
     }
 

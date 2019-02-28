@@ -6,5 +6,8 @@ services:
 
     apiserach_plugin.pio.interaction_middleware:
         class: Apisearch\Plugin\PredictionIO\Domain\Middleware\InteractionMiddleware
+        arguments:
+            - "%apisearch_plugin.predictionio.event_server%"
+            - "%apisearch_plugin.predictionio.access_key%"
         tags:
             - { name: apisearch_plugin.middleware }

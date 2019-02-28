@@ -26,6 +26,35 @@ use DateTime;
 class InteractionMiddleware implements PluginMiddleware
 {
     /**
+     * @var array
+     *
+     * Event Server information
+     */
+    private $eventServer;
+
+    /**
+     * @var string
+     *
+     * Access key
+     */
+    private $accessKey;
+
+    /**
+     * InteractionMiddleware constructor.
+     *
+     * @param array  $eventServer
+     * @param string $accessKey
+     */
+    public function __construct(
+        array $eventServer,
+        string $accessKey
+    )
+    {
+        $this->eventServer = $eventServer;
+        $this->accessKey = $accessKey;
+    }
+
+    /**
      * Execute middleware.
      *
      * @param AddInteraction $command
@@ -51,14 +80,11 @@ class InteractionMiddleware implements PluginMiddleware
     private function putInteraction(Interaction $interaction)
     {
         $this->postContent([
-            'event' => 'interact',
+            'event' => $interaction->getEventName(),
             'entityType' => 'user',
             'entityId' => $interaction->getUser()->getId(),
             'targetEntityType' => 'item',
             'targetEntityId' => $interaction->getItemUUID()->composeUUID(),
-            'properties' => [
-                'weight' => $interaction->getWeight()
-            ],
             'eventTime' => (new DateTime)->format(DateTime::ATOM)
         ]);
     }
@@ -87,11 +113,11 @@ class InteractionMiddleware implements PluginMiddleware
      */
     function postContent(array $content)
     {
-        $fp = fsockopen("127.0.0.1", 7070, $errno, $errstr, 30);
+        $fp = fsockopen($this->eventServer['host'], $this->eventServer['port'], $errno, $errstr, 30);
         $data = json_encode($content);
-        $accessKey = '9Yp1Ot2tGmYYpgqUmxTjzPYnC0mOh5WNPADfedR4vtFNYJsZ7qQpfgMf7fU4JEVo';
+        $accessKey = $this->accessKey;
         $out = "POST /events.json?accessKey=$accessKey HTTP/1.1\r\n";
-        $out.= "Host: 127.0.0.1:7070\r\n";
+        $out.= "Host: {$this->eventServer['host']}:{$this->eventServer['port']}\r\n";
         $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
         $out.= "Content-Length: ".strlen($data)."\r\n";
         $out.= "Connection: Close\r\n\r\n";

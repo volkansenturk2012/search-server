@@ -57,7 +57,7 @@
                     "email": "hello@puntmig.com"
                 }
             ],
-            "time": "2019-02-19T15:29:32+00:00"
+            "time": "2019-02-19 15:29:32"
         },
         {
             "name": "apisearch-io/php-client",
@@ -65,12 +65,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/apisearch-io/php-client.git",
-                "reference": "d661a02dfa61f793acc819ff108e1e532b10ce6c"
+                "reference": "6b2d90596cc44a1f8ba6fa07b5b3682b83072336"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/d661a02dfa61f793acc819ff108e1e532b10ce6c",
-                "reference": "d661a02dfa61f793acc819ff108e1e532b10ce6c",
+                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/6b2d90596cc44a1f8ba6fa07b5b3682b83072336",
+                "reference": "6b2d90596cc44a1f8ba6fa07b5b3682b83072336",
                 "shasum": ""
             },
             "require": {
@@ -103,7 +103,7 @@
                     "email": "yuhu@mmoreram.com"
                 }
             ],
-            "time": "2019-02-19T14:41:59+00:00"
+            "time": "2019-02-27 13:42:05"
         },
         {
             "name": "cboden/ratchet",
@@ -4888,6 +4888,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2017-06-30T09:13:00+00:00"
         },
         {
