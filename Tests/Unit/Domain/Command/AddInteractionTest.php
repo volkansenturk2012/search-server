@@ -45,6 +45,7 @@ class AddInteractionTest extends TestCase
         $interaction = new Interaction(
             new User('123'),
             new ItemUUID('456', 'product'),
+            'add',
             10
         );
 
