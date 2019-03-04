@@ -131,6 +131,7 @@ abstract class TokenTest extends HttpFunctionalTest
             self::$index,
             $token
         );
+        $this->assertTrue(true);
     }
 
     /**

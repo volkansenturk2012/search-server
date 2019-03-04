@@ -38,9 +38,12 @@ class AsynchronousCommandNoBundleTest extends AsynchronousFunctionalTest
 
     /**
      * Do something.
+     *
+     * If the test is executed, means that the kernel failed. That would mean a
+     * good scenario
      */
     public function testSomething()
     {
-        // Blah blah blah
+        $this->assertTrue(true);
     }
 }

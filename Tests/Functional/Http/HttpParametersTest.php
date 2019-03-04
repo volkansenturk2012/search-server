@@ -37,5 +37,6 @@ class HttpParametersTest extends HttpFunctionalTest
             'get',
             $testRoute
         );
+        $this->assertTrue(true);
     }
 }
