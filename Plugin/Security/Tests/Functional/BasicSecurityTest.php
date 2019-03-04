@@ -50,6 +50,7 @@ class BasicSecurityTest extends SecurityFunctionalTest
             $this->fail(sprintf('%s exception expected', InvalidTokenException::class));
         } catch (InvalidTokenException $e) {
             // Silent pass
+            $this->assertTrue(true);
         }
     }
 
@@ -71,6 +72,7 @@ class BasicSecurityTest extends SecurityFunctionalTest
             self::$index,
             $token
         );
+        $this->assertTrue(true);
     }
 
     /**
@@ -98,6 +100,7 @@ class BasicSecurityTest extends SecurityFunctionalTest
             $this->fail(sprintf('%s exception expected', InvalidTokenException::class));
         } catch (InvalidTokenException $e) {
             // Silent pass
+            $this->assertTrue(true);
         }
     }
 
@@ -132,6 +135,7 @@ class BasicSecurityTest extends SecurityFunctionalTest
             self::$index,
             $token
         );
+        $this->assertTrue(true);
     }
 
     /**
@@ -168,6 +172,7 @@ class BasicSecurityTest extends SecurityFunctionalTest
             $this->fail(sprintf('%s should be thrown', InvalidTokenException::class));
         } catch (InvalidTokenException $e) {
             // Silent pass
+            $this->assertTrue(true);
         }
 
         $newToken = new Token(
@@ -188,13 +193,12 @@ class BasicSecurityTest extends SecurityFunctionalTest
             $this->fail(sprintf('%s should be thrown', InvalidTokenException::class));
         } catch (InvalidTokenException $e) {
             // Silent pass
+            $this->assertTrue(true);
         }
     }
 
     /**
      * Test restricted fields.
-     *
-     * @group lele
      */
     public function testRestrictedFields()
     {
@@ -214,8 +218,6 @@ class BasicSecurityTest extends SecurityFunctionalTest
 
     /**
      * Test restricted fields.
-     *
-     * @group lele
      */
     public function testAllowedFields()
     {

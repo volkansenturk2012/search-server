@@ -62,6 +62,7 @@ abstract class GenerateBasicTokensCommandTest extends CommandTest
             $this->fail('Query endpoint should not be accessible with an interactions token');
         } catch (InvalidTokenException $e) {
             // Silent pass
+            $this->assertTrue(true);
         }
     }
 }

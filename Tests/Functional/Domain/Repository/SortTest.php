@@ -122,6 +122,8 @@ trait SortTest
         if ($sameIdTimes === $iterations) {
             $this->fail('Random sort is not working...');
         }
+
+        $this->assertTrue(true);
     }
 
     /**

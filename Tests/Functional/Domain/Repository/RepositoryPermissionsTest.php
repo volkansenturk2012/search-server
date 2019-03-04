@@ -76,13 +76,7 @@ trait RepositoryPermissionsTest
             [self::$anotherInexistentAppId, self::$anotherIndex, 'indexItems', [$item]],
             [self::$anotherInexistentAppId, self::$anotherIndex, 'deleteItems', [$itemUUID]],
         ];
-    }
 
-    /**
-     * Reset all.
-     */
-    public function testResetAfterRepositoryPermissionTest()
-    {
         $this->resetScenario();
     }
 }

@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Server\Tests\Functional\Http;
 
+use Apisearch\Exception\InvalidFormatException;
 use Apisearch\Server\Tests\Functional\CurlFunctionalTest;
 
 /**
@@ -25,16 +26,37 @@ class MalformedQueryTest extends CurlFunctionalTest
     /**
      * Test malformed query.
      *
-     * @expectedException \Apisearch\Exception\InvalidFormatException
+     * @dataProvider dataMalformedQuery
      */
-    public function testMalformedQuery()
+    public function testMalformedQuery(string $query)
     {
-        self::makeCurl(
-            'v1-query',
-            self::$appId,
-            self::$index,
-            null,
-            '{"query":{"q":"","aggregations":{"undefined":{"field":"indexed_metadata.anon"}},"size":1000}}'
-        );
+        try {
+            self::makeCurl(
+                'v1-query',
+                self::$appId,
+                self::$index,
+                null,
+                $query
+            );
+            $this->fail('InvalidFormatException should be thrown');
+        } catch (InvalidFormatException $e) {
+            // Silent pass
+            $this->assertTrue(true);
+        }
+    }
+
+    /**
+     * Get malformed queries.
+     *
+     * @return array
+     */
+    public function dataMalformedQuery(): array
+    {
+        return [
+            ['{"query":{}}}}'],
+            ['{"query":{"aggregations":{"undefined":{"field":"indexed_metadata.anon"}}}}'],
+            ['{"query":{"filters":{"bla":{"values":"string"}}}'],
+            ['{"query":{"filters":{"bla":{"filter_type": "date_range", "values":"a1..a2"}}}}'],
+        ];
     }
 }

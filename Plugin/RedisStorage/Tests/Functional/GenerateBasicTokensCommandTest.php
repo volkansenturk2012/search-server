@@ -19,7 +19,7 @@ use Apisearch\Plugin\RedisStorage\RedisStoragePluginBundle;
 use Apisearch\Server\Tests\Functional\Console\GenerateBasicTokensCommandTest as BaseTest;
 
 /**
- * File header placeholder.
+ * Class GenerateBasicTokensCommandTest.
  */
 class GenerateBasicTokensCommandTest extends BaseTest
 {

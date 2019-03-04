@@ -50,7 +50,8 @@ class CheckTokenDefinitionsTest extends StaticTokensFunctionalTest
 
             $this->fail('Non accepted app should throw exception');
         } catch (\Exception $e) {
-            // Pass
+            // Silence Pass
+            $this->assertTrue(true);
         }
     }
 
@@ -77,7 +78,8 @@ class CheckTokenDefinitionsTest extends StaticTokensFunctionalTest
 
             $this->fail('Non accepted index should throw exception');
         } catch (\Exception $e) {
-            // Pass
+            // Silence Pass
+            $this->assertTrue(true);
         }
     }
 
@@ -104,7 +106,8 @@ class CheckTokenDefinitionsTest extends StaticTokensFunctionalTest
 
             $this->fail('Non accepted endpoints should throw exception');
         } catch (\Exception $e) {
-            // Pass
+            // Silence Pass
+            $this->assertTrue(true);
         }
     }
 
@@ -120,5 +123,6 @@ class CheckTokenDefinitionsTest extends StaticTokensFunctionalTest
             null,
             $token
         );
+        $this->assertTrue(true);
     }
 }

@@ -36,13 +36,6 @@ trait RepositoryResetTest
             0,
             $this->query(Query::createMatchAll())->getItems()
         );
-    }
-
-    /**
-     * Reset all.
-     */
-    public function testResetAfterRepositoryResetTest()
-    {
         $this->resetScenario();
     }
 }
