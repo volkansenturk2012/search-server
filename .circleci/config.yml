@@ -242,9 +242,9 @@ jobs:
             - run:
                 name: Run tests
                 command: |
-                    docker logs apisearch.server
-                    docker logs apisearch.commands_consumer_redis
-                    docker logs apisearch.domain_events_consumer_redis
-                    docker logs apisearch.commands_consumer_rabbitmq
-                    docker logs apisearch.domain_events_consumer_rabbitmq
+                    # docker logs apisearch.server
+                    # docker logs apisearch.commands_consumer_redis
+                    # docker logs apisearch.domain_events_consumer_redis
+                    # docker logs apisearch.commands_consumer_rabbitmq
+                    # docker logs apisearch.domain_events_consumer_rabbitmq
                     docker exec -it apisearch.server sh /var/www/apisearch/scripts/run-tests

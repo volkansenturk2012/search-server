@@ -58,7 +58,8 @@ class SimpleTokensWorkflowDisabledTest extends RedisFunctionalTest
 
             $this->fail('Non invalid token should throw exception');
         } catch (InvalidTokenException $e) {
-            // Pass
+            // Silent pass
+            $this->assertTrue(true);
         }
     }
 }

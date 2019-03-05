@@ -168,4 +168,22 @@ trait SortTest
             ['4', '2', '1', '5', '3']
         );
     }
+
+    /**
+     * Test sort by function.
+     */
+    public function testSortByFunction()
+    {
+        $result = $this->query(Query::createMatchAll()
+            ->sortBy(SortBy::create()->byFunction(
+                'doc["indexed_metadata.simple_int"].value * doc["indexed_metadata.relevance"].value',
+                SortBy::DESC
+            ))
+        );
+
+        $this->assertResults(
+            $result,
+            ['4', '1', '5', '3', '2']
+        );
+    }
 }
