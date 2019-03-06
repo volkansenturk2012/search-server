@@ -19,7 +19,6 @@ use Apisearch\Geo\CoordinateAndDistance;
 use Apisearch\Geo\LocationRange;
 use Apisearch\Geo\Polygon;
 use Apisearch\Geo\Square;
-use Apisearch\Model\Coordinate;
 use Apisearch\Model\Item;
 use Apisearch\Query\Aggregation as QueryAggregation;
 use Apisearch\Query\Filter;
@@ -929,47 +928,69 @@ class QueryBuilder
         $sortByElements = array_map(function (array $sortBy) {
             $type = $sortBy['type'] ?? SortBy::TYPE_FIELD;
             $mode = $sortBy['mode'] ?? SortBy::MODE_AVG;
-            unset($sortBy['type']);
-            unset($sortBy['mode']);
+            $order = $sortBy['order'] ?? SortBy::ASC;
 
-            if (SortBy::TYPE_NESTED === $type) {
-                $filter = null;
-                if (
-                    isset($sortBy['filter']) &&
-                    ($sortBy['filter'] instanceof Filter)
-                ) {
-                    $filter = $sortBy['filter'];
-                    unset($sortBy['filter']);
-                }
+            switch ($type) {
+                case SortBy::TYPE_SCORE:
+                    return '_score';
 
-                $key = array_keys($sortBy)[0];
-                $path = explode('.', $key);
-                array_pop($path);
-                $sortBy[$key]['mode'] = $mode;
-                $sortBy[$key]['nested'] = [
-                    'path' => implode('.', $path),
-                ];
+                case SortBy::TYPE_FUNCTION:
+                    return [
+                        '_script' => [
+                            'type' => 'number',
+                            'script' => [
+                                'lang' => 'painless',
+                                'source' => $sortBy['function'],
+                            ],
+                            'order' => $order,
+                        ],
+                    ];
 
-                if (!is_null($filter)) {
-                    $sortBy[$key]['nested']['filter'] = $this->createQueryFilterByApplicationType(
-                        $filter,
-                        false,
-                        false,
-                        false
-                    );
-                }
+                case SortBy::TYPE_FIELD:
+                    return [
+                        $sortBy['field'] => [
+                            'order' => $order,
+                        ],
+                    ];
+
+                case SortBy::TYPE_DISTANCE:
+                    return [
+                        '_geo_distance' => [
+                            'coordinate' => $sortBy['coordinate']->toArray(),
+                            'order' => SortBy::ASC,
+                            'unit' => $sortBy['unit'],
+                        ],
+                    ];
+
+                case SortBy::TYPE_NESTED:
+
+                    $key = $sortBy['field'];
+                    $path = explode('.', $key);
+                    array_pop($path);
+
+                    return [
+                        $key => [
+                            'mode' => $mode,
+                            'order' => $order,
+                            'nested' => array_filter([
+                                'path' => implode('.', $path),
+                                'filter' => (
+                                    isset($sortBy['filter'])
+                                        ? $this->createQueryFilterByApplicationType(
+                                            $sortBy['filter'],
+                                            false,
+                                            false,
+                                            false
+                                        ) : false
+                                ),
+                            ]),
+                        ],
+                    ];
             }
 
-            if (
-                isset($sortBy['_geo_distance']) &&
-                isset($sortBy['_geo_distance']['coordinate']) &&
-                ($sortBy['_geo_distance']['coordinate'] instanceof Coordinate)
-            ) {
-                $sortBy['_geo_distance']['coordinate'] = $sortBy['_geo_distance']['coordinate']->toArray();
-            }
-
-            return $sortBy;
+            return [];
         }, $sortByElements);
+
         $mainQuery->setSort($sortByElements);
 
         return $mainQuery;
