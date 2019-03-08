@@ -38,6 +38,13 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
     use HttpResponsesToException;
 
     /**
+     * @var array
+     *
+     * Last response
+     */
+    public static $lastResponse = [];
+
+    /**
      * Query using the bus.
      *
      * @param QueryModel $query
@@ -45,6 +52,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      * @param string     $index
      * @param Token      $token
      * @param array      $parameters
+     * @param array $headers
      *
      * @return Result
      */
@@ -53,18 +61,22 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $appId = null,
         string $index = null,
         Token $token = null,
-        array $parameters = []
+        array $parameters = [],
+        array $headers = []
     ): Result {
-        $result = self::makeCurl(
+        $response = self::makeCurl(
             'v1-query',
             $appId,
             $index,
             $token,
             ['query' => $query->toArray()],
-            $parameters
+            $parameters,
+            $headers
         );
 
-        return Result::createFromArray($result['body']);
+        self::$lastResponse = $response;
+
+        return Result::createFromArray($response['body']);
     }
 
     /**
@@ -81,7 +93,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $index = null,
         Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-items-delete',
             $appId,
             $index,
@@ -106,7 +118,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         ?string $index = null,
         ?Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-items-index',
             $appId,
             $index,
@@ -133,7 +145,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $index = null,
         Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-items-update',
             $appId,
             $index,
@@ -157,7 +169,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $index = null,
         Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-index-reset',
             $appId,
             $index,
@@ -175,7 +187,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $appId = null,
         Token $token = null
     ): array {
-        $result = self::makeCurl(
+        $response = self::makeCurl(
             'v1-indices-get',
             $appId,
             null,
@@ -184,10 +196,11 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         );
 
         $indices = [];
-        $body = $result['body'];
+        $body = $response['body'];
         foreach ($body as $item) {
             $indices[] = Index::createFromArray($item);
         }
+        self::$lastResponse = $response;
 
         return $indices;
     }
@@ -207,7 +220,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         Config $config = null
     ) {
         $indexUUIDAsArray = TokenUUID::createById($index ?? self::$index)->toArray();
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-index-create',
             $appId,
             $index,
@@ -238,7 +251,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         Token $token = null
     ) {
         $indexUUIDAsArray = TokenUUID::createById($index ?? self::$index)->toArray();
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-index-config',
             $appId,
             $index,
@@ -269,18 +282,19 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         Token $token = null
     ): bool {
         try {
-            $result = self::makeCurl(
+            $response = self::makeCurl(
                 'v1-index-check',
                 $appId,
                 $index,
                 $token,
                 []
             );
+            self::$lastResponse = $response;
         } catch (ConnectionException $exception) {
             return false;
         }
 
-        return '200' === $result['code'];
+        return '200' === $response['code'];
     }
 
     /**
@@ -295,7 +309,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $index = null,
         Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-index-delete',
             $appId,
             $index,
@@ -315,7 +329,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $appId = null,
         Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-token-add',
             $appId,
             null,
@@ -336,7 +350,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $appId = null,
         Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-token-delete',
             $appId,
             null,
@@ -357,12 +371,13 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $appId = null,
         Token $token = null
     ) {
-        $result = self::makeCurl(
+        $response = self::makeCurl(
             'v1-tokens-get',
             $appId,
             null,
             $token
         );
+        self::$lastResponse = $response;
 
         return array_map(function (array $tokenAsArray) {
             return Token::createFromArray($tokenAsArray);
@@ -379,7 +394,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $appId,
         Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-tokens-delete',
             $appId,
             null,
@@ -403,7 +418,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $appId,
         Token $token
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-interactions',
             $appId,
             null,
@@ -426,7 +441,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         string $appId,
         Token $token = null
     ) {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-interactions-delete',
             $appId,
             null,
@@ -443,12 +458,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      */
     public function ping(Token $token = null): bool
     {
-        $result = self::makeCurl(
-            'v1-ping',
-            null,
-            null,
-            $token
-        );
+        return false;
     }
 
     /**
@@ -460,12 +470,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      */
     public function checkHealth(Token $token = null): array
     {
-        $result = self::makeCurl(
-            'v1-check-health',
-            null,
-            null,
-            $token
-        );
+        return [];
     }
 
     /**
@@ -491,7 +496,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      */
     public function pauseConsumers(array $types)
     {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-pause-consumers',
             null,
             null,
@@ -509,7 +514,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      */
     public function resumeConsumers(array $types)
     {
-        self::makeCurl(
+        self::$lastResponse = self::makeCurl(
             'v1-resume-consumers',
             null,
             null,
@@ -529,6 +534,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      * @param Token|null   $token
      * @param array|string $body
      * @param array        $queryParameters
+     * @param array $headers
      *
      * @return array
      */
@@ -538,7 +544,8 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         ?string $index,
         ?Token $token,
         $body = [],
-        $queryParameters = []
+        $queryParameters = [],
+        array $headers = []
     ): array {
         $endpoint = Endpoints::all()[$routeName];
         $tmpFile = tempnam('/tmp', 'curl_tmp');
@@ -550,7 +557,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
                 : self::getParameterStatic('apisearch_server.god_token'),
         ] + $queryParameters;
 
-        $command = sprintf('curl -s -o %s -w "%%{http_code}" %s %s "http://localhost:'.static::HTTP_TEST_SERVICE_PORT.'%s?%s" -d\'%s\'',
+        $command = sprintf('curl -s -o %s -w "%%{http_code}-%%{size_download}" %s %s %s "http://localhost:'.static::HTTP_TEST_SERVICE_PORT.'%s?%s" -d\'%s\'',
             $tmpFile,
             (
                 'head' === $endpoint['verb']
@@ -562,6 +569,9 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
                     ? ''
                     : '-H "Content-Type: application/json"'
             ),
+            implode(' ', array_map(function(string $header) {
+                return "-H \"$header\"";
+            }, $headers)),
             $endpoint['path'],
             http_build_query($parameters),
             is_string($body)
@@ -570,11 +580,20 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         );
 
         $command = str_replace("-d'[]'", '', $command);
-
         $responseCode = exec($command);
+        list($httpCode, $contentLength) = explode('-', $responseCode, 2);
+        $content = file_get_contents($tmpFile);
+        if (array_search('Accept-Encoding: gzip', $headers) !== false) {
+            $content = gzuncompress($content);
+        }
+        if (array_search('Accept-Encoding: deflate', $headers) !== false) {
+            $content = gzinflate($content);
+        }
+
         $result = [
-            'code' => $responseCode,
-            'body' => json_decode(file_get_contents($tmpFile), true),
+            'code' => $httpCode,
+            'body' => json_decode($content, true),
+            'length' => $contentLength,
         ];
         unlink($tmpFile);
 
