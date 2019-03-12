@@ -14,16 +14,17 @@
 declare(strict_types=1);
 
 namespace Apisearch\Plugin\Compression\Tests\Functional;
+
 use Apisearch\Query\Query;
 use Apisearch\Server\Tests\Functional\CurlFunctionalTest;
 
 /**
- * Class BasicCompressionTest
+ * Class BasicCompressionTest.
  */
 class BasicCompressionTest extends CurlFunctionalTest
 {
     /**
-     * Test gzip compression
+     * Test gzip compression.
      */
     public function testGzipCompression()
     {
@@ -35,7 +36,7 @@ class BasicCompressionTest extends CurlFunctionalTest
         $result = $this->query(
             Query::createMatchAll(),
             null, null, null, [], [
-                'Accept-Encoding: gzip'
+                'Accept-Encoding: gzip',
             ]
         );
         $this->assertCount(5, $result->getItems());
@@ -44,7 +45,7 @@ class BasicCompressionTest extends CurlFunctionalTest
     }
 
     /**
-     * Test deflate compression
+     * Test deflate compression.
      */
     public function testDeflateCompression()
     {
@@ -53,7 +54,7 @@ class BasicCompressionTest extends CurlFunctionalTest
         $result = $this->query(
             Query::createMatchAll(),
             null, null, null, [], [
-                'Accept-Encoding: deflate'
+                'Accept-Encoding: deflate',
             ]
         );
         $this->assertCount(5, $result->getItems());

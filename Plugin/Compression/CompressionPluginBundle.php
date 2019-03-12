@@ -22,7 +22,7 @@ use Mmoreram\BaseBundle\SimpleBaseBundle;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
- * Class CompressionPluginBundle
+ * Class CompressionPluginBundle.
  */
 class CompressionPluginBundle extends SimpleBaseBundle implements Plugin
 {
@@ -39,7 +39,7 @@ class CompressionPluginBundle extends SimpleBaseBundle implements Plugin
     {
         return [
             ApisearchServerBundle::class,
-            BaseBundle::class
+            BaseBundle::class,
         ];
     }
 
