@@ -18,12 +18,12 @@ namespace Apisearch\Plugin\Compression\Domain\Listener;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
- * Class ResponseListener
+ * Class ResponseListener.
  */
 class ResponseListener
 {
     /**
-     * On kernel response
+     * On kernel response.
      *
      * @param FilterResponseEvent $event
      */
@@ -43,7 +43,7 @@ class ResponseListener
         $allowedCompression = array_map('trim', $allowedCompression);
 
         if (in_array('gzip', $allowedCompression)) {
-            $response->setContent(gzcompress($response->getContent()));
+            $response->setContent(gzencode($response->getContent()));
             $response
                 ->headers
                 ->set('Content-Encoding', 'gzip');

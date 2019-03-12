@@ -52,7 +52,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      * @param string     $index
      * @param Token      $token
      * @param array      $parameters
-     * @param array $headers
+     * @param array      $headers
      *
      * @return Result
      */
@@ -534,7 +534,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
      * @param Token|null   $token
      * @param array|string $body
      * @param array        $queryParameters
-     * @param array $headers
+     * @param array        $headers
      *
      * @return array
      */
@@ -569,7 +569,7 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
                     ? ''
                     : '-H "Content-Type: application/json"'
             ),
-            implode(' ', array_map(function(string $header) {
+            implode(' ', array_map(function (string $header) {
                 return "-H \"$header\"";
             }, $headers)),
             $endpoint['path'],
@@ -583,10 +583,10 @@ abstract class CurlFunctionalTest extends ApisearchServerBundleFunctionalTest
         $responseCode = exec($command);
         list($httpCode, $contentLength) = explode('-', $responseCode, 2);
         $content = file_get_contents($tmpFile);
-        if (array_search('Accept-Encoding: gzip', $headers) !== false) {
-            $content = gzuncompress($content);
+        if (false !== array_search('Accept-Encoding: gzip', $headers)) {
+            $content = gzdecode($content);
         }
-        if (array_search('Accept-Encoding: deflate', $headers) !== false) {
+        if (false !== array_search('Accept-Encoding: deflate', $headers)) {
             $content = gzinflate($content);
         }
 
