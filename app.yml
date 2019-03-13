@@ -1,7 +1,6 @@
 bundles:
     - Apisearch\Server\ApisearchServerBundle
     - Apisearch\Plugin\Elastica\ElasticaPluginBundle
-    - Apisearch\Plugin\Compression\CompressionPluginBundle
     - Apisearch\Server\ApisearchPluginsBundle
 routes:
     - "@ApisearchServerBundle/Resources/config/routing.yml"

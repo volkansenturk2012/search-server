@@ -1,9 +1,0 @@
-services:
-
-    #
-    # Adapters
-    #
-    apisearch_plugin.compression.response_listener:
-        class: Apisearch\Plugin\Compression\Domain\Listener\ResponseListener
-        tags:
-            - { name: kernel.event_listener, event: kernel.response }
