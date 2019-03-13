@@ -13,15 +13,15 @@
 
 declare(strict_types=1);
 
-namespace Apisearch\Plugin\Compression\Tests\Functional;
+namespace Apisearch\Server\Tests\Functional\Http;
 
 use Apisearch\Query\Query;
 use Apisearch\Server\Tests\Functional\CurlFunctionalTest;
 
 /**
- * Class BasicCompressionTest.
+ * Class CompressionTest.
  */
-class BasicCompressionTest extends CurlFunctionalTest
+class CompressionTest extends CurlFunctionalTest
 {
     /**
      * Test gzip compression.
