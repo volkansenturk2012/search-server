@@ -90,11 +90,22 @@ class ApisearchServerExtension extends BaseExtension
      */
     protected function getParametrizationValues(array $config): array
     {
+        $domainEventsAdapter = Env::get('APISEARCH_DOMAIN_EVENTS_ADAPTER', $config['domain_events_adapter']);
+        $commandsAdapter = Env::get('APISEARCH_COMMANDS_ADAPTER', $config['commands_adapter']);
+
         return [
             'apisearch_server.environment' => Env::get('APISEARCH_ENV', $config['environment']),
-            'apisearch_server.middleware_domain_events_service' => Env::get('APISEARCH_EVENTS_MIDDLEWARE', $config['middleware_domain_events_service']),
-            'apisearch_server.command_bus_service' => $config['command_bus_service'],
-            'apisearch_server.token_repository_service' => $config['token_repository_service'],
+            'apisearch_server.middleware_domain_events_service' => [
+                'inline' => 'apisearch_server.middleware.inline_events',
+                'enqueue' => 'apisearch_server.middleware.enqueue_events',
+                'ignore' => 'apisearch_server.middleware.ignore_events',
+            ][$domainEventsAdapter],
+
+            'apisearch_server.command_bus_service' => [
+                'inline' => 'apisearch_server.command_bus.inline',
+                'enqueue' => 'apisearch_server.command_bus.asynchronous',
+            ][$commandsAdapter],
+
             'apisearch_server.god_token' => Env::get('APISEARCH_GOD_TOKEN', $config['god_token']),
             'apisearch_server.readonly_token' => Env::get('APISEARCH_READONLY_TOKEN', $config['readonly_token']),
             'apisearch_server.ping_token' => Env::get('APISEARCH_PING_TOKEN', $config['ping_token']),
