@@ -22,7 +22,7 @@ use Apisearch\Model\Index;
 use Apisearch\Model\IndexUUID;
 use Apisearch\Plugin\Elastica\Domain\ElasticaWrapperWithRepositoryReference;
 use Apisearch\Server\Domain\Repository\AppRepository\IndexRepository as IndexRepositoryInterface;
-use Elastica\Index\Stats;
+use Elastica\Exception\ResponseException;
 
 /**
  * Class IndexRepository.
@@ -36,9 +36,15 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
      */
     public function getIndices(): array
     {
-        return $this
-            ->elasticaWrapper
-            ->getIndices($this->getRepositoryReference());
+        try {
+            return $this
+                ->elasticaWrapper
+                ->getIndices($this->getRepositoryReference());
+        } catch (ResponseException $exception) {
+            // Silent pass
+        }
+
+        return [];
     }
 
     /**
@@ -128,22 +134,5 @@ class IndexRepository extends ElasticaWrapperWithRepositoryReference implements 
             );
 
         $this->refresh();
-    }
-
-    /**
-     * Get the index stats.
-     *
-     * @param IndexUUID $indexUUID
-     *
-     * @return Stats
-     */
-    public function getIndexStats(IndexUUID $indexUUID): Stats
-    {
-        return $this
-            ->elasticaWrapper
-            ->getIndexStats($this
-                ->getRepositoryReference()
-                ->changeIndex($indexUUID)
-            );
     }
 }

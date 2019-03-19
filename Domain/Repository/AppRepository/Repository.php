@@ -171,14 +171,23 @@ class Repository extends RepositoryWithCredentials implements BaseRepository
     public function checkIndex(IndexUUID $indexUUID): bool
     {
         try {
-            $this
+            $indices = $this
                 ->getRepository(IndexRepository::class)
-                ->getIndexStats($indexUUID);
+                ->getIndices();
+
+            foreach ($indices as $index) {
+                if (
+                    $index->getUUID()->composeUUID() == $indexUUID->composeUUID() &&
+                    $index->isOK()
+                ) {
+                    return true;
+                }
+            }
         } catch (TransportableException $exception) {
-            return false;
+            // Silent pass
         }
 
-        return true;
+        return false;
     }
 
     /**
