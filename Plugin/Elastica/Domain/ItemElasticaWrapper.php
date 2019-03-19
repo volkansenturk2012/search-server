@@ -272,6 +272,14 @@ class ItemElasticaWrapper
                     ],
                 ],
             ],
+            [
+                'metadata_as_non_indexed' => [
+                    'path_match' => 'metadata.*',
+                    'mapping' => [
+                        'index' => false,
+                    ],
+                ],
+            ],
         ]);
 
         $sourceExcludes = [];
@@ -301,7 +309,6 @@ class ItemElasticaWrapper
             'metadata' => [
                 'type' => 'object',
                 'dynamic' => true,
-                'enabled' => false,
             ],
             'indexed_metadata' => [
                 'type' => 'object',
@@ -459,7 +466,10 @@ class ItemElasticaWrapper
         string $field,
         array $data
     ): void {
-        if (isset($data['type'])) {
+        if (
+            isset($data['type']) &&
+            'nested' !== $data['type']
+        ) {
             $metadataBucket[$field] = $data['type'];
 
             return;
@@ -471,29 +481,6 @@ class ItemElasticaWrapper
                 trim("$field.$property", '.'),
                 $value
             );
-        }
-    }
-
-    /**
-     * Get index stats.
-     *
-     * @param RepositoryReference $repositoryReference
-     *
-     * @return Index\Stats
-     */
-    public function getIndexStats(RepositoryReference $repositoryReference): Index\Stats
-    {
-        try {
-            return $this
-                ->client
-                ->getIndex($this->getIndexAliasName($repositoryReference))
-                ->getStats();
-        } catch (ResponseException $exception) {
-            /*
-             * The index resource cannot be deleted.
-             * This means that the resource is not available
-             */
-            throw $this->getIndexNotAvailableException($exception->getMessage());
         }
     }
 
