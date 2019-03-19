@@ -138,16 +138,16 @@ abstract class ApisearchServerBundleFunctionalTest extends BaseFunctionalTest
                 ],
             ],
             'apisearch_server' => [
-                'middleware_domain_events_service' => static::saveEvents()
+                'domain_events_adapter' => static::saveEvents()
                     ? (
                         static::asynchronousEvents()
-                            ? 'apisearch_server.middleware.enqueue_events'
-                            : 'apisearch_server.middleware.inline_events'
+                            ? 'enqueue'
+                            : 'inline'
                     )
-                    : 'apisearch_server.middleware.ignore_events',
-                'command_bus_service' => static::asynchronousCommands()
-                    ? 'apisearch_server.command_bus.asynchronous'
-                    : 'apisearch_server.command_bus.inline',
+                    : 'ignore',
+                'commands_adapter' => static::asynchronousCommands()
+                    ? 'enqueue'
+                    : 'inline',
                 'god_token' => self::$godToken,
                 'ping_token' => self::$pingToken,
                 'readonly_token' => self::$readonlyToken,

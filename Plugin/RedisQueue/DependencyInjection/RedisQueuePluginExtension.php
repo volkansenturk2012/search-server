@@ -111,7 +111,7 @@ class RedisQueuePluginExtension extends BaseExtension
     {
         $redisHost = Env::get('REDIS_QUEUE_HOST', $config['host']);
         if (null === $redisHost) {
-            $exception = new InvalidConfigurationException('Please provide a host for the rs queue plugin');
+            $exception = new InvalidConfigurationException('Please provide a host for the redis queue plugin');
             $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'host'));
 
             throw $exception;
@@ -119,7 +119,7 @@ class RedisQueuePluginExtension extends BaseExtension
 
         $redisPort = Env::get('REDIS_QUEUE_PORT', $config['port']);
         if (null === $redisPort) {
-            $exception = new InvalidConfigurationException('Please provide a port for the rs queue plugin');
+            $exception = new InvalidConfigurationException('Please provide a port for the redis queue plugin');
             $exception->setPath(sprintf('%s.%s', $this->getAlias(), 'port'));
 
             throw $exception;
